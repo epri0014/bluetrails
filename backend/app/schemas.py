@@ -1,28 +1,74 @@
 # app/schemas.py
-from pydantic import BaseModel
+from typing import Optional, Any
+from pydantic import BaseModel, field_serializer
+from geoalchemy2.elements import WKBElement
+from geoalchemy2.shape import to_shape
 
-class StateOut(BaseModel):
+
+# ---- 通用几何序列化混入：把 WKBElement -> WKT 字符串 ----
+class _GeomAsWKT(BaseModel):
+    @field_serializer("geom_point", "geom_polygon", "geom_geom")
+    def _serialize_geom(self, v: Optional[WKBElement], _info):
+        if v is None:
+            return None
+        try:
+            # to_shape -> shapely geometry，再输出为 WKT
+            return to_shape(v).wkt
+        except Exception:
+            # 异常时返回 None（可按需改为抛错）
+            return None
+
+    class Config:
+        from_attributes = True
+
+
+# ---------- States ----------
+class StateOut(_GeomAsWKT):
     st_code: str
-    st_desc: str | None = None
-    latitude: float | None = None
-    longitude: float | None = None
+    st_desc: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
-    class Config: from_attributes = True
+    # 可选的附加字段，与 models.py 对齐
+    feature_type: Optional[str] = None
+    area_bbox: Optional[str] = None
+    area_geojson: Optional[dict] = None
+    # 几何字段（输出为 WKT 字符串）
+    geom_point: Optional[str] = None
+    geom_polygon: Optional[str] = None
 
-class RegionOut(BaseModel):
+
+# ---------- Regions ----------
+class RegionOut(_GeomAsWKT):
     reg_code: str
-    reg_name: str | None = None
-    reg_desc: str | None = None
-    st_code:  str
+    reg_name: Optional[str] = None
+    reg_desc: Optional[str] = None
+    st_code: str
 
-    class Config: from_attributes = True
+    # 对齐 models.py 的其它列
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    feature_type: Optional[str] = None
+    area_bbox: Optional[str] = None
+    area_geojson: Optional[dict] = None
+    # 几何字段
+    geom_point: Optional[str] = None
+    geom_geom: Optional[str] = None   # 混合几何类型，统一按 WKT 字符串输出
 
-class BeachOut(BaseModel):
+
+# ---------- Beaches ----------
+class BeachOut(_GeomAsWKT):
     bc_code: str
-    bc_name: str | None = None
-    bc_address: str | None = None
+    bc_name: Optional[str] = None
+    bc_address: Optional[str] = None
     reg_code: str
-    latitude: float | None = None
-    longitude: float | None = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
-    class Config: from_attributes = True
+    # 对齐 models.py 的其它列
+    feature_type: Optional[str] = None
+    area_bbox: Optional[str] = None
+    area_geojson: Optional[dict] = None
+    # 几何字段
+    geom_point: Optional[str] = None
+    geom_geom: Optional[str] = None
