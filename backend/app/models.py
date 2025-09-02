@@ -1,6 +1,6 @@
-# app/models.py
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import Text, Float, ForeignKey
+from sqlalchemy.dialects.postgresql import JSONB   # ← 新增
 from geoalchemy2 import Geometry
 from .database import Base
 
@@ -12,7 +12,7 @@ class State(Base):
     longitude: Mapped[float | None] = mapped_column(Float)
     feature_type: Mapped[str | None] = mapped_column(Text)
     area_bbox: Mapped[str | None] = mapped_column(Text)
-    area_geojson: Mapped[dict | None] = mapped_column()          # jsonb
+    area_geojson: Mapped[dict | None] = mapped_column(JSONB)  # ← 指定 JSONB
     geom_point: Mapped[str | None] = mapped_column(Geometry("POINT", srid=4326))
     geom_polygon: Mapped[str | None] = mapped_column(Geometry("MULTIPOLYGON", srid=4326))
 
@@ -26,7 +26,7 @@ class Region(Base):
     longitude: Mapped[float | None] = mapped_column(Float)
     feature_type: Mapped[str | None] = mapped_column(Text)
     area_bbox: Mapped[str | None] = mapped_column(Text)
-    area_geojson: Mapped[dict | None] = mapped_column()
+    area_geojson: Mapped[dict | None] = mapped_column(JSONB)  # ← 指定 JSONB
     geom_point: Mapped[str | None] = mapped_column(Geometry("POINT", srid=4326))
     geom_geom:  Mapped[str | None] = mapped_column(Geometry(geometry_type="GEOMETRY", srid=4326))
 
@@ -40,6 +40,6 @@ class Beach(Base):
     longitude: Mapped[float | None] = mapped_column(Float)
     feature_type: Mapped[str | None] = mapped_column(Text)
     area_bbox:  Mapped[str | None] = mapped_column(Text)
-    area_geojson: Mapped[dict | None] = mapped_column()
+    area_geojson: Mapped[dict | None] = mapped_column(JSONB)  # ← 指定 JSONB
     geom_point: Mapped[str | None] = mapped_column(Geometry("POINT", srid=4326))
     geom_geom:  Mapped[str | None] = mapped_column(Geometry(geometry_type="GEOMETRY", srid=4326))
