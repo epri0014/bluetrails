@@ -11,9 +11,11 @@ if (!file.exists(excel_path)) stop("File not found: ", excel_path)
 # ---------- packages ----------
 library(shiny)
 pkgs <- c("bslib","leaflet","dplyr","readxl","lubridate","stringr","tidyr","purrr","tibble")
-need <- setdiff(pkgs, rownames(installed.packages()))
-if (length(need)) install.packages(need)
-invisible(lapply(pkgs, library, character.only=TRUE))
+#need <- setdiff(pkgs, rownames(installed.packages()))
+#if (length(need)) install.packages(need)
+#invisible(lapply(pkgs, library, character.only=TRUE))
+pkgs <- c("bslib","leaflet","dplyr","readxl","lubridate","stringr","tidyr","purrr","tibble")
+lapply(pkgs, library, character.only=TRUE)
 
 # ---------- helpers (robust parsing & cleaning) ----------
 numify <- function(x){ as.numeric(gsub("[^0-9.\\-]", "", as.character(x))) }
