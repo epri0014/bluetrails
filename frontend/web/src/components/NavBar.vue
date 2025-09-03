@@ -1,109 +1,93 @@
+
 <template>
   <header class="nav">
     <div class="wrap">
-      <!-- 左边 -->
-      <a class="brand" href="/">
-        <span class="logo">🟦</span>
-        <span class="brand-text">BLUE TRAILS</span>
-      </a>
+      <RouterLink to="/" class="brand">OCEAN KIDS</RouterLink>
 
-      <!-- 右边 -->
-      <div class="right">
-        <nav class="menu">
-          <RouterLink to="/" class="pill" :class="{ active: isActive('/') }">HOME</RouterLink>
-          <RouterLink to="/explore" class="pill" :class="{ active: isActive('/explore') }">EXPLORE</RouterLink>
-          <RouterLink to="/favourites" class="pill" :class="{ active: isActive('/favourites') }">FAVOURITES</RouterLink>
-          <RouterLink to="/settings" class="pill" :class="{ active: isActive('/settings') }">SETTINGS</RouterLink>
-        </nav>
-        <RouterLink to="/login" class="login">LOGIN</RouterLink>
+      <nav class="links" aria-label="Primary">
+        <RouterLink class="link" to="/explore">Animals at Risk</RouterLink>
+        <RouterLink class="link" to="/favourites">How Bad Is It?</RouterLink>
+        <RouterLink class="link" to="/settings">Water Quality</RouterLink>
+      </nav>
+
+      <button class="hamburger" @click="open = true" aria-label="Open menu">≡</button>
+    </div>
+
+    <div class="drawer" v-if="open" @click.self="open = false">
+      <div class="panel">
+        <button class="close" @click="open = false" aria-label="Close">×</button>
+        <RouterLink class="dlink" to="/explore" @click="open=false">Animals at Risk</RouterLink>
+        <RouterLink class="dlink" to="/favourites" @click="open=false">How Bad Is It?</RouterLink>
+        <RouterLink class="dlink" to="/settings" @click="open=false">Water Quality</RouterLink>
       </div>
     </div>
   </header>
 </template>
 
 <script setup>
-import { RouterLink, useRoute } from 'vue-router'
-const route = useRoute()
-const isActive = (p) => route?.path === p
+import { ref } from 'vue'
+const open = ref(false)
 </script>
 
 <style scoped>
-.nav {
-  position: sticky;
-  top: 0;
-  z-index: 60;
-  backdrop-filter: blur(10px);
-  background: color-mix(in oklab, #ffffff 80%, transparent);
-  border-bottom: 1px solid #e9edf3;
+.nav{
+  position: fixed;     
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: transparent;  
+  color: #fff;
 }
-.wrap {
+
+.wrap{
   max-width: 1200px;
   margin: 0 auto;
-  padding: .7rem 1rem;
+  padding: 0 20px;
+  height: 64px;
   display: flex;
-  align-items: center;
-  justify-content: space-between; /* 👈 左右两端对齐 */
+  align-items: center;      
 }
-.brand {
-  display: flex;
-  align-items: center;
-  gap: .55rem;
+
+.brand{
+  font-weight: 900;
+  color: #fff;
   text-decoration: none;
+  letter-spacing: .5px;
+  text-shadow: 0 1px 3px rgba(0,0,0,.6);  
 }
-.logo {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  background: #8de3ff;
+
+.links{
+  margin-left: auto;         
+  display: flex;
+  gap: 12px;
 }
-.brand-text {
+.btn{
+  color: #fff;
+  text-decoration: none;
   font-weight: 800;
-  letter-spacing: .06em;
-  color: #0b1b2b;
+  padding: 8px 12px;
+  border-radius: 10px;
+  text-shadow: 0 1px 3px rgba(0,0,0,.6);
 }
-.right {
-  display: flex;
-  align-items: center;
-  gap: .6rem;
+.btn:hover{ background: rgba(255,255,255,.18); }
+
+.hamburger{
+  display:none; margin-left:12px;
+  width:40px; height:40px; border:none; border-radius:10px;
+  background: rgba(255,255,255,.2); color:#fff;
 }
-.menu {
-  display: flex;
-  gap: .4rem;
+@media (max-width:900px){
+  .links{ display:none; }
+  .hamburger{ display:block; }
 }
-.pill {
-  padding: .45rem .9rem;
-  border-radius: 999px;
-  text-decoration: none;
-  font-weight: 600;
-  color: #4b5563;
-  border: 1px solid transparent;
+
+.drawer{ position:fixed; inset:0; pointer-events:none; }
+.drawer.show{ pointer-events:auto; }
+.panel{
+  position:absolute; right:0; top:0; bottom:0; width:min(88%,360px); background:#fff;
+  transform:translateX(100%); transition:.25s; padding:16px; display:flex; flex-direction:column; gap:12px;
+  box-shadow:-8px 0 24px rgba(0,0,0,.2);
 }
-.pill:hover {
-  background: #f3f6fb;
-}
-.pill.active {
-  background: #eef4ff;
-  border-color: #cfe1ff;
-  color: #1f2a44;
-}
-.login {
-  text-decoration: none;
-  font-weight: 700;
-  letter-spacing: .02em;
-  padding: .5rem 1rem;
-  border-radius: 12px;
-  border: 1px solid #d8dee8;
-  color: #0b1b2b;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, .06);
-}
-.login:hover {
-  background: #f7f9fc;
-}
-@media (max-width: 780px) {
-  .menu {
-    display: none;
-  }
-}
+.drawer.show .panel{ transform:translateX(0); }
+.close{ align-self:flex-end; width:40px; height:40px; border:none; border-radius:10px; background:#f3f4f6; }
+.dlink{ background:#f5f7f9; padding:12px; border-radius:10px; font-weight:800; color:#111; text-decoration:none; }
 </style>
