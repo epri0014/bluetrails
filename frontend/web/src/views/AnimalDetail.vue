@@ -54,7 +54,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const base = '/animal-page'
+const base = 'https://gvwrmcyksmswvduehrtd.supabase.co/storage/v1/object/public/bluetrails/animal-page'
 const DATA = [
   {
     slug:'sea-turtle',

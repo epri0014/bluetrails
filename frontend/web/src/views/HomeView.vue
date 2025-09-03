@@ -18,7 +18,7 @@
 
       <div class="photo">
         <div class="frame">
-          <img src="/hero/AnimalPic.jpg" alt="Sea life in the ocean" />
+          <img src="https://gvwrmcyksmswvduehrtd.supabase.co/storage/v1/object/public/bluetrails/hero/AnimalPic.jpg" alt="Sea life in the ocean" />
         </div>
       </div>
     </div>
@@ -53,7 +53,7 @@
     rgba(0,30,60,.18) 48%,
     rgba(0,30,60,.06) 65%,
     rgba(0,0,0,0) 78%),
-  url('/hero/background.jpg');
+  url('https://gvwrmcyksmswvduehrtd.supabase.co/storage/v1/object/public/bluetrails/hero/background.jpg');
   background-position: center;
   background-size: cover;
 }
@@ -67,7 +67,7 @@
         rgba(0,0,0,.28) 58%,
         rgba(0,0,0,.10) 75%,
         rgba(0,0,0,0) 88%),
-      url('/hero/background.jpg');
+      url('https://gvwrmcyksmswvduehrtd.supabase.co/storage/v1/object/public/bluetrails/hero/background.jpg');
   }
 }
 

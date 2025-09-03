@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-const base = '/animal-page'
+const base = 'https://gvwrmcyksmswvduehrtd.supabase.co/storage/v1/object/public/bluetrails/animal-page'
 const animals = [
   { slug: 'sea-turtle',  name: 'Sea Turtles',        src: `${base}/sea-turtle.jpg` },
   { slug: 'sea-birds',   name: 'Seabirds',           src: `${base}/sea-birds.jpg` },
