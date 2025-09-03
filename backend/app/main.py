@@ -68,6 +68,27 @@ def _to_lonlat(point: WKBElement | None):
     shp = to_shape(point)  # shapely Point
     return (shp.x, shp.y)
 
+# ---------------- Root & Health ----------------
+@app.get("/")
+def root():
+    return {
+        "message": "Beaches API is running 🚀",
+        "docs": "/docs",
+        "redoc": "/redoc",
+        "examples": {
+            "states": "/api/states",
+            "regions": "/api/regions?state=VIC",
+            "beaches_search": "/api/beaches?state=VIC&search=Brighton&limit=10&offset=0",
+            "beaches_nearby": "/api/beaches/nearby?lat=-37.9&lon=145.0&radius_km=10",
+            "regions_within": "/api/regions/within?min_lon=144.8&min_lat=-38.0&max_lon=145.5&max_lat=-37.5",
+        },
+    }
+
+@app.get("/healthz")
+def healthz():
+    return {"status": "ok"}
+
+# ---------------- APIs ----------------
 @app.get("/api/states", response_model=list[StateOut])
 def list_states(db: Session = Depends(get_db)):
     rows = db.execute(select(State).order_by(State.st_code)).scalars().all()
