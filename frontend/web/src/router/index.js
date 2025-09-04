@@ -1,20 +1,30 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '@/views/HomeView.vue'
-import ExploreView from '@/views/ExploreView.vue'
-import FavouritesView from '@/views/FavouritesView.vue'
-import SettingsView from '@/views/SettingsView.vue'
-import LoginView from '@/views/LoginView.vue'
+import Home from '../views/HomeView.vue'
+import AnimalsGrid from '../views/AnimalsGrid.vue'
+import AnimalDetail from '../views/AnimalDetail.vue'
+
+const Severity = {
+  template: `<section style="max-width:1100px;margin:28px auto;padding:0 20px">
+               <h1>How Bad Is It?</h1>
+             </section>`
+}
+const Water = {
+  template: `<section style="max-width:1100px;margin:28px auto;padding:0 20px">
+               <h1>Water Quality</h1>
+             </section>`
+}
 
 const routes = [
-  { path: '/', name: 'home', component: HomeView },
-  { path: '/explore', name: 'explore', component: ExploreView },
-  { path: '/favourites', name: 'favourites', component: FavouritesView },
-  { path: '/settings', name: 'settings', component: SettingsView },
-  { path: '/login', name: 'login', component: LoginView },
+  { path: '/', name: 'home', component: Home },
+  { path: '/animals', name: 'animals', component: AnimalsGrid },
+  { path: '/animals/:id', name: 'animal-detail', component: AnimalDetail }, 
+  { path: '/severity', name: 'severity', component: Severity },
+  { path: '/water-quality', name: 'water', component: Water },
+  { path: '/:pathMatch(.*)*', redirect: '/' }
 ]
 
 export default createRouter({
   history: createWebHistory(),
   routes,
-  scrollBehavior() { return { top: 0 } },
+  scrollBehavior: () => ({ top: 0 })
 })
