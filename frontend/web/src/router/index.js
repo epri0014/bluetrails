@@ -3,19 +3,18 @@ import Home from '../views/HomeView.vue'
 import AnimalsGrid from '../views/AnimalsGrid.vue'
 import AnimalDetail from '../views/AnimalDetail.vue'
 import WaterView from '../views/WaterView.vue'
-
-const Severity = {
-  template: `<section style="max-width:1100px;margin:28px auto;padding:0 20px">
-               <h1>How Bad Is It?</h1>
-             </section>`
-}
+import AvatarSelect from '../views/AvatarSelect.vue'
+import OceanHealth from '../views/OceanHealth.vue'
+import CausePage from '@/views/CausePage.vue'
 
 const routes = [
   { path: '/', name: 'home', component: Home },
   { path: '/animals', name: 'animals', component: AnimalsGrid },
   { path: '/animals/:id', name: 'animal-detail', component: AnimalDetail }, 
-  { path: '/severity', name: 'severity', component: Severity },
   { path: '/water-quality', name: 'water', component: WaterView },
+  { path: '/choose', name: 'choose', component: AvatarSelect },
+  { path: '/health', component: OceanHealth },
+  { path: '/cause', component: CausePage },
   { path: '/:pathMatch(.*)*', redirect: '/' }
 ]
 

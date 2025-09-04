@@ -32,19 +32,19 @@
 
         <h2>How pollution hurts them</h2>
         <ul class="bullets">
-          <li v-for="t in a.threats" :key="t">• {{ t }}</li>
+          <li v-for="t in a.threats" :key="t">{{ t }}</li>
         </ul>
 
         <h2>How you can help</h2>
         <ul class="bullets">
-          <li v-for="h in a.help" :key="h">• {{ h }}</li>
+          <li v-for="h in a.help" :key="h">{{ h }}</li>
         </ul>
       </section>
     </div>
 
     <div class="wrap" v-else>
       <RouterLink to="/animals" class="back">← Back</RouterLink>
-      <p>Sorry, we couldn’t find that animal.</p>
+      <p>Sorry, we couldn't find that animal.</p>
     </div>
   </main>
 </template>
@@ -67,7 +67,7 @@ const DATA = [
     status:'Many species are threatened',
     src:`${base}/sea-turtle.jpg`,
     intro:'Sea turtles are ancient swimmers that glide across warm oceans.',
-    story:'Imagine wearing a backpack your whole life—that’s a turtle’s shell! It keeps them safe while they explore coral gardens and open seas.',
+    story:`Imagine wearing a backpack your whole life, that's a turtle's shell! It keeps them safe while they explore coral gardens and open seas.`,
     why:'Sea turtles keep seagrass healthy and help coral reefs by eating jellyfish. Healthy turtles mean balanced ocean food webs.',
     threats:[
       'Plastic bags look like jellyfish and can choke turtles.',
@@ -75,9 +75,9 @@ const DATA = [
       'Beach lights and trash make it harder for babies to reach the sea.'
     ],
     help:[
-      'Use a reusable bag and bottle—skip single-use plastic.',
+      'Use a reusable bag and bottle, skip single-use plastic.',
       'Clean up a beach or river for 15 minutes with an adult.',
-      'Keep beaches dark and clear—no holes, no lights near nests.'
+      'Keep beaches dark and clear, no holes, no lights near nests.'
     ]
   },
   {
@@ -100,8 +100,8 @@ const DATA = [
     ],
     help:[
       'Cut rings and loops before throwing anything away.',
-      'Choose tuna with “bird-safe” or pole-and-line labels if possible.',
-      'Join a local cleanup—every tiny piece helps.'
+      'Choose tuna with "bird-safe" or pole-and-line labels if possible.',
+      'Join a local cleanup, every tiny piece helps.'
     ]
   },
   {
@@ -110,12 +110,12 @@ const DATA = [
     scientific:'Phocidae & Otariidae',
     group:'Mammals',
     type:'Marine mammal',
-    size:'1–3 meters, species vary',
+    size:'1-3 meters, species vary',
     diet:'Fish and squid',
     status:'Some stable, some at risk',
     src:`${base}/seals.jpg`,
     intro:'Curious, whiskered swimmers who love rocky shores.',
-    story:'Puppies practice diving like kids learning to swim—short dips first, then deeper and longer!',
+    story:'Puppies practice diving like kids learning to swim, short dips first, then deeper and longer!',
     why:'They are top predators that keep fish populations balanced.',
     threats:[
       'Lost fishing nets (ghost gear) can trap their necks and flippers.',
@@ -123,9 +123,9 @@ const DATA = [
       'Noise and pollution can scare mothers from pups.'
     ],
     help:[
-      'Throw trash in closed bins—wind can’t take what it can’t reach.',
+      `Throw trash in closed bins, wind can't take what it can't reach.`,
       'Support projects that remove ghost nets.',
-      'Watch wildlife from a distance—give them space.'
+      'Watch wildlife from a distance, give them space.'
     ]
   },
   {
@@ -134,20 +134,20 @@ const DATA = [
     scientific:'Delphinidae',
     group:'Mammals',
     type:'Marine mammal',
-    size:'2–4 meters, species vary',
+    size:'2-4 meters, species vary',
     diet:'Fish and squid',
     status:'Some species threatened',
     src:`${base}/dolphins.jpg`,
     intro:'Dolphins are fast, playful, and super smart.',
-    story:'Pods work as a team—some herd the fish, others take turns to eat. It’s like an underwater sport!',
-    why:'Dolphins show when oceans are healthy—if dolphins are well, many other animals are too.',
+    story:`Pods work as a team, some herd the fish, others take turns to eat. It's like an underwater sport!`,
+    why:'Dolphins show when oceans are healthy, if dolphins are well, many other animals are too.',
     threats:[
       'Plastic and tiny microplastics enter the food they eat.',
       'Chemicals build up in their bodies over time.',
       'Loud noise from ships can confuse their echo-location.'
     ],
     help:[
-      'Reduce, reuse, recycle—especially plastic.',
+      'Reduce, reuse, recycle, especially plastic.',
       'Choose products with less packaging.',
       'Learn and share: quiet oceans help dolphins talk.'
     ]
@@ -163,17 +163,17 @@ const DATA = [
     status:'Some recovering, some endangered',
     src:`${base}/whale.jpg`,
     intro:'The giants of the sea are gentle and powerful.',
-    story:'Baleen whales eat with a giant comb—scooping water in and pushing it out while tasty krill stay trapped.',
-    why:'Whales help fertilize the ocean with “whale pump,” boosting tiny plants that make oxygen for our planet.',
+    story:'Baleen whales eat with a giant comb, scooping water in and pushing it out while tasty krill stay trapped.',
+    why:'Whales help fertilize the ocean with "whale pump," boosting tiny plants that make oxygen for our planet.',
     threats:[
       'Ropes and nets can wrap around tails and mouths.',
       'Plastic and balloons may be swallowed by mistake.',
       'Noise makes it hard to communicate and find food.'
     ],
     help:[
-      'Never release balloons—tie them down or skip them.',
+      'Never release balloons, tie them down or skip them.',
       'Support rescue groups that free entangled whales.',
-      'Learn about “quiet ships” and share with friends.'
+      'Learn about "quiet ships" and share with friends.'
     ]
   },
   {
@@ -182,12 +182,12 @@ const DATA = [
     scientific:'Enhydra lutris',
     group:'Mammals',
     type:'Marine mammal',
-    size:'About 1–1.5 meters',
+    size:'About 1-1.5 meters',
     diet:'Sea urchins, crabs, clams',
     status:'Threatened in some areas',
     src:`${base}/sea-otters.jpg`,
     intro:'Sea otters are fluffy kelp-forest heroes.',
-    story:'They float on their backs and use a rock as a hammer—crack!—dinner is served.',
+    story:'They float on their backs and use a rock as a hammer, crack!, dinner is served.',
     why:'Otters eat sea urchins that munch kelp; with otters, kelp forests grow tall and shelter many fish.',
     threats:[
       'Oil and chemicals ruin their super-warm fur.',
@@ -195,9 +195,9 @@ const DATA = [
       'Sick prey from pollution can make pups weak.'
     ],
     help:[
-      'Use less oil—walk, bike, or share rides when you can.',
+      'Use less oil, walk, bike, or share rides when you can.',
       'Choose reef-safe sunscreen for beach days.',
-      'Pick up litter near rivers—it all flows to the sea.'
+      'Pick up litter near rivers, it all flows to the sea.'
     ]
   },
   {
@@ -211,16 +211,16 @@ const DATA = [
     status:'Many reefs are stressed',
     src:`${base}/Coral.jpg`,
     intro:'Corals are animals that build colorful underwater cities.',
-    story:'Each coral is a tiny polyp with tentacles. Millions together make a reef where fish find homes—like apartments under the sea.',
+    story:'Each coral is a tiny polyp with tentacles. Millions together make a reef where fish find homes, like apartments under the sea.',
     why:'Reefs protect coasts, feed people, and hold amazing sea life.',
     threats:[
       'Sunscreen chemicals and plastic harm coral polyps.',
-      'Warmer water makes corals “bleach” and lose color.',
+      'Warmer water makes corals "bleach" and lose color.',
       'Sediment and sewage block the sunlight they need.'
     ],
     help:[
       'Use reef-safe sunscreen and a hat or shirt for shade.',
-      'Keep drains clean—never pour oil or chemicals.',
+      'Keep drains clean, never pour oil or chemicals.',
       'Support groups that restore reefs with coral gardening.'
     ]
   },
@@ -231,10 +231,10 @@ const DATA = [
     group:'Fish',
     type:'Top predator',
     size:'From 20 cm to 12 m (whale shark)',
-    diet:'Fish, squid—varies widely',
+    diet:'Fish, squid, varies widely',
     status:'Many species declining',
     src:`${base}/shark.jpg`,
-    intro:'Sharks are not monsters—they’re important ocean guardians.',
+    intro:`Sharks are not monsters, they're important ocean guardians.`,
     story:'Like referees in a game, sharks keep the rules: they eat the sick and the weak so fish schools stay strong.',
     why:'Without sharks, food webs wobble and some animals overgrow.',
     threats:[

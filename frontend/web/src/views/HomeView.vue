@@ -10,7 +10,7 @@
 
         <div class="actions" role="navigation" aria-label="Main features">
           <RouterLink class="action" to="/animals">Animals at Risk</RouterLink>
-          <RouterLink class="action" to="/severity">How Bad Is It?</RouterLink>
+          <RouterLink class="action" to="/choose">Story of the Water</RouterLink>
           <RouterLink class="action" to="/water-quality">Know your Water</RouterLink>
           <div class="action placeholder" aria-hidden="true" title="More coming soon">More coming soon</div>
         </div>
