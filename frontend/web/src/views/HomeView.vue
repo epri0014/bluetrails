@@ -10,7 +10,7 @@
 
         <div class="actions" role="navigation" aria-label="Main features">
           <RouterLink class="action" to="/animals">Animals at Risk</RouterLink>
-          <RouterLink class="action" to="/choose">Story of the Water</RouterLink>
+          <RouterLink class="action" to="/choose">Be an Ocean Hero</RouterLink>
           <RouterLink class="action" to="/water-quality">Know your Water</RouterLink>
           <div class="action placeholder" aria-hidden="true" title="More coming soon">More coming soon</div>
         </div>
@@ -139,4 +139,5 @@
   z-index:1; font-size:14px; display:flex; gap:10px; align-items:center;
   text-shadow:0 2px 10px rgba(0,0,0,.35);
 }
+
 </style>
