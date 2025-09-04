@@ -2,7 +2,7 @@
 <template>
   <header class="nav">
     <div class="wrap">
-      <RouterLink to="/" class="brand">OCEAN KIDS</RouterLink>
+      <RouterLink to="/" class="brand">BLUETRAILS</RouterLink>
     </div>
   </header>
 </template>
