@@ -1,28 +1,24 @@
 <template>
   <main class="page">
     <!-- Loading overlay -->
-    <div v-if="loading" class="loading">
-      <div class="spinner"></div>
-      <p>Gathering ocean story...</p>
-    </div>
+    <LoadingOverlay v-if="loading" message="🐠 Preparing your Ocean Story..." />
 
-    <div v-else class="accordion">
+    <div v-else class="accordion wrap">
       <!-- Section 1 - Causes of Pollution -->
       <section class="card" :class="{ open: active === 1 }">
         <header @click="setActive(1)">
-          <h2>Causes of Pollution</h2>
+          <img class="avatar-icon" :src="avatar.image_neutral_url" :alt="avatar.name" />
+          <h2>🚯 Causes of Pollution</h2>
         </header>
         <div v-if="active === 1" class="body">
-          <!-- Avatar bubble -->
-          <!--<div class="speech-bubble orange">
+          <div class="speech-bubble orange" v-if="cause?.justifications?.length">
             <ul>
               <li v-for="(j, idx) in cause.justifications" :key="idx">
                 {{ j }}
               </li>
             </ul>
-          </div>-->
+          </div>
 
-          <!-- Pollution causes list -->
           <ul class="causes">
             <li v-for="c in pollutionCauses" :key="c.id">
               <span class="icon">{{ c.icon }}</span>
@@ -33,7 +29,7 @@
             </li>
           </ul>
 
-          <button class="btn next" @click="setActive(2)">
+          <button class="btn primary" @click="setActive(2)">
             👉 See how this affects me and my ocean friends
           </button>
         </div>
@@ -42,14 +38,19 @@
       <!-- Section 2 - Marine Life Facts -->
       <section class="card" :class="{ open: active === 2 }">
         <header @click="setActive(2)">
-          <h2>Marine Life Facts</h2>
+          <img class="avatar-icon" :src="avatar.image_neutral_url" :alt="avatar.name" />
+          <h2>🐬 Marine Life Facts</h2>
         </header>
         <div v-if="active === 2" class="body">
+          <!--<div class="speech-bubble blue">
+            "You see? Pollution makes life harder for us."
+          </div>-->
+
           <ul class="facts">
-            <li v-for="f in funFacts" :key="f.id">🐠 {{ f.fact_text }}</li>
+            <li v-for="f in funFacts" :key="f.id">🌊 {{ f.fact_text }}</li>
           </ul>
 
-          <button class="btn next" @click="setActive(3)">
+          <button class="btn primary" @click="setActive(3)">
             👉 Now here's how YOU can help
           </button>
         </div>
@@ -58,14 +59,15 @@
       <!-- Section 3 - Eco Actions + Reward -->
       <section class="card" :class="{ open: active === 3 }">
         <header @click="setActive(3)">
-          <h2>Eco-Actions & Reward</h2>
+          <img class="avatar-icon" :src="avatar.image_happy_url" :alt="avatar.name" />
+          <h2>🌱 Eco-Actions & Reward</h2>
         </header>
         
         <div v-if="active === 3" class="body">
-        <div class="speech-bubble red" v-if="checked.length < ecoActions.length">
-          Check all the list!
-        </div>
-          <!-- Checklist -->
+          <div class="speech-bubble red" v-if="checked.length < ecoActions.length">
+            ✅ Check all the items below to help the ocean!
+          </div>
+
           <ul class="actions">
             <li v-for="a in ecoActions" :key="a.id">
               <label>
@@ -75,19 +77,14 @@
             </li>
           </ul>
 
-          <!-- Avatar bubble after checklist -->
-          <div
-            v-if="checked.length === ecoActions.length"
-            class="speech-bubble green"
-          >
-            Great job! You're helping me and my fishy friends 🐟
+          <div v-if="checked.length === ecoActions.length" class="speech-bubble green">
+            🎉 Great job! You're helping me and my fishy friends 🐟
           </div>
 
-          <!-- Reward -->
           <div v-if="checked.length === ecoActions.length" class="reward">
             🎖️
             <button class="btn green" @click="downloadBadge">
-              Download badge: Ocean Hero - Defender of {{ site?.name }}
+              Download badge: Ocean Hero – Defender of {{ site?.name }}
             </button>
           </div>
         </div>
@@ -101,6 +98,7 @@ import { ref, onMounted } from 'vue'
 import { useStoryStore } from '../store/storyStore'
 import { fetchPollutionCauses, fetchFunFacts, fetchEcoActions } from '../services/api'
 import { useRouter } from 'vue-router'
+import LoadingOverlay from '../components/LoadingOverlay.vue'
 
 const store = useStoryStore()
 const avatar = store.avatar
@@ -141,7 +139,7 @@ onMounted(async () => {
 })
 
 function downloadBadge() {
-  alert(`Congratz! You are an Ocean Hero - Defender of ${site?.name}`)
+  alert(`Congratz! You are an Ocean Hero – Defender of ${site?.name}`)
   router.push('/choose')
 }
 </script>
@@ -150,89 +148,90 @@ function downloadBadge() {
 .page {
   padding-top: var(--nav-h);
   min-height: 100vh;
-  background: #fafafa;
-  position: relative;
-}
-
-/* Loading overlay */
-.loading {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: rgba(250, 249, 247, 0.9);
-  z-index: 100;
-  font-weight: 600;
-  color: #333;
-}
-.spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid #ddd;
-  border-top: 4px solid #0ea5e9;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 12px;
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
+  background-image:
+    linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.15)),
+    url('/hero/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 .accordion {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
 }
 
 .card {
-  border: 1px solid #ddd;
   border-radius: 12px;
   background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  overflow: hidden;
 }
 .card header {
-  padding: 14px;
-  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  font-weight: 800;
+  background: #f0f9ff;
+  border-bottom: 1px solid #ddd;
   cursor: pointer;
-  border-bottom: 1px solid #eee;
 }
 .card .body {
-  padding: 16px;
+  padding: 18px;
 }
 
-/* Speech bubble */
+.avatar-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #0ea5e9;
+  background: #fff;
+}
+
+/* Speech bubbles */
 .speech-bubble {
-  border: 2px solid;
   border-radius: 12px;
   padding: 12px 16px;
   margin-bottom: 14px;
-  font-size: 14px;
+  font-size: 15px;
+  line-height: 1.5;
 }
-.speech-bubble.orange { background: #fff3e0; border-color: #f59e0b; }
-.speech-bubble.red { background: #fee2e2; border-color: #ef4444; }
-.speech-bubble.green { background: #e6f9e6; border-color: #22c55e; }
+.speech-bubble.orange { background: #fff3e0; border: 2px solid #f59e0b; }
+.speech-bubble.red { background: #fee2e2; border: 2px solid #ef4444; }
+.speech-bubble.green { background: #e6f9e6; border: 2px solid #22c55e; }
+.speech-bubble.blue { background: #e0f2fe; border: 2px solid #0ea5e9; }
 
 /* Lists */
 .causes li, .facts li, .actions li {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   display: flex;
-  gap: 8px;
+  gap: 10px;
+  align-items: flex-start;
 }
 
-.icon { font-size: 20px; }
-.title { font-weight: 700; }
+.icon { font-size: 22px; }
+.title { font-weight: 700; margin-bottom: 2px; }
 
+.actions input {
+  margin-right: 8px;
+}
+
+/* Buttons */
 .btn {
   display: inline-block;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  text-decoration: none;
-  margin-top: 12px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  margin-top: 14px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
 }
-.btn.next { background: #0ea5e9; color: white; }
+.btn.primary { background: #0ea5e9; color: white; }
 .btn.green { background: #22c55e; color: white; }
+.btn:hover { transform: scale(1.05); }
 
 .reward {
   margin-top: 16px;

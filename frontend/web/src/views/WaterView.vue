@@ -1,45 +1,49 @@
 <template>
   <main class="page">
-    <div class="iframe-wrapper">
-      <div v-if="loading" class="loading-overlay">
-        <div class="spinner"></div>
-        <p>Loading Interactive app...</p>
-      </div>
+    <section class="wrap">
+      <div class="card iframe-card">
+        <!-- Loading overlay -->
+        <LoadingOverlay v-if="loading" message="📊 Loading interactive app..." />
 
-      <iframe
-        src="https://019911fb-5550-ad05-7994-5cd5737f0ef1.share.connect.posit.cloud/"
-        title="Water Quality Shiny App"
-        frameborder="0"
-        allowfullscreen
-        @load="onLoad"
-      ></iframe>
-    </div>
+        <!-- Shiny iframe -->
+        <iframe
+          src="https://019911fb-5550-ad05-7994-5cd5737f0ef1.share.connect.posit.cloud/"
+          title="Water Quality Shiny App"
+          frameborder="0"
+          allowfullscreen
+          @load="onLoad"
+        ></iframe>
+      </div>
+    </section>
   </main>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import LoadingOverlay from '../components/LoadingOverlay.vue'
+
 const loading = ref(true)
-function onLoad() { loading.value = false }
+function onLoad() {
+  loading.value = false
+}
 </script>
 
 <style scoped>
-.page {
-  /* take full viewport height minus navbar */
-  height: calc(100vh - var(--nav-h));
-  margin-top: var(--nav-h); /* prevent overlap with fixed NavBar */
-}
-
-.iframe-wrapper {
-  width: 100%;
-  height: 100%;
+/* Card extension for iframe */
+.iframe-card {
   position: relative;
+  height: calc(100vh - var(--nav-h) - 64px); /* full viewport minus nav + padding */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Iframe fills card */
 iframe {
+  flex: 1;
   width: 100%;
-  height: 100%;
   border: none;
+  border-radius: 6px;
 }
 
 /* Loading overlay */
@@ -67,6 +71,8 @@ iframe {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
