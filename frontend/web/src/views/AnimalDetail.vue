@@ -1,12 +1,15 @@
 <template>
-  <main class="detail">
+  <main class="detail" :style="{ background: heroBg }">
     <div class="wrap" v-if="a">
       <RouterLink to="/animals" class="back">← Back</RouterLink>
 
       <h1 class="title">{{ a.name }}</h1>
-      <p class="intro">{{ a.intro }}</p>
 
-      <section class="facts">
+      <div class="glass intro-card">
+        <p class="intro">{{ a.intro }}</p>
+      </div>
+
+      <section class="facts glass">
         <div class="facts-inner">
           <ul class="kv">
             <li><span>COMMON NAME:</span> {{ a.name }}</li>
@@ -17,34 +20,43 @@
             <li v-if="a.diet"><span>DIET:</span> {{ a.diet }}</li>
             <li v-if="a.status"><span>STATUS:</span> {{ a.status }}</li>
           </ul>
+
           <div class="circle">
-            <img :src="a.src" :alt="a.name" />
+            <img :src="a.src" :alt="a.name" @error="onImgError" />
           </div>
         </div>
       </section>
 
-      <section class="body">
-        <h2>Meet the {{ a.name }}</h2>
-        <p>{{ a.story }}</p>
+      <section class="cards">
+        <article class="card-block glass">
+          <h2>Meet the {{ a.name }}</h2>
+          <p>{{ a.story }}</p>
+        </article>
 
-        <h2>Why they matter</h2>
-        <p>{{ a.why }}</p>
+        <article class="card-block glass">
+          <h2>Why they matter</h2>
+          <p>{{ a.why }}</p>
+        </article>
 
-        <h2>How pollution hurts them</h2>
-        <ul class="bullets">
-          <li v-for="t in a.threats" :key="t">{{ t }}</li>
-        </ul>
+        <article class="card-block glass">
+          <h2>How pollution hurts them</h2>
+          <ul class="bullets">
+            <li v-for="t in a.threats" :key="t">{{ t }}</li>
+          </ul>
+        </article>
 
-        <h2>How you can help</h2>
-        <ul class="bullets">
-          <li v-for="h in a.help" :key="h">{{ h }}</li>
-        </ul>
+        <article class="card-block glass">
+          <h2>How you can help</h2>
+          <ul class="bullets">
+            <li v-for="h in a.help" :key="h">{{ h }}</li>
+          </ul>
+        </article>
       </section>
     </div>
 
     <div class="wrap" v-else>
       <RouterLink to="/animals" class="back">← Back</RouterLink>
-      <p>Sorry, we couldn't find that animal.</p>
+      <div class="glass intro-card"><p>Sorry, we couldn't find that animal.</p></div>
     </div>
   </main>
 </template>
@@ -54,7 +66,17 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const base = 'https://gvwrmcyksmswvduehrtd.supabase.co/storage/v1/object/public/bluetrails/animal-page'
+
+const CDN = 'https://gvwrmcyksmswvduehrtd.supabase.co/storage/v1/object/public'
+const BUCKET = 'bluetrails'
+const heroBg =
+  `linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.35) 33%, rgba(0,0,0,.20) 100%), ` +
+  `url('${CDN}/${BUCKET}/hero/background.jpg') center/cover fixed no-repeat`
+
+const PRIMARY_DIR = 'animal-page'
+const FALLBACK_DIR = 'animal%20page'
+
+const base = `${CDN}/${BUCKET}/${PRIMARY_DIR}`
 const DATA = [
   {
     slug:'sea-turtle',
@@ -250,71 +272,109 @@ const DATA = [
   }
 ]
 
-const a = computed(() => DATA.find(x => x.slug === useRoute().params.id))
+const a = computed(() => DATA.find(x => x.slug === route.params.id))
+
+function onImgError(e) {
+  const img = e.target
+  const src = img.getAttribute('src') || ''
+  if (src.includes(`/${PRIMARY_DIR}/`)) {
+    img.src = src.replace(`/${PRIMARY_DIR}/`, `/${FALLBACK_DIR}/`)
+  }
+}
 </script>
 
 <style scoped>
 .detail{
   min-height:100vh;
   padding-top:var(--nav-h);
-  padding-bottom:48px;
-  background-image:
-    linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.25)),
-    url('/hero/background.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+  padding-bottom:56px;
+  color:#f6f7fb;
 }
 
 .wrap{
   max-width:980px;
   margin:0 auto;
   padding:0 20px;
-  color:#fff;              
 }
 
 .back{
-  display:inline-block; margin:18px 0 6px;
-  color:#fff; text-decoration:none; font-weight:600;
-  background: rgba(255,255,255,.18);
-  padding:6px 10px; border-radius:10px;
-  backdrop-filter: blur(2px);
+  display:inline-block; margin:18px 0 10px;
+  color:#fff; text-decoration:none; font-weight:700;
+  background: rgba(255,255,255,.14);
+  padding:8px 12px; border-radius:12px;
+  backdrop-filter: blur(4px);
+  border:1px solid rgba(255,255,255,.18);
 }
 
 .title{
-  font-size: clamp(28px, 6vw, 42px);
-  line-height:1.1; margin:.2em 0 .4em;
-  text-shadow: 0 6px 22px rgba(0,0,0,.45), 0 2px 10px rgba(0,0,0,.35);
-}
-.intro{
-  max-width:800px; font-size:18px; line-height:1.6;
-  text-shadow: 0 2px 8px rgba(0,0,0,.35);
+  font-size: clamp(30px, 6vw, 46px);
+  line-height:1.1; margin:.2em 0 .35em;
+  text-shadow: 0 8px 30px rgba(0,0,0,.5), 0 2px 10px rgba(0,0,0,.35);
 }
 
-.facts{ margin:22px 0 28px; }
+.glass{
+  background: rgba(17, 25, 40, .55);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.intro-card{
+  padding:16px 18px;
+  margin-bottom:18px;
+}
+.intro{
+  font-size:18px; line-height:1.65;
+}
+
+.facts{ margin:18px 0 24px; padding:0; }
 .facts-inner{
   position:relative;
-  background:#3f8f2e; border-radius:6px; padding:18px 18px; color:#fff;
-  box-shadow:0 8px 20px rgba(0,0,0,.22);
+  background:#3f8f2e;
+  border-radius:12px;
+  padding:18px 18px;
+  color:#fff;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
 }
 .kv{ list-style:none; padding:0; margin:0; }
-.kv li{ padding:8px 0; border-bottom:1px solid rgba(255,255,255,.18); font-size:15px; }
+.kv li{
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.22);
+  font-size:15px;
+}
 .kv li:last-child{ border-bottom:none; }
-.kv span{ color:#ffe066; font-weight:700; letter-spacing:.02em; margin-right:8px; }
+.kv span{
+  color:#ffe066; font-weight:800; letter-spacing:.02em; margin-right:8px;
+}
 
 .circle{
   position:absolute; right:16px; top:16px;
   width:120px; height:120px; border-radius:50%;
   overflow:hidden; border:4px solid #fff;
-  box-shadow:0 6px 14px rgba(0,0,0,.28);
+  box-shadow:0 8px 16px rgba(0,0,0,.35);
 }
 .circle img{ width:100%; height:100%; object-fit:cover; }
 
-.body h2{ margin:22px 0 10px; font-size:22px; text-shadow: 0 2px 8px rgba(0,0,0,.35); }
-.body p{ line-height:1.7; text-shadow: 0 2px 8px rgba(0,0,0,.30); }
-.bullets{ margin:0; padding-left:1.1em; line-height:1.7; }
+.cards{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:18px;
+}
+.card-block{ padding:18px; }
+.card-block h2{
+  margin:4px 0 10px;
+  font-size:22px; font-weight:900;
+  text-shadow: 0 2px 8px rgba(0,0,0,.35);
+}
+.card-block p, .card-block li{
+  line-height:1.75;
+}
+.bullets{ margin:0; padding-left:1.1em; }
 
-@media (max-width: 720px){
+@media (max-width: 780px){
+  .cards{ grid-template-columns: 1fr; }
   .circle{ position:static; margin:12px auto 0; }
   .facts-inner{ padding-bottom:12px; }
 }
