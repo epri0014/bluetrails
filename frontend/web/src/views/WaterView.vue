@@ -32,18 +32,19 @@ function onLoad() {
 /* Card extension for iframe */
 .iframe-card {
   position: relative;
-  height: calc(100vh - var(--nav-h) - 64px); /* full viewport minus nav + padding */
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  height: calc(100vh - var(--nav-h)); /* fill screen below navbar */
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-radius: 0; /* optional: remove rounded corners */
+  box-shadow: none; /* optional: remove card shadow */
+  background: #fff;
 }
 
-/* Iframe fills card */
 iframe {
-  flex: 1;
   width: 100%;
+  height: 100%;
   border: none;
-  border-radius: 6px;
 }
 
 /* Loading overlay */
