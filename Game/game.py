@@ -53,7 +53,7 @@ def reset_score():
     score = 0
     return {"success": True, "msg": "Score reset to 0", "score": score}
 
-# 注册 API 路由 —— 一定要在静态挂载之前！
+# Register API routes — before static mounting!
 app.include_router(api)
 
 # ---------- Static site at "/" ----------
