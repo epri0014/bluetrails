@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Eco Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; max-width: 720px; margin: 32px auto; padding: 0 16px; }
+    h1 { margin-bottom: 0.25rem; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    button { padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
+    #score { font-weight: bold; }
+    .row { margin: 16px 0; }
+    .muted { color: #666; }
+  </style>
+</head>
+<body>
+  <h1>🌍 Eco Game</h1>
+  <div class="muted">Place items in the correct location to gain points.</div>
+
+  <p id="score">Current Score: 0</p>
+
+  <h2>Choose an item and place it:</h2>
+
+  <div class="row grid">
+    <button onclick="playAction('plastic', 'bin')">Plastic → Bin</button>
+    <button onclick="playAction('plastic', 'beach')">Plastic → Beach</button>
+
+    <button onclick="playAction('paint', 'bin')">Paint → Bin</button>
+    <button onclick="playAction('paint', 'beach')">Paint → Beach</button>
+
+    <button onclick="playAction('pollution_clean', 'bin')">Pollution Clean → Bin</button>
+    <button onclick="playAction('pollution_clean', 'beach')">Pollution Clean → Beach</button>
+  </div>
+
+  <div class="row">
+    <button onclick="resetScore()">Reset Score</button>
+  </div>
+
+  <h3>Result:</h3>
+  <p id="result">No action yet</p>
+
+  <script>
+    // Use relative base so it works on 127.0.0.1 and future deployments
+    const API_BASE = "/api";
+
+    async function playAction(item, place) {
+      try {
+        const res = await fetch(`${API_BASE}/play`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ item, place })
+        });
+        const data = await res.json();
+        document.getElementById("result").innerText = data.msg ?? "No response";
+        document.getElementById("score").innerText = "Current Score: " + (data.score ?? 0);
+      } catch {
+        document.getElementById("result").innerText = "Request failed. Is the API running?";
+      }
+    }
+
+    async function fetchScore() {
+      try {
+        const res = await fetch(`${API_BASE}/score`);
+        const data = await res.json();
+        document.getElementById("score").innerText = "Current Score: " + (data.score ?? 0);
+      } catch {
+        document.getElementById("score").innerText = "Current Score: (API not reachable)";
+      }
+    }
+
+    async function resetScore() {
+      try {
+        const res = await fetch(`${API_BASE}/reset`, { method: "POST" });
+        const data = await res.json();
+        document.getElementById("result").innerText = data.msg ?? "Reset done";
+        document.getElementById("score").innerText = "Current Score: " + (data.score ?? 0);
+      } catch {
+        document.getElementById("result").innerText = "Reset failed. Is the API running?";
+      }
+    }
+
+    // Load score on first paint
+    fetchScore();
+  </script>
+</body>
+</html>
