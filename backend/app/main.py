@@ -3,6 +3,7 @@ from fastapi import FastAPI, Depends, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 from .config import CORS_ORIGINS
 from .routers import ws_routes, core_routes
 
@@ -14,11 +15,16 @@ app.add_middleware(
 =======
 from app.routes import router as api_router
 =======
+=======
+>>>>>>> 3c8f114f10c66ba41bf199fcaed824aa475fb381
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func, text
 from geoalchemy2.shape import to_shape
 from geoalchemy2.elements import WKBElement
+<<<<<<< HEAD
 >>>>>>> c4e290f (iteration-back-end developing)
+=======
+>>>>>>> 3c8f114f10c66ba41bf199fcaed824aa475fb381
 
 from .database import get_db
 from .config import CORS_ORIGINS
@@ -30,16 +36,21 @@ app = FastAPI(title="Beaches API w/ PostGIS")
 app.add_middleware(
     CORSMiddleware,
 <<<<<<< HEAD
+<<<<<<< HEAD
     allow_origins=["*"],  
 >>>>>>> 8942bf8 (backend first-vision)
 =======
     allow_origins=CORS_ORIGINS,
 >>>>>>> c4e290f (iteration-back-end developing)
+=======
+    allow_origins=CORS_ORIGINS,
+>>>>>>> 3c8f114f10c66ba41bf199fcaed824aa475fb381
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 @app.get("/")
@@ -61,6 +72,8 @@ app.include_router(ws_routes.router, prefix="/api/ws")
 app.include_router(api_router, prefix="/api/v1")
 >>>>>>> 8942bf8 (backend first-vision)
 =======
+=======
+>>>>>>> 3c8f114f10c66ba41bf199fcaed824aa475fb381
 # 工具：把 geometry(WKB) 转为 lng/lat
 def _to_lonlat(point: WKBElement | None):
     if point is None:
@@ -199,4 +212,7 @@ def regions_within_bbox(
     """)
     rows = db.execute(stmt, {"min_lon": min_lon, "min_lat": min_lat, "max_lon": max_lon, "max_lat": max_lat}).mappings().all()
     return {"items": rows, "bbox": [min_lon, min_lat, max_lon, max_lat]}
+<<<<<<< HEAD
 >>>>>>> c4e290f (iteration-back-end developing)
+=======
+>>>>>>> 3c8f114f10c66ba41bf199fcaed824aa475fb381

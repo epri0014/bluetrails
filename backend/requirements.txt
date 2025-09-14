@@ -4,8 +4,12 @@ SQLAlchemy==2.0.32
 pydantic==2.8.2
 python-dotenv==1.0.1
 <<<<<<< HEAD
+<<<<<<< HEAD
 psycopg[binary,pool]==3.2.9
 =======
 psycopg2-binary==2.9.9
 >>>>>>> c4e290f (iteration-back-end developing)
+=======
+psycopg2-binary==2.9.9
+>>>>>>> 3c8f114f10c66ba41bf199fcaed824aa475fb381
 geoalchemy2==0.15.2
