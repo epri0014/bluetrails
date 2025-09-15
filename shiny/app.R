@@ -124,10 +124,12 @@ icon_svg <- function(name, size=16){
   HTML("")
 }
 
+# avatars carry data-keep='ava' so the egg-remover never touches them
 avatar <- function(kind="turtle", size=56){
-  if (kind=="turtle")   return(HTML(sprintf("<div class='ava ava-turtle' style='width:%dpx;height:%dpx'></div>", size,size)))
-  if (kind=="dolphin")  return(HTML(sprintf("<div class='ava ava-dolphin' style='width:%dpx;height:%dpx'></div>", size,size)))
-  if (kind=="crab")     return(HTML(sprintf("<div class='ava ava-crab' style='width:%dpx;height:%dpx'></div>", size,size)))
+  base <- sprintf("style='width:%dpx;height:%dpx' data-keep='ava'", size, size)
+  if (kind=="turtle")   return(HTML(sprintf("<div class='ava ava-turtle' %s></div>",  base)))
+  if (kind=="dolphin")  return(HTML(sprintf("<div class='ava ava-dolphin' %s></div>", base)))
+  if (kind=="crab")     return(HTML(sprintf("<div class='ava ava-crab' %s></div>",    base)))
   HTML("")
 }
 
@@ -153,14 +155,10 @@ ui <- bslib::page_navbar(
   title = "Ocean Heroes - Kids’ Water Guide",
   theme = theme,
   
-  # Put CSS/JS + bubbles in header to avoid navbar warnings
   header = tagList(
     tags$head(
       tags$style(HTML("
-        :root{
-          --sea1:#8fd3ff; --sea2:#a4ffd8; --sea3:#ffe6a3; --sea4:#b7f2ff;
-          --card:#fff;
-        }
+        :root{ --sea1:#8fd3ff; --sea2:#a4ffd8; --sea3:#ffe6a3; --sea4:#b7f2ff; --card:#fff; }
         body{
           background:
             radial-gradient(1200px 700px at -10% 0%, var(--sea1), transparent 60%),
@@ -169,13 +167,11 @@ ui <- bslib::page_navbar(
             radial-gradient(800px 500px at 20% 100%, var(--sea4), transparent 60%);
         }
         .container-lg{ max-width:1140px; }
-        .grid-2{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
-        .grid-3{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
+        .grid-2{ display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+        .grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
         @media (max-width: 992px){ .grid-2, .grid-3{ grid-template-columns:1fr; } }
         .no-overlap .form-select, .no-overlap .form-control, .no-overlap .btn { width:100% }
         .leaflet-top.leaflet-right { top: 74px; }
-
-        /* fun patterned cards */
         .card-cute{
           background:
             linear-gradient(135deg, rgba(255,255,255,.98), rgba(255,255,255,.98)),
@@ -185,20 +181,16 @@ ui <- bslib::page_navbar(
           box-shadow:6px 6px 0 #00000018; transition:transform .2s;
         }
         .card-cute:hover{ transform:translateY(-2px) }
-
         .chip{
           display:inline-flex; align-items:center; gap:8px; margin:6px 6px 0 0;
-          padding:10px 12px; border:2px solid #000; border-radius:999px; background:#ffffffee;
+          padding:10px 12px; border:2px solid #000; border-radius:14px; background:#ffffffee;
         }
         .badge-dot{ width:12px; height:12px; border-radius:50%; border:2px solid #000; display:inline-block; }
         .dot-green{ background:#24c38b } .dot-amber{ background:#ffb000 } .dot-red{ background:#e74a5f }
         .section-title{ font-weight:800; letter-spacing:.3px; }
-
         .btn-ghost{ background:#1a7bd6; color:#fff; border:2px solid #0f5ca5; box-shadow:0 4px 0 #0f5ca5; }
         .btn-ghost:hover{ filter:brightness(.95); }
         .btn-warning{ font-weight:700; }
-
-        /* animated bubbles */
         .ocean-bubbles{ position:fixed; inset:0; pointer-events:none; z-index:0; }
         .ocean-bubbles span{
           position:absolute; border-radius:50%; opacity:.9;
@@ -206,20 +198,15 @@ ui <- bslib::page_navbar(
           animation: rise 10s linear infinite;
           filter: drop-shadow(0 0 8px rgba(255,255,255,.7));
         }
-        @keyframes rise{ from{ transform:translateY(30px) scale(.9) } to{ transform:translateY(-120vh) scale(1.1) } }
-
-        /* colourful gradient wash over the map */
+        @keyframes rise{ from{ transform:translateY(30px) } to{ transform:translateY(-120vh) } }
         .map-wash{
           position:absolute; inset:0; pointer-events:none; z-index:400;
           background: linear-gradient(120deg, rgba(0,191,255,.12), rgba(0,220,180,.10), rgba(255,196,0,.12));
-          mix-blend-mode: multiply; animation: waveShift 12s ease-in-out infinite alternate;
-          display:none;
+          mix-blend-mode: multiply; animation: waveShift 12s ease-in-out infinite alternate; display:none;
         }
         @keyframes waveShift{ from{filter:saturate(1)} to{filter:saturate(1.5)} }
-
-        /* avatars (turtle, dolphin, crab only) */
         .ava{ border:2px solid #000; border-radius:50%; background:#fff; position:relative; overflow:hidden;
-              box-shadow:4px 4px 0 #00000018; animation:bob 3.6s ease-in-out infinite }
+              box-shadow:4px 4px 0 #00000018; animation:bob 3.6s ease-in-out infinite; cursor:pointer }
         @keyframes bob{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-4px) } }
         .ava-turtle::before{ content:''; position:absolute; inset:10% 15%;
           background:radial-gradient(circle at 30% 50%, #2ecc71 40%, #116e36 41%); border-radius:50% }
@@ -227,34 +214,22 @@ ui <- bslib::page_navbar(
           background:radial-gradient(circle at 50% 50%, #5dade2 45%, #1a7bd6 46%); border-radius:50% }
         .ava-crab::before{ content:''; position:absolute; inset:14% 18%;
           background:radial-gradient(circle at 50% 50%, #e74a5f 45%, #a92434 46%); border-radius:50% }
-
-        /* HARD REMOVE any 'egg' or 'oval' shapes, whatever they're called */
-        .egg, .eggs, .egg-stack, .traffic-eggs, .traffic-ovals, .status-egg,
-        .oval, .ovals, .status-oval,
-        [class*='egg' i], [class*='oval' i] {
-          display: none !important;
-          visibility: hidden !important;
-          width: 0 !important; height: 0 !important; padding: 0 !important; margin: 0 !important;
-          overflow: hidden !important; opacity: 0 !important;
-        }
-
-        /* confetti */
+        /* hide any known egg classes (backup to JS killer) */
+        .egg, .eggs, .egg-stack, .traffic-eggs, .status-egg, .traffic-ovals, .status-oval { display:none !important; }
         .confetti{position:fixed;left:0;top:0;pointer-events:none;z-index:9999}
         .cf-piece{position:absolute;width:8px;height:12px;opacity:.95;border-radius:2px}
       ")),
       tags$script(HTML("
         (function(){
-          // init popovers
+          // ----- Bootstrap popovers -----
           function initPopovers(){
             var els = document.querySelectorAll('[data-bs-toggle=\"popover\"]');
-            Array.prototype.forEach.call(els, function(el){
-              try { new bootstrap.Popover(el); } catch(e){}
-            });
+            els.forEach(function(el){ try { new bootstrap.Popover(el); } catch(e){} });
           }
           document.addEventListener('DOMContentLoaded', initPopovers);
           document.addEventListener('shiny:value', initPopovers, true);
 
-          // confetti
+          // ----- Confetti -----
           function rand(a,b){return Math.random()*(b-a)+a}
           function dropOne(cnv,w,h,clr){
             var d=document.createElement('div'); d.className='cf-piece'; d.style.background=clr;
@@ -275,46 +250,44 @@ ui <- bslib::page_navbar(
             setTimeout(function(){ if(cnv) cnv.innerHTML=''; }, 2500);
           });
 
-          // toggle map wash
+          // ----- Map wash toggle -----
           Shiny.addCustomMessageHandler('toggleMapWash', function(x){
             var el=document.getElementById('mapwash');
             if(el) el.style.display = (x && x.show) ? 'block' : 'none';
           });
 
-          // Nuke any 'egg/oval' nodes that appear later
+          // ======= Remove stray 'egg/oval' graphics but never avatars/dots =======
+          function looksLikeEgg(el){
+            if (!el || el.nodeType!==1) return false;
+            if (el.closest('[data-keep=\"ava\"]') || el.closest('.ava')) return false;   // keep avatars
+            if (el.className && /badge-dot/.test(el.className)) return false;           // keep tiny legend dots
+            var cs = getComputedStyle(el);
+            var w = el.offsetWidth, h = el.offsetHeight;
+            if (!(cs.borderRadius && cs.borderRadius.indexOf('%')>-1)) return false;
+            if (Math.min(w,h) < 28 || Math.max(w,h) > 160) return false;
+            if (el.textContent.trim().length) return false;
+            var name = (el.className||'') + ' ' + (el.id||'');
+            if (/(egg|oval|traffic.*light|status.*light)/i.test(name)) return true;
+            var hasBg = (cs.backgroundImage!=='none' || (cs.backgroundColor && cs.backgroundColor!=='rgba(0, 0, 0, 0)'));
+            var hasShadow = cs.boxShadow && cs.boxShadow!=='none';
+            var thickBorder = parseFloat(cs.borderTopWidth||'0') >= 2;
+            return (hasBg && (hasShadow || thickBorder));
+          }
           function nukeEggs(root){
             try{
-              var nodes = root.querySelectorAll(\".egg, .eggs, .egg-stack, .traffic-eggs, .traffic-ovals, .status-egg, .oval, .ovals, .status-oval, [class*='egg' i], [class*='oval' i]\");
-              nodes.forEach(function(n){ n.remove(); });
+              var nodes = root.querySelectorAll('div,span,i,em,svg,canvas');
+              nodes.forEach(function(n){ if(looksLikeEgg(n)) n.remove(); });
             }catch(e){}
           }
           document.addEventListener('DOMContentLoaded', function(){ nukeEggs(document); });
           new MutationObserver(function(muts){
-            muts.forEach(function(m){
-              if(m.addedNodes && m.addedNodes.length){
-                m.addedNodes.forEach(function(n){
-                  if(n.nodeType===1){ nukeEggs(n); }
-                });
+            for (var i=0;i<muts.length;i++){
+              var m=muts[i];
+              if (m.addedNodes && m.addedNodes.length){
+                m.addedNodes.forEach(function(n){ if(n.nodeType===1){ nukeEggs(n); } });
               }
-            });
+            }
           }).observe(document.body, {childList:true, subtree:true});
-
-          // fun facts rotator
-          var facts = [
-            'Seahorses are fish that swim upright!',
-            'After rain, water can be cloudy - best to wait a day.',
-            'Tiny plants (algae) need light and nutrients to grow.',
-            'Fish use oxygen in water - just like we use air!',
-            'Clear water helps you spot shells and crabs!'
-          ];
-          var idx = 0;
-          function rotateFacts(){
-            var el = document.getElementById('funfacts');
-            if(!el) return;
-            idx = (idx + 1) % facts.length;
-            el.innerText = facts[idx];
-          }
-          setInterval(rotateFacts, 4500);
         })();
       "))
     ),
@@ -406,15 +379,15 @@ ui <- bslib::page_navbar(
         # LOWER PANELS (story + avatars rail + badges + insights)
         div(class="grid-3",
             
-            # Story card and avatar rail (NO EGGS)
+            # Story card and avatar rail
             bslib::card(class="card-cute position-relative",
                         card_header=uiOutput("panel_title"),
                         div(class="d-flex align-items-start gap-3",
                             div(style="flex:1;", uiOutput("story_block")),
                             div(style="width:96px; display:flex; flex-direction:column; gap:10px;",
-                                actionLink("meet_turtle",  label = avatar("turtle", 72),  icon = NULL),
-                                actionLink("meet_dolphin", label = avatar("dolphin", 72), icon = NULL),
-                                actionLink("meet_crab",    label = avatar("crab", 72),    icon = NULL)
+                                actionLink("meet_turtle",  label = HTML(avatar("turtle", 72)),  icon = NULL),
+                                actionLink("meet_dolphin", label = HTML(avatar("dolphin", 72)), icon = NULL),
+                                actionLink("meet_crab",    label = HTML(avatar("crab", 72)),    icon = NULL)
                             )
                         )
             ),
@@ -478,14 +451,14 @@ server <- function(input, output, session){
     pick_latest_with_temp(sub)
   })
   
-  # MAP (with basemap toggle)
+  # MAP (reliable basemaps + zoom-on-click)
   output$map <- renderLeaflet({
     mdf <- map_data()
     validate(need(nrow(mdf) > 0, "No samples available on/before this date."))
     
     center_lat <- median(mdf$latitude)
     center_lon <- median(mdf$longitude)
-    provider <- if (isTRUE(input$funmap)) providers$Esri.OceanBasemap else providers$Stamen.Watercolor
+    provider <- if (isTRUE(input$funmap)) providers$Esri.OceanBasemap else providers$CartoDB.Positron
     
     leaflet(mdf, options = leafletOptions(minZoom = 8, maxZoom = 16)) %>%
       addProviderTiles(provider) %>%
@@ -509,21 +482,24 @@ server <- function(input, output, session){
       )
   })
   
-  # toggle map wash overlay
-  observe({
-    session$sendCustomMessage('toggleMapWash', list(show = isTRUE(input$funmap)))
-  })
+  # Toggle map wash overlay
+  observe({ session$sendCustomMessage('toggleMapWash', list(show = isTRUE(input$funmap))) })
   session$onFlushed(function() {
     session$sendCustomMessage('toggleMapWash', list(show = TRUE))
   }, once = TRUE)
   
-  # click marker selects site
+  # Marker click: select site AND force zoom immediately
   observeEvent(input$map_marker_click, ignoreInit=TRUE, {
     id <- input$map_marker_click$id
-    if (!is.null(id) && id %in% all_sites) updateSelectInput(session, "site", selected=id)
+    if (!is.null(id) && id %in% all_sites) {
+      updateSelectInput(session, "site", selected=id)
+      mdf <- map_data(); req(nrow(mdf) > 0)
+      r <- mdf %>% dplyr::filter(site_name_short == id) %>% dplyr::slice(1)
+      leafletProxy("map") %>% setView(lng = r$longitude[1], lat = r$latitude[1], zoom = 12)
+    }
   })
   
-  # auto-fit / auto-zoom
+  # Auto-fit / auto-zoom on changes
   observeEvent(list(input$site, input$date), {
     mdf <- map_data(); req(nrow(mdf) > 0)
     proxy <- leafletProxy("map", data = mdf)
@@ -538,7 +514,7 @@ server <- function(input, output, session){
     }
   }, ignoreInit = TRUE)
   
-  # reset
+  # Reset
   observeEvent(input$resetView, {
     updateSelectInput(session, "site", selected = "All sites")
     updateDateInput(session, "date", value = max_d)
@@ -557,7 +533,7 @@ server <- function(input, output, session){
     }
   })
   
-  # STORY BLOCK
+  # STORY
   make_story <- function(row){
     oc <- overall_code(code_algae(row$CHL_A), code_clarity(row$Turb),
                        code_oxygen(row$DO_mg), code_nutr(row$N_TOTAL), code_temp(row$Temperature))
@@ -565,24 +541,18 @@ server <- function(input, output, session){
     else if (oc=="amber") "Look closely today - pick the clearest patch to paddle."
     else "Better for sandcastles today - let the waves rest."
     
-    p1 <- paste0(
-      "<b>Today’s Story:</b> ", opener, " The water here is checked with real tests. ",
-      "We look at how clear it is, how many bubbles help fish breathe, how much algae there is, ",
-      "and how warm the water feels."
-    )
-    p2 <- paste0(
-      "<b>What it means right now:</b> ",
-      "Clarity - ", kidline("Clarity", code_clarity(row$Turb)), " ",
-      "Oxygen - ", kidline("Oxygen", code_oxygen(row$DO_mg)), " ",
-      "Algae - ",  kidline("Algal Bloom", code_algae(row$CHL_A)), " ",
-      "Temperature - ", kidline("Temperature", code_temp(row$Temperature)), "."
-    )
-    p3 <- paste0(
-      "<b>Try this here:</b> bring a small clear jar and scoop some water. ",
-      "Can you spot tiny bits or sand? If it looks cloudy, wait for a clearer day or walk the shore and count shells."
-    )
+    p1 <- paste0("<b>Today’s Story:</b> ", opener,
+                 " The water here is checked with real tests. ",
+                 "We look at how clear it is, how many bubbles help fish breathe, how much algae there is, ",
+                 "and how warm the water feels.")
+    p2 <- paste0("<b>What it means right now:</b> ",
+                 "Clarity - ", kidline("Clarity", code_clarity(row$Turb)), " ",
+                 "Oxygen - ", kidline("Oxygen", code_oxygen(row$DO_mg)), " ",
+                 "Algae - ",  kidline("Algal Bloom", code_algae(row$CHL_A)), " ",
+                 "Temperature - ", kidline("Temperature", code_temp(row$Temperature)), ".")
+    p3 <- paste0("<b>Try this here:</b> bring a small clear jar and scoop some water. ",
+                 "Can you spot tiny bits or sand? If it looks cloudy, wait for a clearer day or walk the shore and count shells.")
     p4 <- "<b>Be a Bay Helper:</b> use bins, keep soaps out of drains, and teach a friend one water fact today."
-    
     HTML(paste(p1, p2, p3, p4, sep = "<br/><br/>"))
   }
   
@@ -694,7 +664,7 @@ server <- function(input, output, session){
     }
   })
   
-  # 🎉 CONFETTI on improvement or Safe status
+  # 🎉 CONFETTI
   observe({
     if (is.null(input$site) || input$site=="All sites") return()
     row  <- current_row(); if (is.null(row) || nrow(row)!=1) return()
@@ -709,7 +679,7 @@ server <- function(input, output, session){
       session$sendCustomMessage("confetti", list(n = if (now_code=="green") 170 else 130))
   })
   
-  # Avatar fun-fact modals (status-neutral)
+  # Avatar fun-fact modals
   observeEvent(input$meet_turtle, {
     showModal(modalDialog(title="Turtle says",
                           "I love clear water - it helps me find jellyfish snacks!",
