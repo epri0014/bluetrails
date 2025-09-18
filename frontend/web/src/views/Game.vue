@@ -1,19 +1,32 @@
 <template>
   <div class="game-container">
-    <iframe
-      src="https://oceanhero-game.pages.dev/"
-      class="game-iframe"
-      frameborder="0"
-      allowfullscreen
-      loading="lazy"
-      title="Ocean Hero Game"
-      scrolling="no"
-    ></iframe>
+    <div class="iframe-wrap">
+      <LoadingOverlay v-if="loading" message="🎮 Loading Ocean Hero Game..." />
+      <iframe
+        ref="gameFrame"
+        src="https://oceanhero-game.pages.dev/"
+        class="game-iframe"
+        frameborder="0"
+        allowfullscreen
+        loading="lazy"
+        title="Ocean Hero Game"
+        scrolling="no"
+        @load="onLoad"
+      ></iframe>
+    </div>
   </div>
 </template>
 
 <script setup>
-// Game component for embedded Ocean Hero game
+import { ref } from 'vue'
+import LoadingOverlay from '../components/LoadingOverlay.vue'
+
+const loading = ref(true)
+const gameFrame = ref(null)
+
+function onLoad() {
+  loading.value = false
+}
 </script>
 
 <style scoped>
@@ -25,7 +38,13 @@
   margin-top: var(--nav-h, 80px);
   overflow: hidden;
   background: #000;
+}
+
+.iframe-wrap {
   position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .game-iframe {
@@ -57,5 +76,4 @@
     transform: scale(0.625);
   }
 }
-
 </style>

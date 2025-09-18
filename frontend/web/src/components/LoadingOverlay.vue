@@ -18,7 +18,7 @@ defineProps({
 
 <style scoped>
 .loading-overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: rgba(255, 255, 255, 0.9);
   display: flex;
