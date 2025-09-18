@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/HomeView.vue'
+import Home from '../views/NewHomeView.vue'
 import AnimalsGrid from '../views/AnimalsGrid.vue'
 import AnimalDetail from '../views/AnimalDetail.vue'
 import WaterView from '../views/WaterView.vue'
