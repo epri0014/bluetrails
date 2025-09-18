@@ -8,7 +8,7 @@
         </svg>
       </RouterLink>
 
-      <!-- Desktop links (right) -->
+      <!-- Desktop navigation links (right) -->
       <nav class="links" aria-label="Primary">
         <RouterLink class="link" to="/animals">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
@@ -16,18 +16,14 @@
           </svg>
           <span>Meet Our Ocean Friends</span>
         </RouterLink>
-        <RouterLink class="link" to="/water">
-          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2S6.5 8 6.5 14c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5C17.5 8 12 2 12 2z"/>
-          </svg>
-          <span>Visit Ocean Friends Home</span>
-        </RouterLink>
-        <RouterLink class="link" href="#">
+
+        <!-- Normal anchor link, jump to the game page -->
+        <a class="link" href="/Ocean-Hero-Game/index.html">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M17.5 7c-1.66 0-3 1.34-3 3 0 .35.07.69.18 1H16v2h-1.32c-.11.31-.18.65-.18 1 0 1.66 1.34 3 3 3s3-1.34 3-3V10c0-1.66-1.34-3-3-3zM8 9c0-1.66-1.34-3-3-3S2 7.34 2 10v3c0 1.66 1.34 3 3 3s3-1.34 3-3c0-.35-.07-.69-.18-1H9v-2H7.82c.11-.31.18-.65.18-1zm8-2V5c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h6c.55 0 1-.45 1-1z"/>
           </svg>
           <span>Play Ocean Fun Games</span>
-        </RouterLink>
+        </a>
       </nav>
 
       <!-- Mobile menu button -->
@@ -38,24 +34,21 @@
     <div v-if="open" class="drawer" @click.self="open = false">
       <nav class="panel" aria-label="Mobile">
         <button class="close" @click="open = false" aria-label="Close">×</button>
+
         <RouterLink class="dlink" to="/animals" @click="open=false">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c.64.16 1.31.26 2 .26s1.36-.1 2-.26V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm-2 7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm4 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
           </svg>
           <span>Meet Our Ocean Friends</span>
         </RouterLink>
-        <RouterLink class="dlink" to="/water" @click="open=false">
-          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2S6.5 8 6.5 14c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5C17.5 8 12 2 12 2z"/>
-          </svg>
-          <span>Visit Ocean Friends Home</span>
-        </RouterLink>
-        <RouterLink class="dlink" href="#" @click="open=false">
+
+        <!-- Normal anchor link (mobile) -->
+        <a class="dlink" href="/Ocean-Hero-Game/index.html" @click="open=false">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M17.5 7c-1.66 0-3 1.34-3 3 0 .35.07.69.18 1H16v2h-1.32c-.11.31-.18.65-.18 1 0 1.66 1.34 3 3 3s3-1.34 3-3V10c0-1.66-1.34-3-3-3zM8 9c0-1.66-1.34-3-3-3S2 7.34 2 10v3c0 1.66 1.34 3 3 3s3-1.34 3-3c0-.35-.07-.69-.18-1H9v-2H7.82c.11-.31.18-.65.18-1zm8-2V5c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h6c.55 0 1-.45 1-1z"/>
           </svg>
           <span>Play Ocean Fun Games</span>
-        </RouterLink>
+        </a>
       </nav>
     </div>
   </header>
