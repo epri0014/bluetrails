@@ -2,13 +2,18 @@
   <div class="app">
     <NavBar />
     <RouterView />
-    <Footer />
+    <Footer v-if="!isGamePage" />
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import NavBar from './components/NavBar.vue'
 import Footer from './components/Footer.vue'
+
+const route = useRoute()
+const isGamePage = computed(() => route.path === '/game')
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Nunito:wght@200;300;400;500;600;700;800;900&display=swap');
