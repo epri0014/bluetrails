@@ -67,217 +67,232 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
+// ---- Assets (Supabase) ----
 const CDN = 'https://gvwrmcyksmswvduehrtd.supabase.co/storage/v1/object/public'
 const BUCKET = 'bluetrails'
+const PRIMARY_DIR = 'animal-page'
+const FALLBACK_DIR = 'animal%20page' // 兼容空格目录
+
 const heroBg =
   `linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.35) 33%, rgba(0,0,0,.20) 100%), ` +
   `url('${CDN}/${BUCKET}/hero/background.jpg') center/cover fixed no-repeat`
 
-const PRIMARY_DIR = 'animal-page'
-const FALLBACK_DIR = 'animal%20page'
-
 const base = `${CDN}/${BUCKET}/${PRIMARY_DIR}`
+
+// ---- Victoria (AU) species ----
 const DATA = [
   {
-    slug:'sea-turtle',
-    name:'Sea Turtles',
-    scientific:'Cheloniidae',
-    group:'Reptiles',
-    type:'Ocean animal',
-    size:'Up to 2 meters (shell length)',
-    diet:'Jellyfish, seagrass, algae (varies by species)',
-    status:'Many species are threatened',
-    src:`${base}/sea-turtle.jpg`,
-    intro:'Sea turtles are ancient swimmers that glide across warm oceans.',
-    story:`Imagine wearing a backpack your whole life, that's a turtle's shell! It keeps them safe while they explore coral gardens and open seas.`,
-    why:'Sea turtles keep seagrass healthy and help coral reefs by eating jellyfish. Healthy turtles mean balanced ocean food webs.',
-    threats:[
-      'Plastic bags look like jellyfish and can choke turtles.',
-      'Ghost nets and fishing lines can wrap around flippers and necks.',
-      'Beach lights and trash make it harder for babies to reach the sea.'
+    slug: 'burrunan-dolphin',
+    name: 'Burrunan Dolphin',
+    scientific: 'Tursiops australis',
+    group: 'Mammals',
+    type: 'Marine mammal',
+    size: 'Up to ~2.7 m',
+    diet: 'Fish, squid',
+    status: 'Endangered in Victoria',
+    src: `${base}/burranan.png`,
+    intro: 'The Burrunan Dolphin is a coastal dolphin found in parts of Victoria, including Port Phillip and Gippsland Lakes.',
+    story: 'They live in small, social groups and communicate with whistles and clicks. Burrunan Dolphins were only recognised as a distinct species in recent years.',
+    why: 'As top predators, they help keep fish populations balanced and indicate the health of our bays.',
+    threats: [
+      'Pollution and litter (especially plastics) in bays',
+      'Boat strikes and noise disturbance',
+      'Entanglement in fishing gear'
     ],
-    help:[
-      'Use a reusable bag and bottle, skip single-use plastic.',
-      'Clean up a beach or river for 15 minutes with an adult.',
-      'Keep beaches dark and clear, no holes, no lights near nests.'
+    help: [
+      'Dispose of fishing line and rubbish properly',
+      'Slow down around dolphins; keep distance when boating',
+      'Support bay clean-ups and report entanglements'
     ]
   },
   {
-    slug:'sea-birds',
-    name:'Seabirds',
-    scientific:'Procellariiformes (many species)',
-    group:'Birds',
-    type:'Ocean bird',
-    size:'From small petrels to huge albatross',
-    diet:'Fish, squid, krill',
-    status:'Many species are declining',
-    src:`${base}/sea-birds.jpg`,
-    intro:'Seabirds are champions of long-distance flight.',
-    story:'Some albatross can circle the globe! They skim the waves, then soar on strong winds like tiny airplanes.',
-    why:'Seabirds move nutrients from sea to land and help scientists find healthy fish populations.',
-    threats:[
-      'Chicks are fed plastic pieces that look like food.',
-      'Oil and chemicals make feathers lose waterproofing.',
-      'Hooks and longlines can catch birds by mistake.'
+    slug: 'southern-right-whale',
+    name: 'Southern Right Whale',
+    scientific: 'Eubalaena australis',
+    group: 'Mammals',
+    type: 'Marine mammal',
+    size: 'Up to ~15 m',
+    diet: 'Tiny crustaceans (krill)',
+    status: 'Endangered (recovering)',
+    src: `${base}/Southern-Right-Whale.jpg`,
+    intro: 'Southern Right Whales visit Victoria’s coast in winter to calve and rest near sheltered shores.',
+    story: 'They are slow swimmers with calloused patches on the head (callosities) that make each whale unique.',
+    why: 'Whales move nutrients through the ocean and draw people to value and protect the coast.',
+    threats: [
+      'Entanglement in ropes and nets',
+      'Ship strikes and underwater noise',
+      'Pollution and climate change affecting food'
     ],
-    help:[
-      'Cut rings and loops before throwing anything away.',
-      'Choose tuna with "bird-safe" or pole-and-line labels if possible.',
-      'Join a local cleanup, every tiny piece helps.'
+    help: [
+      'Support whale-safe fishing practices',
+      'Keep a safe distance from whales (follow rules)',
+      'Choose products and actions that reduce ocean pollution'
     ]
   },
   {
-    slug:'seals',
-    name:'Seals & Sea Lions',
-    scientific:'Phocidae & Otariidae',
-    group:'Mammals',
-    type:'Marine mammal',
-    size:'1-3 meters, species vary',
-    diet:'Fish and squid',
-    status:'Some stable, some at risk',
-    src:`${base}/seals.jpg`,
-    intro:'Curious, whiskered swimmers who love rocky shores.',
-    story:'Puppies practice diving like kids learning to swim, short dips first, then deeper and longer!',
-    why:'They are top predators that keep fish populations balanced.',
-    threats:[
-      'Lost fishing nets (ghost gear) can trap their necks and flippers.',
-      'Plastic rings and straps can tighten as they grow.',
-      'Noise and pollution can scare mothers from pups.'
+    slug: 'australian-fur-seal',
+    name: 'Australian Fur Seal',
+    scientific: 'Arctocephalus pusillus doriferus',
+    group: 'Mammals',
+    type: 'Marine mammal',
+    size: '1.5–2.3 m',
+    diet: 'Fish, squid',
+    status: 'Protected in Victoria (recovering)',
+    src: `${base}/Australian-Fur-Seal.jpg`,
+    intro: 'Our most common local seal, with big colonies on Bass Strait islands.',
+    story: 'They are powerful swimmers and rest together on rocky haul-outs.',
+    why: 'Seals are important predators and help show the health of marine food webs.',
+    threats: [
+      'Entanglement in lost rope, straps and nets',
+      'Plastic pollution on haul-out sites',
+      'Disturbance at breeding colonies'
     ],
-    help:[
-      `Throw trash in closed bins, wind can't take what it can't reach.`,
-      'Support projects that remove ghost nets.',
-      'Watch wildlife from a distance, give them space.'
+    help: [
+      'Cut loops in rubbish; never leave rope or straps',
+      'Give seals space on shore and never feed them',
+      'Join or support marine debris clean-ups'
     ]
   },
   {
-    slug:'dolphins',
-    name:'Dolphins',
-    scientific:'Delphinidae',
-    group:'Mammals',
-    type:'Marine mammal',
-    size:'2-4 meters, species vary',
-    diet:'Fish and squid',
-    status:'Some species threatened',
-    src:`${base}/dolphins.jpg`,
-    intro:'Dolphins are fast, playful, and super smart.',
-    story:`Pods work as a team, some herd the fish, others take turns to eat. It's like an underwater sport!`,
-    why:'Dolphins show when oceans are healthy, if dolphins are well, many other animals are too.',
-    threats:[
-      'Plastic and tiny microplastics enter the food they eat.',
-      'Chemicals build up in their bodies over time.',
-      'Loud noise from ships can confuse their echo-location.'
+    slug: 'little-penguin',
+    name: 'Little Penguin',
+    scientific: 'Eudyptula minor',
+    group: 'Birds',
+    type: 'Seabird',
+    size: '~30–33 cm',
+    diet: 'Small fish, squid',
+    status: 'Protected (locally managed)',
+    src: `${base}/little-penguin.jpg`,
+    intro: 'The world’s smallest penguin, famous at Phillip Island and in some urban colonies.',
+    story: 'They nest in burrows and return at dusk in the “penguin parade”.',
+    why: 'Penguins connect people to wildlife and need clean near-shore waters.',
+    threats: [
+      'Plastic and oil pollution',
+      'Dogs and foxes near nesting areas',
+      'Fishing hooks and line'
     ],
-    help:[
-      'Reduce, reuse, recycle, especially plastic.',
-      'Choose products with less packaging.',
-      'Learn and share: quiet oceans help dolphins talk.'
+    help: [
+      'Keep dogs away from nesting beaches',
+      'Take litter home; reduce single-use plastic',
+      'Report injured wildlife to local carers'
     ]
   },
   {
-    slug:'whale',
-    name:'Whales',
-    scientific:'Balaenopteridae & others',
-    group:'Mammals',
-    type:'Marine mammal',
-    size:'Up to 30 meters (blue whale!)',
-    diet:'Krill or fish (species vary)',
-    status:'Some recovering, some endangered',
-    src:`${base}/whale.jpg`,
-    intro:'The giants of the sea are gentle and powerful.',
-    story:'Baleen whales eat with a giant comb, scooping water in and pushing it out while tasty krill stay trapped.',
-    why:'Whales help fertilize the ocean with "whale pump," boosting tiny plants that make oxygen for our planet.',
-    threats:[
-      'Ropes and nets can wrap around tails and mouths.',
-      'Plastic and balloons may be swallowed by mistake.',
-      'Noise makes it hard to communicate and find food.'
+    slug: 'weedy-seadragon',
+    name: 'Weedy Seadragon',
+    scientific: 'Phyllopteryx taeniolatus',
+    group: 'Fish',
+    type: 'Reef fish (seahorse family)',
+    size: 'Up to ~45 cm',
+    diet: 'Tiny crustaceans',
+    status: 'Protected in Victoria',
+    src: `${base}/Weedy-seadragon.jpg`,
+    intro: 'Victoria’s marine emblem, found on kelp and reef along the coast.',
+    story: 'Males carry the eggs under their tail until they hatch—sea-horse style!',
+    why: 'Healthy seadragons mean healthy kelp forests and reefs.',
+    threats: [
+      'Habitat loss from storms and warming seas',
+      'Pollution and sediment smothering kelp',
+      'Illegal collection'
     ],
-    help:[
-      'Never release balloons, tie them down or skip them.',
-      'Support rescue groups that free entangled whales.',
-      'Learn about "quiet ships" and share with friends.'
+    help: [
+      'Avoid trampling reefs; dive and snorkel carefully',
+      'Reduce runoff (keep drains clear, pick up litter)',
+      'Support reef-care and restoration projects'
     ]
   },
   {
-    slug:'sea-otters',
-    name:'Sea Otters',
-    scientific:'Enhydra lutris',
-    group:'Mammals',
-    type:'Marine mammal',
-    size:'About 1-1.5 meters',
-    diet:'Sea urchins, crabs, clams',
-    status:'Threatened in some areas',
-    src:`${base}/sea-otters.jpg`,
-    intro:'Sea otters are fluffy kelp-forest heroes.',
-    story:'They float on their backs and use a rock as a hammer, crack!, dinner is served.',
-    why:'Otters eat sea urchins that munch kelp; with otters, kelp forests grow tall and shelter many fish.',
-    threats:[
-      'Oil and chemicals ruin their super-warm fur.',
-      'Plastic straps or lines can entangle them.',
-      'Sick prey from pollution can make pups weak.'
+    slug: 'australian-fairy-tern',
+    name: 'Australian Fairy Tern',
+    scientific: 'Sternula nereis nereis',
+    group: 'Birds',
+    type: 'Seabird',
+    size: '~22–25 cm',
+    diet: 'Small fish',
+    status: 'Endangered in Victoria',
+    src: `${base}/Australian-Fairy-Tern.jpg`,
+    intro: 'A tiny coastal tern that nests on open sandy spits and islands.',
+    story: 'They hover and dive for fish in shallow, clear water.',
+    why: 'Fairy terns need quiet, clean beaches—protecting them protects shorelines.',
+    threats: [
+      'Disturbance at nesting sites (people, dogs, vehicles)',
+      'Predation by foxes and cats',
+      'Beach litter and plastics'
     ],
-    help:[
-      'Use less oil, walk, bike, or share rides when you can.',
-      'Choose reef-safe sunscreen for beach days.',
-      'Pick up litter near rivers, it all flows to the sea.'
+    help: [
+      'Obey seasonal beach closures and keep dogs leashed',
+      'Bin rubbish and help remove plastics',
+      'Support local shorebird monitoring'
     ]
   },
   {
-    slug:'coral',
-    name:'Coral Reefs',
-    scientific:'Class Anthozoa',
-    group:'Animals (cnidarians)',
-    type:'Reef-building animal',
-    size:'Tiny polyps build giant reefs',
-    diet:'Microscopic plankton + algae partners',
-    status:'Many reefs are stressed',
-    src:`${base}/Coral.jpg`,
-    intro:'Corals are animals that build colorful underwater cities.',
-    story:'Each coral is a tiny polyp with tentacles. Millions together make a reef where fish find homes, like apartments under the sea.',
-    why:'Reefs protect coasts, feed people, and hold amazing sea life.',
-    threats:[
-      'Sunscreen chemicals and plastic harm coral polyps.',
-      'Warmer water makes corals "bleach" and lose color.',
-      'Sediment and sewage block the sunlight they need.'
+    slug: 'hooded-plover',
+    name: 'Hooded Plover (Vic)',
+    scientific: 'Thinornis cucullatus',
+    group: 'Birds',
+    type: 'Shorebird',
+    size: '~20 cm',
+    diet: 'Small invertebrates',
+    status: 'Vulnerable in Victoria',
+    src: `${base}/Larissa-Hill-Hooded-Plover.jpg`,
+    intro: 'This beach-nesting bird lays eggs right on the sand above the surf.',
+    story: 'Chicks are tiny and rely on camouflage; they run to feed at the water’s edge.',
+    why: 'They signal the health of our surf beaches and dune systems.',
+    threats: [
+      'People and dogs disturbing nests',
+      'Vehicles on beaches crushing eggs',
+      'Rubbish attracting predators'
     ],
-    help:[
-      'Use reef-safe sunscreen and a hat or shirt for shade.',
-      'Keep drains clean, never pour oil or chemicals.',
-      'Support groups that restore reefs with coral gardening.'
+    help: [
+      'Respect fencing and signs; give nesting birds space',
+      'Leash dogs on beaches; avoid driving on sand',
+      'Take your litter home'
     ]
   },
   {
-    slug:'shark',
-    name:'Sharks',
-    scientific:'Selachimorpha',
-    group:'Fish',
-    type:'Top predator',
-    size:'From 20 cm to 12 m (whale shark)',
-    diet:'Fish, squid, varies widely',
-    status:'Many species declining',
-    src:`${base}/shark.jpg`,
-    intro:`Sharks are not monsters, they're important ocean guardians.`,
-    story:'Like referees in a game, sharks keep the rules: they eat the sick and the weak so fish schools stay strong.',
-    why:'Without sharks, food webs wobble and some animals overgrow.',
-    threats:[
-      'Plastic and fishing gear can injure gills and fins.',
-      'Chemical pollution builds up in top predators.',
-      'Overfishing removes too many sharks from the sea.'
+    slug: 'short-tailed-shearwater',
+    name: 'Short-tailed Shearwater',
+    scientific: 'Ardenna tenuirostris',
+    group: 'Birds',
+    type: 'Seabird',
+    size: '~40–45 cm',
+    diet: 'Krill, small fish',
+    status: 'Protected (millions migrate through Vic)',
+    src: `${base}/Short-tailed-Shearwater.jpg`,
+    intro: 'Also called “muttonbirds”, they migrate from the Arctic to nest on Bass Strait islands.',
+    story: 'Chicks grow in burrows; adults travel incredible distances across the ocean.',
+    why: 'Mass migrations show how connected oceans are—and why clean seas matter.',
+    threats: [
+      'Plastic ingestion at sea',
+      'Light pollution disorienting fledglings',
+      'Oil spills and bycatch'
     ],
-    help:[
-      'Say no to souvenirs made from shark parts.',
-      'Learn about sustainable seafood with an adult.',
-      'Share the truth: most sharks avoid people!'
+    help: [
+      'Reduce night lighting near colonies during fledging',
+      'Cut plastic use and join clean-ups',
+      'Choose seafood from responsible fisheries'
     ]
   }
 ]
 
-const a = computed(() => DATA.find(x => x.slug === route.params.id))
+// 根据路由找到物种
+const a = computed(() => DATA.find(x => x.slug === useRoute().params.id))
 
+// 图片兜底：目录名切换 + 扩展名互换
 function onImgError(e) {
   const img = e.target
   const src = img.getAttribute('src') || ''
-  if (src.includes(`/${PRIMARY_DIR}/`)) {
+
+  // 1) 先在 jpg / png 之间互换一次
+  if (!img.dataset.extSwapped) {
+    img.dataset.extSwapped = '1'
+    if (/\.jpe?g$/i.test(src)) { img.src = src.replace(/\.jpe?g$/i, '.png'); return }
+    if (/\.png$/i.test(src))   { img.src = src.replace(/\.png$/i,   '.jpg'); return }
+  }
+
+  // 2) 目录名兜底（animal-page -> animal%20page）
+  if (!img.dataset.dirSwapped && src.includes(`/${PRIMARY_DIR}/`)) {
+    img.dataset.dirSwapped = '1'
     img.src = src.replace(`/${PRIMARY_DIR}/`, `/${FALLBACK_DIR}/`)
   }
 }
