@@ -47,3 +47,10 @@
 
 .btn.primary { background: #0ea5e9; color: white; }
 .btn.green   { background: #22c55e; color: white; }
+
+/* Navigation highlighting in speech text */
+.nav-highlight {
+  font-weight: 800 !important;
+  color: #f59e0b !important;
+  font-family: 'Fredoka', sans-serif !important;
+}

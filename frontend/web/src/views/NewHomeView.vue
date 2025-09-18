@@ -62,7 +62,7 @@
     </div>
 
     <!-- Content 1: Welcome Section -->
-    <Transition name="fade">
+    <Transition name="instant">
       <section v-if="currentContent === 1" class="welcome-content">
         <div class="welcome-text">
           <h1 class="main-title bounce-animation">Welcome to BlueTrails</h1>
@@ -193,9 +193,10 @@ const getAvatarImage = (file) => `${CDN}/${BUCKET}/${PRIMARY_DIR}/${file}`
 // Speech system
 const speechTexts = [
   "Hi! 🐠 We are Victorian Ocean Friends! 🌊 We need your help to protect our home. Join us in learning about the ocean and how you can make a difference! 🐢",
-  "Know us better by clicking the <strong>'Meet Our Ocean Friends'</strong> 🐙 button in the navigation menu above. Let's explore and have fun together! ⭐",
-  "Oh, Hey! 🦈 you can visit our home too! Click the <strong>'Visit Ocean Friends Home'</strong> 🏠 button in the top navigation bar to see where we live and how you can help keep it safe and clean! 🌊",
-  "Already know us and where we live? Great! 🎮 Let's play some fun games together! Click the <strong>'Play Ocean Fun Games'</strong> 🎯 button in the navigation menu to start playing and learning! 🐠",
+  "Know us better by hovering over the <span class='nav-highlight'>Ocean Friends</span> 🐙 section in the navigation menu above, then click <span class='nav-highlight'>Meet Our Ocean Friends</span>. Let's explore and have fun together! ⭐",
+  "Oh, Hey! 🦈 you can visit our home too! Hover over the <span class='nav-highlight'>Ocean Friends</span> 🏠 section in the top navigation bar, then click <span class='nav-highlight'>Visit Ocean Friends Home</span> to see where we live and how you can help keep it safe and clean! 🌊",
+  "Already know us and where we live? Great! 🎮 Let's play some fun games together! Hover over the <span class='nav-highlight'>Play & Practice</span> 🎯 section in the navigation menu, then click <span class='nav-highlight'>Play Ocean Fun Games</span> to start playing and learning! 🐠",
+  "Want to test your ocean knowledge? 📚 Hover over the <span class='nav-highlight'>Play & Practice</span> 🧠 section in the navigation menu, then click <span class='nav-highlight'>Practice Ocean Quiz</span> to challenge yourself with fun questions about marine life! 🤓",
   "Thank you for visiting us! 🙏 We hope you have a great time exploring and learning about the ocean. 🌊 Remember, every little action counts in protecting our beautiful Victorian Ocean. Let's be Ocean Heroes together! 🦸‍♂️🌊"
 ]
 
@@ -227,7 +228,7 @@ const typeText = async (text) => {
   isTyping.value = false
 
   // Show arrows for specific speech texts
-  if (currentSpeechIndex.value >= 1 && currentSpeechIndex.value <= 3) {
+  if (currentSpeechIndex.value >= 1 && currentSpeechIndex.value <= 4) {
     showNavigationArrow()
   }
 }
@@ -244,8 +245,8 @@ const nextSpeech = () => {
   // If it's the last speech and user clicks restart
   if (isLastSpeech.value) {
     // Reset navbar animations
-    const navButtons = document.querySelectorAll('.link')
-    navButtons.forEach(btn => btn.classList.remove('highlight-bounce'))
+    const allElements = document.querySelectorAll('.highlight-bounce')
+    allElements.forEach(el => el.classList.remove('highlight-bounce'))
 
     // Reset to first speech
     currentSpeechIndex.value = 0
@@ -267,8 +268,8 @@ const previousSpeech = () => {
 
   // Reset navbar animations when going back to first speech
   if (currentSpeechIndex.value === 1) {
-    const navButtons = document.querySelectorAll('.link')
-    navButtons.forEach(btn => btn.classList.remove('highlight-bounce'))
+    const allElements = document.querySelectorAll('.highlight-bounce')
+    allElements.forEach(el => el.classList.remove('highlight-bounce'))
   }
 
   currentSpeechIndex.value = currentSpeechIndex.value === 0
@@ -283,16 +284,31 @@ const startSpeechSequence = () => {
 
 // Navigation highlighting
 const showNavigationArrow = () => {
-  // Add animation class to navbar buttons
-  const navButtons = document.querySelectorAll('.link')
+  // Remove existing animations from all elements
+  const allElements = document.querySelectorAll('.highlight-bounce')
+  allElements.forEach(el => el.classList.remove('highlight-bounce'))
 
-  // Remove existing animations
-  navButtons.forEach(btn => btn.classList.remove('highlight-bounce'))
+  // Map speech index to navigation elements
+  const speechIndex = currentSpeechIndex.value - 1
 
-  // Add animation to specific button based on speech index
-  const buttonIndex = currentSpeechIndex.value - 1
-  if (navButtons[buttonIndex]) {
-    navButtons[buttonIndex].classList.add('highlight-bounce')
+  if (speechIndex >= 0) {
+    // Use setTimeout to ensure DOM is ready
+    setTimeout(() => {
+      // Find the appropriate dropdown trigger to animate
+      let triggerToAnimate = null
+
+      if (speechIndex <= 1) {
+        // Ocean Friends group (speechIndex 0 = Meet Our Ocean Friends, speechIndex 1 = Visit Ocean Friends Home)
+        triggerToAnimate = document.querySelector('.dropdown:first-child .dropdown-trigger')
+      } else if (speechIndex >= 2 && speechIndex <= 3) {
+        // Play & Practice group (speechIndex 2 = Play Ocean Fun Games, speechIndex 3 = Practice Ocean Quiz)
+        triggerToAnimate = document.querySelector('.dropdown:nth-child(2) .dropdown-trigger')
+      }
+
+      if (triggerToAnimate) {
+        triggerToAnimate.classList.add('highlight-bounce')
+      }
+    }, 100)
   }
 
   showArrows.value = true
@@ -320,6 +336,7 @@ const getFloatingIconStyle = (index) => ({
   animationDelay: Math.random() * 5 + 's',
   fontSize: (12 + Math.random() * 8) + 'px'
 })
+
 
 
 onMounted(() => {
@@ -351,6 +368,7 @@ onMounted(() => {
       }
     }, 1000)
   }
+
 })
 
 onBeforeUnmount(() => {
@@ -359,6 +377,7 @@ onBeforeUnmount(() => {
     backgroundMusic.value.pause()
     backgroundMusic.value.currentTime = 0
   }
+
 })
 </script>
 
@@ -372,6 +391,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   padding-top: var(--nav-h);
+  cursor: auto;
 }
 
 .home-page > .fade-enter-active,
@@ -852,7 +872,8 @@ onBeforeUnmount(() => {
   transition: all 0.3s ease;
   cursor: pointer;
   opacity: 0;
-  animation: avatar-float-in 0.6s ease forwards;
+  animation: avatar-float-in 0.6s ease forwards, water-wave-bounce 3s ease-in-out infinite;
+  animation-delay: 0s, 0.6s;
 }
 
 .avatar-image:hover {
@@ -876,6 +897,21 @@ onBeforeUnmount(() => {
   100% {
     opacity: 1;
     transform: translate(var(--end-x, 0), var(--end-y, 0)) scale(1);
+  }
+}
+
+@keyframes water-wave-bounce {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  25% {
+    transform: translateY(-8px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+  75% {
+    transform: translateY(-12px);
   }
 }
 
@@ -935,6 +971,12 @@ onBeforeUnmount(() => {
   color: #1e293b;
   line-height: 1.6;
   margin-bottom: 10px;
+}
+
+.speech-text .nav-highlight {
+  font-weight: 800 !important;
+  color: #f59e0b !important;
+  font-family: 'Fredoka', sans-serif !important;
 }
 
 /* Speech Controls */
@@ -1025,6 +1067,20 @@ onBeforeUnmount(() => {
   filter: blur(4px);
 }
 
+/* Instant Transition for Content 1 */
+.instant-enter-active {
+  transition: none;
+}
+
+.instant-leave-active {
+  transition: none;
+}
+
+.instant-enter-from,
+.instant-leave-to {
+  opacity: 0;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .avatar-content {
@@ -1081,4 +1137,5 @@ onBeforeUnmount(() => {
     height: 20px;
   }
 }
+
 </style>

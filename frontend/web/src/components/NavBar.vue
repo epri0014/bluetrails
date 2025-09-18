@@ -10,23 +10,70 @@
 
       <!-- Desktop links (right) -->
       <nav class="links" aria-label="Primary">
-        <RouterLink class="link" to="/animals">
+        <!-- Ocean Friends Dropdown -->
+        <div class="dropdown" @mouseenter="showOceanFriendsDropdown = true" @mouseleave="hideOceanFriendsDropdown">
+          <div class="link dropdown-trigger" :class="{ 'highlight-bounce': shouldHighlightOceanFriends }">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c.64.16 1.31.26 2 .26s1.36-.1 2-.26V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm-2 7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm4 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
+            </svg>
+            <span>Ocean Friends</span>
+            <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7 10l5 5 5-5z"/>
+            </svg>
+          </div>
+          <Transition name="dropdown">
+            <div v-if="showOceanFriendsDropdown" class="dropdown-menu" @mouseenter="keepOceanFriendsDropdown" @mouseleave="hideOceanFriendsDropdown">
+              <RouterLink class="dropdown-item" to="/animals" data-nav-index="0">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c.64.16 1.31.26 2 .26s1.36-.1 2-.26V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm-2 7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm4 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
+                </svg>
+                <span>Meet Our Ocean Friends</span>
+              </RouterLink>
+              <RouterLink class="dropdown-item" to="/water" data-nav-index="1">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2S6.5 8 6.5 14c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5C17.5 8 12 2 12 2z"/>
+                </svg>
+                <span>Visit Ocean Friends Home</span>
+              </RouterLink>
+            </div>
+          </Transition>
+        </div>
+
+        <!-- Play & Practice Dropdown -->
+        <div class="dropdown" @mouseenter="showPlayPracticeDropdown = true" @mouseleave="hidePlayPracticeDropdown">
+          <div class="link dropdown-trigger" :class="{ 'highlight-bounce': shouldHighlightPlayPractice }">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.5 7c-1.66 0-3 1.34-3 3 0 .35.07.69.18 1H16v2h-1.32c-.11.31-.18.65-.18 1 0 1.66 1.34 3 3 3s3-1.34 3-3V10c0-1.66-1.34-3-3-3zM8 9c0-1.66-1.34-3-3-3S2 7.34 2 10v3c0 1.66 1.34 3 3 3s3-1.34 3-3c0-.35-.07-.69-.18-1H9v-2H7.82c.11-.31.18-.65.18-1zm8-2V5c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h6c.55 0 1-.45 1-1z"/>
+            </svg>
+            <span>Play & Practice</span>
+            <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7 10l5 5 5-5z"/>
+            </svg>
+          </div>
+          <Transition name="dropdown">
+            <div v-if="showPlayPracticeDropdown" class="dropdown-menu" @mouseenter="keepPlayPracticeDropdown" @mouseleave="hidePlayPracticeDropdown">
+              <RouterLink class="dropdown-item" href="#" data-nav-index="2">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.5 7c-1.66 0-3 1.34-3 3 0 .35.07.69.18 1H16v2h-1.32c-.11.31-.18.65-.18 1 0 1.66 1.34 3 3 3s3-1.34 3-3V10c0-1.66-1.34-3-3-3zM8 9c0-1.66-1.34-3-3-3S2 7.34 2 10v3c0 1.66 1.34 3 3 3s3-1.34 3-3c0-.35-.07-.69-.18-1H9v-2H7.82c.11-.31.18-.65.18-1zm8-2V5c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h6c.55 0 1-.45 1-1z"/>
+                </svg>
+                <span>Play Ocean Fun Games</span>
+              </RouterLink>
+              <RouterLink class="dropdown-item" href="#" data-nav-index="3">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                </svg>
+                <span>Practice Ocean Quiz</span>
+              </RouterLink>
+            </div>
+          </Transition>
+        </div>
+
+        <!-- About Us Button -->
+        <RouterLink class="link" to="#" aria-label="About Us">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c.64.16 1.31.26 2 .26s1.36-.1 2-.26V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm-2 7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm4 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
           </svg>
-          <span>Meet Our Ocean Friends</span>
-        </RouterLink>
-        <RouterLink class="link" to="/water">
-          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2S6.5 8 6.5 14c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5C17.5 8 12 2 12 2z"/>
-          </svg>
-          <span>Visit Ocean Friends Home</span>
-        </RouterLink>
-        <RouterLink class="link" href="#">
-          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17.5 7c-1.66 0-3 1.34-3 3 0 .35.07.69.18 1H16v2h-1.32c-.11.31-.18.65-.18 1 0 1.66 1.34 3 3 3s3-1.34 3-3V10c0-1.66-1.34-3-3-3zM8 9c0-1.66-1.34-3-3-3S2 7.34 2 10v3c0 1.66 1.34 3 3 3s3-1.34 3-3c0-.35-.07-.69-.18-1H9v-2H7.82c.11-.31.18-.65.18-1zm8-2V5c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h6c.55 0 1-.45 1-1z"/>
-          </svg>
-          <span>Play Ocean Fun Games</span>
+          <span>About Us</span>
         </RouterLink>
       </nav>
 
@@ -56,6 +103,12 @@
           </svg>
           <span>Play Ocean Fun Games</span>
         </RouterLink>
+        <RouterLink class="dlink" href="#" @click="open=false">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+          </svg>
+          <span>Practice Ocean Quiz</span>
+        </RouterLink>
       </nav>
     </div>
   </header>
@@ -66,6 +119,12 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const open = ref(false)
 const raised = ref(false)
+const showOceanFriendsDropdown = ref(false)
+const showPlayPracticeDropdown = ref(false)
+
+// Simple reactive state - no complex computed logic needed
+const shouldHighlightOceanFriends = ref(false)
+const shouldHighlightPlayPractice = ref(false)
 
 const onScroll = () => {
   // add a soft background after you scroll a bit
@@ -75,6 +134,36 @@ const onScroll = () => {
 const restartHomepage = () => {
   // Emit event to restart homepage or refresh the page
   window.location.reload()
+}
+
+// Dropdown hover handlers with timeout to prevent blinking
+let oceanFriendsTimeout = null
+let playPracticeTimeout = null
+
+const hideOceanFriendsDropdown = () => {
+  oceanFriendsTimeout = setTimeout(() => {
+    showOceanFriendsDropdown.value = false
+  }, 100)
+}
+
+const keepOceanFriendsDropdown = () => {
+  if (oceanFriendsTimeout) {
+    clearTimeout(oceanFriendsTimeout)
+    oceanFriendsTimeout = null
+  }
+}
+
+const hidePlayPracticeDropdown = () => {
+  playPracticeTimeout = setTimeout(() => {
+    showPlayPracticeDropdown.value = false
+  }, 100)
+}
+
+const keepPlayPracticeDropdown = () => {
+  if (playPracticeTimeout) {
+    clearTimeout(playPracticeTimeout)
+    playPracticeTimeout = null
+  }
 }
 
 onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }))
@@ -187,6 +276,83 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
     transform: translateY(-5px) scale(1.05);
     box-shadow: 0 12px 30px rgba(251, 191, 36, 0.4);
   }
+}
+
+/* Dropdown Styles */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-trigger {
+  cursor: pointer;
+}
+
+.dropdown-arrow {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+.dropdown:hover .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  min-width: 250px;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.95) 0%, rgba(6, 182, 212, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 15px 40px rgba(14, 165, 233, 0.4);
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 16px 20px;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateX(5px);
+}
+
+.dropdown-item .icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Dropdown Transitions */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.3s ease;
+}
+
+.dropdown-enter-from {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+}
+
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
 }
 
 .link .icon{
