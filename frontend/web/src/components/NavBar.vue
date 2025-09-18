@@ -52,13 +52,13 @@
           </div>
           <Transition name="dropdown">
             <div v-if="showPlayPracticeDropdown" class="dropdown-menu" @mouseenter="keepPlayPracticeDropdown" @mouseleave="hidePlayPracticeDropdown">
-              <RouterLink class="dropdown-item" href="#" data-nav-index="2">
+              <RouterLink class="dropdown-item" to="/animals" data-nav-index="2">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M17.5 7c-1.66 0-3 1.34-3 3 0 .35.07.69.18 1H16v2h-1.32c-.11.31-.18.65-.18 1 0 1.66 1.34 3 3 3s3-1.34 3-3V10c0-1.66-1.34-3-3-3zM8 9c0-1.66-1.34-3-3-3S2 7.34 2 10v3c0 1.66 1.34 3 3 3s3-1.34 3-3c0-.35-.07-.69-.18-1H9v-2H7.82c.11-.31.18-.65.18-1zm8-2V5c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h6c.55 0 1-.45 1-1z"/>
                 </svg>
                 <span>Play Ocean Fun Games</span>
               </RouterLink>
-              <RouterLink class="dropdown-item" href="#" data-nav-index="3">
+              <RouterLink class="dropdown-item" to="/animals" data-nav-index="3">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
                 </svg>
@@ -69,7 +69,7 @@
         </div>
 
         <!-- About Us Button -->
-        <RouterLink class="link" to="#" aria-label="About Us">
+        <RouterLink class="link" to="/animals" aria-label="About Us">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
           </svg>
@@ -97,13 +97,13 @@
           </svg>
           <span>Visit Ocean Friends Home</span>
         </RouterLink>
-        <RouterLink class="dlink" href="#" @click="open=false">
+        <RouterLink class="dlink" to="/animals" @click="open=false">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M17.5 7c-1.66 0-3 1.34-3 3 0 .35.07.69.18 1H16v2h-1.32c-.11.31-.18.65-.18 1 0 1.66 1.34 3 3 3s3-1.34 3-3V10c0-1.66-1.34-3-3-3zM8 9c0-1.66-1.34-3-3-3S2 7.34 2 10v3c0 1.66 1.34 3 3 3s3-1.34 3-3c0-.35-.07-.69-.18-1H9v-2H7.82c.11-.31.18-.65.18-1zm8-2V5c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h6c.55 0 1-.45 1-1z"/>
           </svg>
           <span>Play Ocean Fun Games</span>
         </RouterLink>
-        <RouterLink class="dlink" href="#" @click="open=false">
+        <RouterLink class="dlink" to="/animals" @click="open=false">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
           </svg>
