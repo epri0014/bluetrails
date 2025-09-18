@@ -31,13 +31,18 @@ function onLoad() {
 
 <style scoped>
 .game-container {
+  position: fixed;
+  top: var(--nav-h, 80px);
+  left: 0;
+  right: 0;
+  bottom: 0;
   width: 100vw;
   height: calc(100vh - var(--nav-h, 80px));
   margin: 0;
   padding: 0;
-  margin-top: var(--nav-h, 80px);
   overflow: hidden;
   background: #000;
+  z-index: 1;
 }
 
 .iframe-wrap {
@@ -51,17 +56,17 @@ function onLoad() {
   position: absolute;
   top: 0;
   left: 0;
-  width: 125%;
-  height: 125%;
+  width: 133%;
+  height: 133%;
   border: none;
   display: block;
-  transform: scale(0.8);
+  transform: scale(0.75);
   transform-origin: top left;
   overflow: hidden;
 }
 
-/* Mobile responsiveness */
-@media (max-width: 768px) {
+/* Responsive scaling for optimal fit */
+@media (max-width: 1200px) {
   .game-iframe {
     width: 140%;
     height: 140%;
@@ -69,11 +74,19 @@ function onLoad() {
   }
 }
 
+@media (max-width: 768px) {
+  .game-iframe {
+    width: 150%;
+    height: 150%;
+    transform: scale(0.67);
+  }
+}
+
 @media (max-width: 480px) {
   .game-iframe {
-    width: 160%;
-    height: 160%;
-    transform: scale(0.625);
+    width: 180%;
+    height: 180%;
+    transform: scale(0.56);
   }
 }
 </style>
