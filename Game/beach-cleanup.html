@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Beach Cleanup — Drag & Drop Demo</title>
+<style>
+  :root{
+    --sand:#FFF6D8;
+    --sea:#72c7ff;
+    --sky:#bfe9ff;
+    --green:#4CAF50;
+    --gray:#555;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, "PingFang SC", "Microsoft Yahei", sans-serif;
+    background: linear-gradient(var(--sky), var(--sea) 45%, var(--sand) 45%);
+    min-height: 100vh;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  header{
+    width:100%; max-width:980px; padding:12px 16px; margin-top:8px;
+    display:flex; align-items:center; justify-content:space-between;
+    background: rgba(255,255,255,.8); border-radius:16px; box-shadow:0 6px 16px rgba(0,0,0,.08);
+  }
+  header h1{font-size:20px; margin:0}
+  #score{font-weight:700}
+  #message{font-size:14px; opacity:.9}
+  #reset{
+    border:0; padding:8px 12px; border-radius:10px; font-weight:600; cursor:pointer;
+    background: #1f8fff; color:#fff; box-shadow:0 3px 10px rgba(31,143,255,.25);
+  }
+
+  /* Beach area */
+  .scene{
+    width:100%; max-width:980px; flex:1; display:grid; gap:12px;
+    grid-template-columns: 1.2fr .8fr; padding:12px 0 24px;
+  }
+  .playground{
+    background: linear-gradient(var(--sand) 0 70%, #f4e7b6 70%);
+    border-radius:16px; padding:14px; position:relative; overflow:hidden;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+  }
+  .playground::before{
+    /* wave effect */
+    content:""; position:absolute; left:-10%; right:-10%; top:64%;
+    height:24px; background:
+      radial-gradient(circle at 10% 50%, rgba(255,255,255,.9) 0 8px, transparent 9px) repeat-x;
+    background-size:80px 24px;
+    opacity:.7; animation:wave 6s linear infinite;
+  }
+  @keyframes wave{to{transform:translateX(80px)}}
+
+  .trash-list{
+    display:flex; flex-wrap:wrap; gap:10px; align-items:flex-start;
+  }
+
+  .item{
+    user-select:none;
+    width:84px; aspect-ratio:1; border-radius:14px; padding:8px 6px 6px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:#fff; border:2px solid rgba(0,0,0,.06);
+    box-shadow:0 6px 14px rgba(0,0,0,.08);
+    cursor:grab; transition:transform .1s;
+  }
+  .item:active{cursor:grabbing; transform:scale(.98)}
+  .emoji{font-size:34px; line-height:1}
+  .label{font-size:12px; margin-top:4px; color:#333}
+
+  .bins{
+    position:absolute; bottom:10px; left:10px; right:10px;
+    display:grid; grid-template-columns: repeat(4, 1fr); gap:10px;
+  }
+  .bin{
+    height:118px; border-radius:14px; padding:8px;
+    color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    outline:3px dashed rgba(255,255,255,.3); outline-offset:-6px;
+    filter: drop-shadow(0 6px 14px rgba(0,0,0,.22));
+    transition: transform .12s, outline-color .12s, opacity .12s;
+  }
+  .bin[data-type="plastic"]{ background:#27b1ff}
+  .bin[data-type="paper"]  { background:#7eabff}
+  .bin[data-type="metal"]  { background:#8a7dff}
+  .bin[data-type="organic"]{ background:#44c07a}
+  .bin .title{font-weight:800; letter-spacing:.3px}
+  .bin .sub{font-size:12px; opacity:.92}
+  .bin.hot{ transform:translateY(-2px); outline-color:#fff}
+  .bin.disabled{ opacity:.5 }
+
+  /* Sidebar with tips */
+  .sidebar{
+    background: rgba(255,255,255,.85); border-radius:16px; padding:14px;
+    display:flex; flex-direction:column; gap:10px; box-shadow:0 8px 20px rgba(0,0,0,.08);
+  }
+  .tip{
+    background:#fff; border:1px solid #eee; border-radius:12px; padding:10px 12px; font-size:14px;
+  }
+  .footer{
+    margin:14px 0 24px; font-size:12px; color:#333; opacity:.8
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>🌊 Beach Cleanup</h1>
+    <div id="message">Drag items into the correct bin! Score: <span id="score">0</span></div>
+    <button id="reset">Restart</button>
+  </header>
+
+  <main class="scene">
+    <section class="playground">
+      <div id="items" class="trash-list" aria-label="Beach trash list"></div>
+
+      <div class="bins" aria-label="Bins area">
+        <div class="bin" data-type="plastic"  aria-label="Plastic bin">
+          <div class="title">Plastic</div>
+          <div class="sub">🧴</div>
+        </div>
+        <div class="bin" data-type="paper"    aria-label="Paper bin">
+          <div class="title">Paper</div>
+          <div class="sub">📦</div>
+        </div>
+        <div class="bin" data-type="metal"    aria-label="Metal & Glass bin">
+          <div class="title">Metal/Glass</div>
+          <div class="sub">🥫</div>
+        </div>
+        <div class="bin" data-type="organic"  aria-label="Organic bin">
+          <div class="title">Organic</div>
+          <div class="sub">🍌</div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <div class="tip" id="tip">Tip: Try dragging 🧴 plastic bottle into the Plastic bin!</div>
+      <div class="tip">Target Audience: Kids / Families / Schools</div>
+      <div class="tip">Extension Ideas: Timer mode, Levels, Badges, Error animations</div>
+    </aside>
+  </main>
+
+  <div class="footer">Minimal runnable Demo (HTML5 native drag & drop).</div>
+
+<script>
+(() => {
+  const itemsEl = document.getElementById('items');
+  const scoreEl = document.getElementById('score');
+  const tipEl   = document.getElementById('tip');
+
+  const facts = [
+    "A plastic bottle can float in the sea for decades.",
+    "Recycling paper saves trees and water.",
+    "Metal and glass can be recycled almost infinitely.",
+    "Food waste can be composted to nourish coastal plants."
+  ];
+
+  // Item pool (emoji + type)
+  const ALL_ITEMS = [
+    { id:'p1', type:'plastic', emoji:'🧴', label:'Bottle' },
+    { id:'p2', type:'plastic', emoji:'🥤', label:'Cup' },
+    { id:'pa1',type:'paper',   emoji:'📰', label:'Newspaper'   },
+    { id:'pa2',type:'paper',   emoji:'📦', label:'Box'   },
+    { id:'m1', type:'metal',   emoji:'🥫', label:'Can' },
+    { id:'m2', type:'metal',   emoji:'🍾', label:'Glass Bottle' },
+    { id:'o1', type:'organic', emoji:'🍌', label:'Banana Peel' },
+    { id:'o2', type:'organic', emoji:'🐟', label:'Fish Bone' },
+  ];
+
+  let score = 0;
+  let remaining = [];
+
+  const shuffle = arr => arr.sort(() => Math.random() - .5);
+
+  function renderItems(list){
+    itemsEl.innerHTML = '';
+    list.forEach(({id, type, emoji, label}) => {
+      const el = document.createElement('div');
+      el.className = 'item';
+      el.setAttribute('draggable', 'true');
+      el.dataset.id = id;
+      el.dataset.type = type;
+      el.innerHTML = `<div class="emoji">${emoji}</div><div class="label">${label}</div>`;
+      addDragHandlers(el);
+      itemsEl.appendChild(el);
+    });
+  }
+
+  function addDragHandlers(el){
+    el.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', JSON.stringify({
+        id: el.dataset.id,
+        type: el.dataset.type
+      }));
+      // Enable bins when dragging starts
+      document.querySelectorAll('.bin').forEach(bin => bin.classList.remove('disabled'));
+    });
+    el.addEventListener('dragend', () => {
+      document.querySelectorAll('.bin').forEach(bin => bin.classList.remove('hot'));
+    });
+  }
+
+  function setupBins(){
+    document.querySelectorAll('.bin').forEach(bin => {
+      bin.addEventListener('dragover', e => {
+        e.preventDefault(); // Allow drop
+        bin.classList.add('hot');
+      });
+      bin.addEventListener('dragleave', () => bin.classList.remove('hot'));
+      bin.addEventListener('drop', e => {
+        e.preventDefault();
+        bin.classList.remove('hot');
+
+        try{
+          const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+          const ok = data.type === bin.dataset.type;
+
+          const dragged = itemsEl.querySelector(`[data-id="${data.id}"]`);
+          if(!dragged) return;
+
+          if(ok){
+            // Correct: remove card, add score, show fact
+            dragged.style.transform = 'scale(.9)';
+            dragged.style.opacity = '.2';
+            setTimeout(() => dragged.remove(), 90);
+
+            score += 10;
+            scoreEl.textContent = score;
+            tipEl.textContent = '✅ Correct! ' + facts[Math.floor(Math.random()*facts.length)];
+
+            remaining = remaining.filter(x => x.id !== data.id);
+            if(remaining.length === 0){
+              tipEl.textContent = '🎉 All sorted! The beach is clean again!';
+              document.querySelectorAll('.bin').forEach(b => b.classList.add('disabled'));
+            }
+          }else{
+            // Wrong: small penalty + tip
+            tipEl.textContent = '❌ Wrong bin. Try again!';
+            score = Math.max(0, score - 3);
+            scoreEl.textContent = score;
+          }
+        }catch(err){
+          // ignore
+        }
+      });
+    });
+  }
+
+  function start(){
+    score = 0; scoreEl.textContent = '0';
+    tipEl.textContent = 'Tip: Try dragging 🧴 plastic bottle into the Plastic bin!';
+    remaining = shuffle([...ALL_ITEMS]).slice(0, 8); // take all and shuffle
+    renderItems(remaining);
+    document.querySelectorAll('.bin').forEach(b => b.classList.remove('disabled'));
+  }
+
+  document.getElementById('reset').addEventListener('click', start);
+
+  setupBins();
+  start();
+})();
+</script>
+</body>
+</html>
