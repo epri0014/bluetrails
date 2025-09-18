@@ -1,9 +1,19 @@
 <template>
-  <main class="page" :style="{ background: heroBg }">
+  <main class="page">
     <section class="wrap">
       <div class="panel glass">
         <header class="panel-head">
-          <h1 class="title">Ocean Heroes — Kids’ Water Guide</h1>
+          <div class="title-container">
+            <h1 class="title">Visit Ocean Friends Home</h1>
+            <div class="avatar-group">
+              <img v-for="(animal, index) in featuredAnimals"
+                   :key="animal.slug"
+                   class="mini-avatar"
+                   :src="getAvatarImage(animal.cartoon)"
+                   :alt="animal.name"
+                   :style="{ animationDelay: (index * 0.3) + 's' }" />
+            </div>
+          </div>
           <div class="actions">
             <button class="btn" @click="reload">
               ↻ Reload
@@ -42,12 +52,24 @@ import LoadingOverlay from '../components/LoadingOverlay.vue'
 
 const CDN = 'https://gvwrmcyksmswvduehrtd.supabase.co/storage/v1/object/public'
 const BUCKET = 'bluetrails'
-const heroBg =
-  `linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.35) 33%, rgba(0,0,0,.20) 100%), ` +
-  `url('${CDN}/${BUCKET}/hero/background.jpg') center/cover fixed no-repeat`
+const PRIMARY_DIR = 'animal-page'
+
+// Featured animals for mini avatars
+const featuredAnimals = [
+  { slug: 'burrunan-dolphin', name: 'Burrunan Dolphin', cartoon: 'dolphin-cartoon.png' },
+  { slug: 'southern-right-whale', name: 'Southern Right Whale', cartoon: 'whale-cartoon.png' },
+  { slug: 'australian-fur-seal', name: 'Australian Fur Seal', cartoon: 'seal-cartoon.png' },
+  { slug: 'little-penguin', name: 'Little Penguin', cartoon: 'penguin-cartoon.png' },
+  { slug: 'weedy-seadragon', name: 'Weedy Seadragon', cartoon: 'seadragon-cartoon.png' }
+]
 
 const loading = ref(true)
 const frame = ref(null)
+
+// Get avatar image URL
+function getAvatarImage(filename) {
+  return `${CDN}/${BUCKET}/${PRIMARY_DIR}/${filename}`
+}
 
 function onLoad() {
   loading.value = false
@@ -69,6 +91,7 @@ function openNew() {
   padding-top:var(--nav-h);
   padding-bottom:24px;
   color:#f6f7fb;
+  background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 20%, #40E0D0 40%, #20B2AA 60%, #008B8B 80%, #F4A460 90%, #DEB887 100%);
 }
 
 .wrap{
@@ -111,6 +134,34 @@ function openNew() {
   justify-content:space-between;
   padding:14px 16px;
   border-bottom:1px solid rgba(255,255,255,.10);
+}
+
+.title-container{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+
+.avatar-group{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.mini-avatar{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,0.3);
+  background:#fff;
+  object-fit:cover;
+  animation:water-wave-bounce 2s ease-in-out infinite;
+  transition:transform 0.3s ease;
+}
+
+.mini-avatar:hover{
+  transform:scale(1.1);
+  border-color:rgba(255,255,255,0.6);
 }
 
 .title{
@@ -170,6 +221,15 @@ iframe{
   margin-bottom:12px;
 }
 @keyframes spin{ to{ transform:rotate(360deg) } }
+
+@keyframes water-wave-bounce {
+  0%, 100% {
+    transform:translateY(0px);
+  }
+  50% {
+    transform:translateY(-6px);
+  }
+}
 
 @media (max-width: 720px){
   .panel{ min-height: calc(100vh - var(--nav-h)); }

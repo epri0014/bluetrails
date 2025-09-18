@@ -1,5 +1,5 @@
 <template>
-  <main class="page" :style="{ background: heroBg }" aria-labelledby="title">
+  <main class="page" aria-labelledby="title">
     <h1 id="title" class="visually-hidden">Animals Play — Learn • Play • Act</h1>
 
     <section class="wrap">
@@ -86,9 +86,6 @@ const CDN = 'https://gvwrmcyksmswvduehrtd.supabase.co/storage/v1/object/public'
 const BUCKET = 'bluetrails'
 const PRIMARY_DIR = 'animal-page'
 const FALLBACK_DIR = 'animal%20page' 
-const heroBg =
-  'linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.35) 33%, rgba(0,0,0,.20) 100%), ' +
-  `url('${CDN}/${BUCKET}/hero/background.jpg') center/cover fixed no-repeat`
 
 const animals = [
   {
@@ -230,7 +227,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.page { min-height: 100vh; padding-top: var(--nav-h); padding-bottom: 40px; color: #fff; }
+.page {
+  min-height: 100vh;
+  padding-top: var(--nav-h);
+  padding-bottom: 40px;
+  color: #fff;
+  background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 20%, #40E0D0 40%, #20B2AA 60%, #008B8B 80%, #F4A460 90%, #DEB887 100%);
+}
 .wrap { max-width: min(1100px, 95vw); margin: 0 auto; padding: 16px 16px 0; }
 .glass { background: rgba(17,25,40,.56); border: 1px solid rgba(255,255,255,.14); border-radius: 16px; backdrop-filter: blur(8px); box-shadow: 0 12px 30px rgba(0,0,0,.28); }
 

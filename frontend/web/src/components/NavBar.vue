@@ -23,13 +23,13 @@
           </div>
           <Transition name="dropdown">
             <div v-if="showOceanFriendsDropdown" class="dropdown-menu" @mouseenter="keepOceanFriendsDropdown" @mouseleave="hideOceanFriendsDropdown">
-              <RouterLink class="dropdown-item" to="/animals" data-nav-index="0">
+              <RouterLink class="dropdown-item" to="/animals" data-nav-index="0" @click="resetNavbarStates">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c.64.16 1.31.26 2 .26s1.36-.1 2-.26V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm-2 7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm4 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
                 </svg>
                 <span>Meet Our Ocean Friends</span>
               </RouterLink>
-              <RouterLink class="dropdown-item" to="/water" data-nav-index="1">
+              <RouterLink class="dropdown-item" to="/water" data-nav-index="1" @click="resetNavbarStates">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2S6.5 8 6.5 14c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5C17.5 8 12 2 12 2z"/>
                 </svg>
@@ -85,13 +85,13 @@
     <div v-if="open" class="drawer" @click.self="open = false">
       <nav class="panel" aria-label="Mobile">
         <button class="close" @click="open = false" aria-label="Close">×</button>
-        <RouterLink class="dlink" to="/animals" @click="open=false">
+        <RouterLink class="dlink" to="/animals" @click="open=false; resetNavbarStates()">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c.64.16 1.31.26 2 .26s1.36-.1 2-.26V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm-2 7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm4 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
           </svg>
           <span>Meet Our Ocean Friends</span>
         </RouterLink>
-        <RouterLink class="dlink" to="/water" @click="open=false">
+        <RouterLink class="dlink" to="/water" @click="open=false; resetNavbarStates()">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2S6.5 8 6.5 14c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5C17.5 8 12 2 12 2z"/>
           </svg>
@@ -115,7 +115,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute()
 
 const open = ref(false)
 const raised = ref(false)
@@ -132,9 +136,43 @@ const onScroll = () => {
 }
 
 const restartHomepage = () => {
-  // Emit event to restart homepage or refresh the page
-  window.location.reload()
+  // If already on homepage, restart it; otherwise navigate to homepage
+  if (route.path === '/') {
+    window.location.reload()
+  } else {
+    router.push('/')
+  }
 }
+
+// Reset navbar states when navigating
+const resetNavbarStates = () => {
+  // Close all dropdowns
+  showOceanFriendsDropdown.value = false
+  showPlayPracticeDropdown.value = false
+
+  // Reset highlight states
+  shouldHighlightOceanFriends.value = false
+  shouldHighlightPlayPractice.value = false
+
+  // Remove highlight animation classes from DOM
+  const highlightedElements = document.querySelectorAll('.highlight-bounce')
+  highlightedElements.forEach(el => el.classList.remove('highlight-bounce'))
+
+  // Clear any pending timeouts
+  if (oceanFriendsTimeout) {
+    clearTimeout(oceanFriendsTimeout)
+    oceanFriendsTimeout = null
+  }
+  if (playPracticeTimeout) {
+    clearTimeout(playPracticeTimeout)
+    playPracticeTimeout = null
+  }
+}
+
+// Watch for route changes and reset navbar states
+watch(() => route.path, () => {
+  resetNavbarStates()
+})
 
 // Dropdown hover handlers with timeout to prevent blinking
 let oceanFriendsTimeout = null
