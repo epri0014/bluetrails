@@ -10,15 +10,13 @@ if (!file.exists(excel_path)) stop("File not found: ", excel_path)
 
 # ---------- packages ----------
 library(shiny)
-pkgs <- c("bslib","leaflet","dplyr","readxl","lubridate","stringr","tidyr","purrr","tibble")
-#need <- setdiff(pkgs, rownames(installed.packages()))
-#if (length(need)) install.packages(need)
-#invisible(lapply(pkgs, library, character.only=TRUE))
-pkgs <- c("bslib","leaflet","dplyr","readxl","lubridate","stringr","tidyr","purrr","tibble")
-lapply(pkgs, library, character.only=TRUE)
+pkgs <- c("bslib","leaflet","dplyr","readxl","lubridate","stringr","tidyr","purrr","tibble","htmltools")
+need <- setdiff(pkgs, rownames(installed.packages()))
+if (length(need)) install.packages(need)
+invisible(lapply(pkgs, library, character.only=TRUE))
 
-# ---------- helpers (robust parsing & cleaning) ----------
-numify <- function(x){ as.numeric(gsub("[^0-9.\\-]", "", as.character(x))) }
+# ---------- helpers ----------
+numify <- function(x){ suppressWarnings(as.numeric(gsub("[^0-9.\\-]", "", as.character(x)))) }
 parse_date_any <- function(x){
   if (inherits(x, "Date")) return(as.Date(x))
   if (is.numeric(x)) return(as.Date(x, origin = "1899-12-30"))
@@ -46,7 +44,6 @@ data <- raw_data %>%
     Temperature = numify(Temperature),
     N_TOTAL     = numify(N_TOTAL)
   ) %>%
-  # remove impossible values (set to NA)
   mutate(
     CHL_A       = clip_invalid(CHL_A, 0, 1000),
     Turb        = clip_invalid(Turb, 0, 1000),
@@ -54,7 +51,6 @@ data <- raw_data %>%
     Temperature = clip_invalid(Temperature, 0, 40),
     N_TOTAL     = clip_invalid(N_TOTAL, 0, 5000)
   ) %>%
-  # drop rows with no metrics at all
   filter(!(is.na(CHL_A) & is.na(Turb) & is.na(DO_mg) & is.na(Temperature) & is.na(N_TOTAL))) %>%
   filter(!is.na(site_id), !is.na(site_name_short), !is.na(date)) %>%
   distinct(site_name_short, date, .keep_all = TRUE)
@@ -80,8 +76,7 @@ min_d <- min(df$date, na.rm=TRUE)
 max_d <- max(df$date, na.rm=TRUE)
 
 # ---------- rating logic ----------
-code_to_color <- c(green="#1db954", amber="#ffb000", red="#e63946")
-code_to_emoji <- c(green="🟢", amber="🟡", red="🔴")
+code_to_color <- c(green="#24c38b", amber="#ffb000", red="#e74a5f")  # strict R-A-G
 code_to_label <- c(green="Safe", amber="Caution", red="Unsafe")
 
 code_algae   <- function(x) ifelse(is.na(x),"amber", ifelse(x < 2,"green", ifelse(x <= 5,"amber","red")))
@@ -95,121 +90,330 @@ overall_code <- function(a,c,o,n,t){
   ifelse(red_any, "red", ifelse(amb_any, "amber", "green"))
 }
 
-# ---------- kid text & trends ----------
+# ---------- kid text ----------
 kidline <- function(metric, code) switch(metric,
-                                         "Algal Bloom"=switch(code, green="Algae are sleepy - fish can feast! 🐟",
-                                                              amber="Some algae around - keep an eye out. 👀",
-                                                              red="Algae party! Fish find it hard to breathe. 😮‍💨"),
-                                         "Clarity"    =switch(code, green="Crystal clear - I can see my lunch! 👓",
-                                                              amber="A bit murky - look before you splash. 🌊",
-                                                              red="Very murky - not much to see. 🙈"),
-                                         "Oxygen"     =switch(code, green="Bubbly water - fish are happy! 💨🐠",
-                                                              amber="Fewer bubbles - fish get a little tired. 😴",
-                                                              red="Low oxygen - fish struggle to breathe. 😵"),
-                                         "Nutrients"  =switch(code, green="Just right - not too much food for algae. ✅",
-                                                              amber="Extra nutrients - algae may grow. 🌱",
-                                                              red="Too many nutrients - algae can take over. 🚨"),
-                                         "Temperature"=switch(code, green="Cool & comfy - splash time! ❄️",
-                                                              amber="A bit warm - take care. 🌤️",
-                                                              red="Very warm - wildlife can get stressed. 🥵"),
+                                         "Algal Bloom"=switch(code, green="Algae are quiet - fish can breathe easily.",
+                                                              amber="Some algae - keep an eye on the water.",
+                                                              red="Algae are booming - sea life finds it hard to breathe."),
+                                         "Clarity"    =switch(code, green="Water looks clear - easy to spot shells and fish.",
+                                                              amber="A little cloudy - look carefully before you splash.",
+                                                              red="Very cloudy - hard to see what’s under the waves."),
+                                         "Oxygen"     =switch(code, green="Plenty of tiny bubbles - sea animals feel strong.",
+                                                              amber="Fewer bubbles - they get tired faster.",
+                                                              red="Low bubbles - sea life may struggle to breathe."),
+                                         "Nutrients"  =switch(code, green="Just enough ‘food’ in the water - algae stays calm.",
+                                                              amber="Extra food - algae could grow quickly.",
+                                                              red="Too much food - algae can take over the bay."),
+                                         "Temperature"=switch(code, green="Comfy and cool water.",
+                                                              amber="Getting warm - take short dips.",
+                                                              red="Very warm - stressful for wildlife."),
                                          "")
 
-trend_arrow <- function(curr, prev, good_when_low = NA) {
-  if (is.na(curr) || is.na(prev)) return("")
-  ch <- curr - prev
-  if (abs(ch) < 1e-6) return("⟷")
-  if (isTRUE(good_when_low)) { if (ch > 0) "⬆️" else "⬇️" }
-  else if (identical(good_when_low, FALSE)) { if (ch > 0) "⬆️" else "⬇️" }
-  else if (is.na(good_when_low)) { if (ch > 0) "⬆️" else "⬇️" }
+# ---------- icons & AVATARS ----------
+icon_svg <- function(name, size=16){
+  if (name=="fish") return(HTML(sprintf(
+    "<svg width='%d' height='%d' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'><path d='M3 12c3-3 8-5 13-5 0 0-1 2-1 5s1 5 1 5c-5 0-10-2-13-5zM20 7l-2 2 2 2 2-2-2-2z'/></svg>", size, size)))
+  if (name=="wave") return(HTML(sprintf(
+    "<svg width='%d' height='%d' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'><path d='M3 16s1.5-2 4-2 4 2 6 2 4-2 6-2 4 2 4 2v2H3v-2z'/></svg>", size, size)))
+  if (name=="leaf") return(HTML(sprintf(
+    "<svg width='%d' height='%d' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'><path d='M21 3S9 4 6 7s-3 8 3 10 11-3 11-14zM8 13c2 0 5-1 7-3'/></svg>", size, size)))
+  if (name=="thermo") return(HTML(sprintf(
+    "<svg width='%d' height='%d' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'><path d='M10 14V6a2 2 0 114 0v8a4 4 0 11-4 0z'/></svg>", size, size)))
+  if (name=="drop") return(HTML(sprintf(
+    "<svg width='%d' height='%d' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'><path d='M12 2s7 7 7 12a7 7 0 11-14 0C5 9 12 2 12 2z'/></svg>", size, size)))
+  HTML("")
 }
 
-# ---------- UI (animations + confetti) ----------
-theme <- bslib::bs_theme(version=5, bootswatch="minty", base_font=bslib::font_google("Nunito"))
+# avatars carry data-keep='ava' so the egg-remover never touches them
+avatar <- function(kind="turtle", size=56){
+  base <- sprintf("style='width:%dpx;height:%dpx' data-keep='ava'", size, size)
+  if (kind=="turtle")   return(HTML(sprintf("<div class='ava ava-turtle' %s></div>",  base)))
+  if (kind=="dolphin")  return(HTML(sprintf("<div class='ava ava-dolphin' %s></div>", base)))
+  if (kind=="crab")     return(HTML(sprintf("<div class='ava ava-crab' %s></div>",    base)))
+  HTML("")
+}
+
+# ---------- theme ----------
+theme <- bslib::bs_theme(
+  version = 5,
+  bootswatch = "minty",
+  primary = "#1a7bd6",
+  bg = "#f3f8ff",
+  fg = "#202022",
+  base_font = bslib::font_google("Nunito")
+)
+
+chip <- function(id, title, content){
+  tags$span(
+    id = id, class="chip", `data-bs-toggle`="popover", `data-bs-trigger`="hover focus",
+    `data-bs-placement`="top", `data-bs-html`="true", `data-bs-content`=content,
+    icon_svg("wave"), HTML(paste0("<b>", title, "</b>"))
+  )
+}
 
 ui <- bslib::page_navbar(
-  title="Ocean Heroes - Kids’ Water Guide",
-  theme=theme,
-  tags$head(
-    tags$style(HTML("
-      :root{ --chip:#222; }
-      .card-header{background:linear-gradient(90deg,#b3e5fc,#e8f5e9,#b3e5fc);
-        background-size:300% 100%;animation:hdr 5s ease-in-out infinite;border-bottom:2px solid rgba(0,0,0,.06)}
-      @keyframes hdr{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-      .container-fluid{animation:pageIn .45s ease}
-      @keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-      .speech-bubble{animation:pop .45s ease;box-shadow:0 8px 24px rgba(0,0,0,.08)}
-      @keyframes pop{0%{transform:scale(.94);opacity:0}100%{transform:scale(1);opacity:1}}
-      .badge-chip{display:flex;align-items:center;gap:10px;margin:8px 0;padding:12px 14px;border-radius:16px;border:2px solid var(--chip);background:#fff;transition:transform .15s, box-shadow .15s}
-      .badge-chip:hover{transform:translateY(-2px) scale(1.02); box-shadow:0 10px 24px rgba(30,144,255,.16)}
-      .pulse-green{animation:pulseG 1.6s ease-in-out infinite}
-      .pulse-amber{animation:pulseA 1.6s ease-in-out infinite}
-      .pulse-red{animation:pulseR 1.6s ease-in-out infinite}
-      @keyframes pulseG{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
-      @keyframes pulseA{0%,100%{transform:scale(1)}50%{transform:scale(1.10)}}
-      @keyframes pulseR{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-      .insight-line{background:linear-gradient(90deg,rgba(255,255,255,0) 0%, rgba(255,255,0,.14) 50%, rgba(255,255,255,0) 100%);
-        background-size:300% 100%; animation:shim 3s ease infinite; border-radius:8px; padding:6px 8px}
-      @keyframes shim{0%{background-position:0% 0%}50%{background-position:100% 0%}100%{background-position:0% 0%}}
-      .leaflet-container::after{content:'';position:absolute;left:10%;bottom:8%;width:6px;height:6px;border-radius:50%;background:rgba(135,206,250,.7);
-        box-shadow:40px 20px 0 0 rgba(135,206,250,.6),80px -10px 0 0 rgba(135,206,250,.5),120px 10px 0 0 rgba(135,206,250,.4),160px -15px 0 0 rgba(135,206,250,.35),200px 5px 0 0 rgba(135,206,250,.3);
-        animation:bubbles 7s linear infinite; pointer-events:none}
-      @keyframes bubbles{0%{transform:translateY(0)}100%{transform:translateY(-120px)}}
-      .confetti{position:fixed;left:0;top:0;pointer-events:none;z-index:9999}
-      .cf-piece{position:absolute;width:8px;height:12px;opacity:.9;border-radius:2px}
-    ")),
-    tags$script(HTML("
-      (function(){
-        function rand(a,b){return Math.random()*(b-a)+a}
-        function dropOne(cnv,w,h,clr){
-          var d=document.createElement('div'); d.className='cf-piece'; d.style.background=clr;
-          d.style.left=rand(0,w)+'px'; d.style.top='-20px'; d.style.transform='rotate('+rand(0,360)+'deg)';
-          cnv.appendChild(d);
-          var y=-20,x=parseFloat(d.style.left),vy=rand(2,4),vx=rand(-1,1),rot=rand(-2,2);
-          var t=setInterval(function(){
-            y+=vy;x+=vx;d.style.top=y+'px';d.style.left=x+'px';
-            d.style.transform='rotate('+(rot+=rand(-6,6))+'deg)';
-            if(y>h+30){clearInterval(t);d.remove();}
-          },16);
+  title = "Ocean Heroes - Kids’ Water Guide",
+  theme = theme,
+  
+  header = tagList(
+    tags$head(
+      tags$style(HTML("
+        :root{ --sea1:#8fd3ff; --sea2:#a4ffd8; --sea3:#ffe6a3; --sea4:#b7f2ff; --card:#fff; }
+        body{
+          background:
+            radial-gradient(1200px 700px at -10% 0%, var(--sea1), transparent 60%),
+            radial-gradient(1200px 800px at 110% 10%, var(--sea2), transparent 60%),
+            radial-gradient(900px 700px at 50% 120%, var(--sea3), transparent 60%),
+            radial-gradient(800px 500px at 20% 100%, var(--sea4), transparent 60%);
         }
-        Shiny.addCustomMessageHandler('confetti', function(opts){
-          var n=opts&&opts.n||120, colors=opts&&opts.colors||['#1db954','#ffb000','#e63946','#43a5f5','#ff66c4'];
-          var cnv=document.querySelector('.confetti'); if(!cnv){cnv=document.createElement('div'); cnv.className='confetti'; document.body.appendChild(cnv);}
-          var w=window.innerWidth||800,h=window.innerHeight||600;
-          for(var i=0;i<n;i++) dropOne(cnv,w,h,colors[Math.floor(Math.random()*colors.length)]);
-          setTimeout(function(){ if(cnv) cnv.innerHTML=''; }, 2500);
-        });
-      })();
-    "))
+        .container-lg{ max-width:1140px; }
+        .grid-2{ display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+        .grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+        @media (max-width: 992px){ .grid-2, .grid-3{ grid-template-columns:1fr; } }
+        .no-overlap .form-select, .no-overlap .form-control, .no-overlap .btn { width:100% }
+        .leaflet-top.leaflet-right { top: 74px; }
+        .card-cute{
+          background:
+            linear-gradient(135deg, rgba(255,255,255,.98), rgba(255,255,255,.98)),
+            radial-gradient(12px 12px at 8px 8px, #e9f7ff 30%, transparent 31%) 0 0 / 28px 28px,
+            radial-gradient(12px 12px at 22px 22px, #fffbe6 30%, transparent 31%) 0 0 / 28px 28px;
+          border:2px solid #000; border-radius:22px; padding:16px;
+          box-shadow:6px 6px 0 #00000018; transition:transform .2s;
+        }
+        .card-cute:hover{ transform:translateY(-2px) }
+        .chip{
+          display:inline-flex; align-items:center; gap:8px; margin:6px 6px 0 0;
+          padding:10px 12px; border:2px solid #000; border-radius:14px; background:#ffffffee;
+        }
+        .badge-dot{ width:12px; height:12px; border-radius:50%; border:2px solid #000; display:inline-block; }
+        .dot-green{ background:#24c38b } .dot-amber{ background:#ffb000 } .dot-red{ background:#e74a5f }
+        .section-title{ font-weight:800; letter-spacing:.3px; }
+        .btn-ghost{ background:#1a7bd6; color:#fff; border:2px solid #0f5ca5; box-shadow:0 4px 0 #0f5ca5; }
+        .btn-ghost:hover{ filter:brightness(.95); }
+        .btn-warning{ font-weight:700; }
+        .ocean-bubbles{ position:fixed; inset:0; pointer-events:none; z-index:0; }
+        .ocean-bubbles span{
+          position:absolute; border-radius:50%; opacity:.9;
+          background:radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,.25));
+          animation: rise 10s linear infinite;
+          filter: drop-shadow(0 0 8px rgba(255,255,255,.7));
+        }
+        @keyframes rise{ from{ transform:translateY(30px) } to{ transform:translateY(-120vh) } }
+        .map-wash{
+          position:absolute; inset:0; pointer-events:none; z-index:400;
+          background: linear-gradient(120deg, rgba(0,191,255,.12), rgba(0,220,180,.10), rgba(255,196,0,.12));
+          mix-blend-mode: multiply; animation: waveShift 12s ease-in-out infinite alternate; display:none;
+        }
+        @keyframes waveShift{ from{filter:saturate(1)} to{filter:saturate(1.5)} }
+        .ava{ border:2px solid #000; border-radius:50%; background:#fff; position:relative; overflow:hidden;
+              box-shadow:4px 4px 0 #00000018; animation:bob 3.6s ease-in-out infinite; cursor:pointer }
+        @keyframes bob{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-4px) } }
+        .ava-turtle::before{ content:''; position:absolute; inset:10% 15%;
+          background:radial-gradient(circle at 30% 50%, #2ecc71 40%, #116e36 41%); border-radius:50% }
+        .ava-dolphin::before{ content:''; position:absolute; inset:10% 12%;
+          background:radial-gradient(circle at 50% 50%, #5dade2 45%, #1a7bd6 46%); border-radius:50% }
+        .ava-crab::before{ content:''; position:absolute; inset:14% 18%;
+          background:radial-gradient(circle at 50% 50%, #e74a5f 45%, #a92434 46%); border-radius:50% }
+        /* hide any known egg classes (backup to JS killer) */
+        .egg, .eggs, .egg-stack, .traffic-eggs, .status-egg, .traffic-ovals, .status-oval { display:none !important; }
+        .confetti{position:fixed;left:0;top:0;pointer-events:none;z-index:9999}
+        .cf-piece{position:absolute;width:8px;height:12px;opacity:.95;border-radius:2px}
+      ")),
+      tags$script(HTML("
+        (function(){
+          // ----- Bootstrap popovers -----
+          function initPopovers(){
+            var els = document.querySelectorAll('[data-bs-toggle=\"popover\"]');
+            els.forEach(function(el){ try { new bootstrap.Popover(el); } catch(e){} });
+          }
+          document.addEventListener('DOMContentLoaded', initPopovers);
+          document.addEventListener('shiny:value', initPopovers, true);
+
+          // ----- Confetti -----
+          function rand(a,b){return Math.random()*(b-a)+a}
+          function dropOne(cnv,w,h,clr){
+            var d=document.createElement('div'); d.className='cf-piece'; d.style.background=clr;
+            d.style.left=rand(0,w)+'px'; d.style.top='-20px'; d.style.transform='rotate('+rand(0,360)+'deg)';
+            cnv.appendChild(d);
+            var y=-20,x=parseFloat(d.style.left),vy=rand(2,4),vx=rand(-1,1),rot=rand(-2,2);
+            var t=setInterval(function(){
+              y+=vy;x+=vx;d.style.top=y+'px';d.style.left=x+'px';
+              d.style.transform='rotate('+(rot+=rand(-6,6))+'deg)';
+              if(y>h+30){clearInterval(t);d.remove();}
+            },16);
+          }
+          Shiny.addCustomMessageHandler('confetti', function(opts){
+            var n=opts&&opts.n||160, colors=opts&&opts.colors||['#24c38b','#ffb000','#e74a5f','#1a7bd6','#5dade2'];
+            var cnv=document.querySelector('.confetti'); if(!cnv){cnv=document.createElement('div'); cnv.className='confetti'; document.body.appendChild(cnv);}
+            var w=window.innerWidth||800,h=window.innerHeight||600;
+            for(var i=0;i<n;i++) dropOne(cnv,w,h,colors[Math.floor(Math.random()*colors.length)]);
+            setTimeout(function(){ if(cnv) cnv.innerHTML=''; }, 2500);
+          });
+
+          // ----- Map wash toggle -----
+          Shiny.addCustomMessageHandler('toggleMapWash', function(x){
+            var el=document.getElementById('mapwash');
+            if(el) el.style.display = (x && x.show) ? 'block' : 'none';
+          });
+
+          // ======= Remove stray 'egg/oval' graphics but never avatars/dots =======
+          function looksLikeEgg(el){
+            if (!el || el.nodeType!==1) return false;
+            if (el.closest('[data-keep=\"ava\"]') || el.closest('.ava')) return false;   // keep avatars
+            if (el.className && /badge-dot/.test(el.className)) return false;           // keep tiny legend dots
+            var cs = getComputedStyle(el);
+            var w = el.offsetWidth, h = el.offsetHeight;
+            if (!(cs.borderRadius && cs.borderRadius.indexOf('%')>-1)) return false;
+            if (Math.min(w,h) < 28 || Math.max(w,h) > 160) return false;
+            if (el.textContent.trim().length) return false;
+            var name = (el.className||'') + ' ' + (el.id||'');
+            if (/(egg|oval|traffic.*light|status.*light)/i.test(name)) return true;
+            var hasBg = (cs.backgroundImage!=='none' || (cs.backgroundColor && cs.backgroundColor!=='rgba(0, 0, 0, 0)'));
+            var hasShadow = cs.boxShadow && cs.boxShadow!=='none';
+            var thickBorder = parseFloat(cs.borderTopWidth||'0') >= 2;
+            return (hasBg && (hasShadow || thickBorder));
+          }
+          function nukeEggs(root){
+            try{
+              var nodes = root.querySelectorAll('div,span,i,em,svg,canvas');
+              nodes.forEach(function(n){ if(looksLikeEgg(n)) n.remove(); });
+            }catch(e){}
+          }
+          document.addEventListener('DOMContentLoaded', function(){ nukeEggs(document); });
+          new MutationObserver(function(muts){
+            for (var i=0;i<muts.length;i++){
+              var m=muts[i];
+              if (m.addedNodes && m.addedNodes.length){
+                m.addedNodes.forEach(function(n){ if(n.nodeType===1){ nukeEggs(n); } });
+              }
+            }
+          }).observe(document.body, {childList:true, subtree:true});
+        })();
+      "))
+    ),
+    # bubbles layer
+    tags$div(class="ocean-bubbles",
+             lapply(1:48, function(i){
+               left <- sample(2:98,1); delay <- runif(1,0,10); size <- sample(12:26,1)
+               tags$span(style=sprintf("left:%d%%; bottom:-20px; width:%dpx; height:%dpx; animation-delay:%.2fs;", left,size,size,delay))
+             })
+    )
   ),
+  
+  # ------------ CONTENT ------------
   bslib::nav_panel(
     "Explore",
-    bslib::layout_sidebar(
-      sidebar = bslib::sidebar(
-        width=360,
-        h4("Pick a place & day"),
-        selectInput("site","Beach / Site", choices=c("All sites", all_sites), selected="All sites"),
-        dateInput("date","Date", value=max_d, min=min_d, max=max_d),
-        div(class="mt-3 p-3 rounded", style="background:#eefcf3;border:2px dashed #1db954;",
-            HTML("<b>Tip:</b> Choose a date to colour every beach. Pick a beach to read fun insights! 🐧"))
-      ),
-      bslib::card(full_screen=TRUE,
-                  card_header="Map — Coloured pins show ocean health today",
-                  leafletOutput("map", height=460)
-      ),
-      bslib::layout_columns(
-        col_widths=c(5,7),
-        bslib::card(class="mb-3", card_header=uiOutput("panel_title"), uiOutput("speech_or_summary")),
-        bslib::card(class="mb-3", card_header=uiOutput("badges_title"), uiOutput("badges")),
-        bslib::card(class="mb-3", card_header=HTML("✨ Auto Insights for Kids"), uiOutput("insights"))
-      )
+    div(class="container-lg py-3 no-overlap",
+        
+        # HERO + controls + Confetti note
+        div(class="card-cute mb-3",
+            div(class="grid-3",
+                div(
+                  div(class="section-title h4 mb-2","What this page is"),
+                  p("A bright, simple guide that shows if today’s beach water is safe and explains ",
+                    "why the colour is green, amber, or red using real measurements from the bay.")
+                ),
+                div(
+                  div(class="section-title h4 mb-2","What you’ll see"),
+                  tags$ul(
+                    tags$li(tags$b("Traffic-light badges"), " for each beach"),
+                    tags$li("A colorful map you can tap to zoom"),
+                    tags$li("Short reasons in kid-friendly words")
+                  )
+                ),
+                div(
+                  div(class="section-title h4 mb-2","How to use it"),
+                  tags$ol(
+                    tags$li("Pick a beach and date."),
+                    tags$li("Read the badge and the short reasons."),
+                    tags$li("Hover Quick Help to learn what each measure means.")
+                  )
+                )
+            ),
+            tags$div(class="mt-2 p-3 rounded d-flex align-items-center gap-2",
+                     style="background:#fff4db;border:2px dashed #ffb000;",
+                     HTML("<b>Confetti note:</b> you’ll see confetti when a beach turns <b>Safe</b> or improves"),
+                     HTML("&nbsp;"), tags$span(style="display:inline-block;", avatar('dolphin', 36)),
+                     HTML("&nbsp;"), tags$span(style="display:inline-block;", avatar('turtle', 36))
+            ),
+            tags$hr(),
+            div(class="grid-2",
+                div(
+                  div(class="section-title h5 mt-1","Pick a place & day"),
+                  selectInput("site","Beach / Site", choices=c("All sites", all_sites), selected="All sites"),
+                  dateInput("date","Date", value=max_d, min=min_d, max=max_d),
+                  checkboxInput("funmap", "Fun Map Mode", value = TRUE),
+                  fluidRow(
+                    column(6, actionButton("resetView","Reset View", class="btn btn-ghost w-100")),
+                    column(6, actionButton("showDisc","Show Disclaimer", class="btn btn-warning w-100"))
+                  )
+                ),
+                div(
+                  div(class="section-title h5 mt-1","Quick Help (hover)"),
+                  chip("qh1","Algal Bloom (Chl-a)",
+                       "When there’s <b>a lot of algae</b>, water can turn green and fish find it harder to breathe."),
+                  chip("qh2","Clarity (NTU)",
+                       "Tells how <b>clear or cloudy</b> the water is. Cloudy water makes it hard to spot hazards."),
+                  chip("qh3","Oxygen (mg/L)",
+                       "Shows the <b>bubbles</b> sea animals need to breathe. More oxygen = happier fish."),
+                  chip("qh4","Nutrients (µg/L)",
+                       "Food for algae. <b>Too much</b> from drains can cause algae to grow quickly."),
+                  chip("qh5","Temperature (°C)",
+                       "<b>Very warm</b> water can stress wildlife and increase algae growth.")
+                )
+            )
+        ),
+        
+        # MAP
+        bslib::card(
+          full_screen = TRUE,
+          class="card-cute mb-3 position-relative",
+          card_header = tagList("Map - coloured pins show ocean health",
+                                span(class="ms-2 small text-muted", "(toggle Fun Map above)")),
+          div(id="mapwrap", style="position:relative;",
+              leafletOutput("map", height = 560),
+              div(class="map-wash", id="mapwash")
+          )
+        ),
+        
+        # LOWER PANELS (story + avatars rail + badges + insights)
+        div(class="grid-3",
+            
+            # Story card and avatar rail
+            bslib::card(class="card-cute position-relative",
+                        card_header=uiOutput("panel_title"),
+                        div(class="d-flex align-items-start gap-3",
+                            div(style="flex:1;", uiOutput("story_block")),
+                            div(style="width:96px; display:flex; flex-direction:column; gap:10px;",
+                                actionLink("meet_turtle",  label = HTML(avatar("turtle", 72)),  icon = NULL),
+                                actionLink("meet_dolphin", label = HTML(avatar("dolphin", 72)), icon = NULL),
+                                actionLink("meet_crab",    label = HTML(avatar("crab", 72)),    icon = NULL)
+                            )
+                        )
+            ),
+            
+            bslib::card(class="card-cute", card_header=uiOutput("badges_title"), uiOutput("badges")),
+            
+            bslib::card(class="card-cute", card_header="Short Reasons, Tips and Fun Fact", uiOutput("insights"))
+        )
     )
   )
-) # no footer
+)
 
 # ---------- server ----------
 server <- function(input, output, session){
   
-  # pick latest-on/before-date per site, preferring rows with Temperature
+  # Disclaimer
+  observeEvent(input$showDisc, {
+    showModal(modalDialog(
+      title = "Data and Safety",
+      HTML("This page simplifies water-quality information for children and families. ",
+           "Always follow local council and life-saving advice. Rain can change conditions quickly."),
+      easyClose = TRUE, footer = modalButton("Close")
+    ))
+  })
+  
+  # latest-on/before-date per site (prefer Temperature present)
   pick_latest_with_temp <- function(tbl){
     tbl <- tbl[order(tbl$date, decreasing=TRUE),]
     idx <- which(!is.na(tbl$Temperature))
@@ -230,8 +434,7 @@ server <- function(input, output, session){
         t = code_temp(Temperature),
         overall   = overall_code(a,c,o,n,t),
         color     = unname(code_to_color[overall]),
-        emoji     = unname(code_to_emoji[overall]),
-        label_txt = paste0(emoji, " ", site_name_short, " — ", unname(code_to_label[overall]))
+        label_txt = paste0(site_name_short, " - ", unname(code_to_label[overall]))
       )
   })
   
@@ -248,30 +451,27 @@ server <- function(input, output, session){
     pick_latest_with_temp(sub)
   })
   
-  # map (click pin => select site)
+  # MAP (reliable basemaps + zoom-on-click)
   output$map <- renderLeaflet({
     mdf <- map_data()
     validate(need(nrow(mdf) > 0, "No samples available on/before this date."))
     
-    if (!is.null(input$site) && input$site != "All sites" &&
-        nrow(mdf %>% filter(site_name_short == input$site)) == 1) {
-      r <- mdf %>% filter(site_name_short == input$site)
-      center_lat <- r$latitude[1]; center_lon <- r$longitude[1]; z <- 11
-    } else {
-      center_lat <- median(mdf$latitude); center_lon <- median(mdf$longitude); z <- 10
-    }
+    center_lat <- median(mdf$latitude)
+    center_lon <- median(mdf$longitude)
+    provider <- if (isTRUE(input$funmap)) providers$Esri.OceanBasemap else providers$CartoDB.Positron
     
-    leaflet(mdf) %>%
-      addProviderTiles(providers$CartoDB.Positron) %>%
-      setView(lng = center_lon, lat = center_lat, zoom = z) %>%
+    leaflet(mdf, options = leafletOptions(minZoom = 8, maxZoom = 16)) %>%
+      addProviderTiles(provider) %>%
+      setView(lng = center_lon, lat = center_lat, zoom = 10) %>%
+      addScaleBar(position = "bottomleft") %>%
       addCircleMarkers(
         lng=~longitude, lat=~latitude, radius=11,
-        color="#333333", weight=2, fillOpacity=0.95,
-        fillColor=~color, label=~label_txt, layerId=~site_name_short,
+        color="#222", weight=2, fillOpacity=0.95, fillColor=~color,
+        label=~label_txt, layerId=~site_name_short,
         popup=~paste0(
           "<b>", site_name_short, "</b><br/>", format(date, "%d %b %Y"), "<br/>",
-          "<span style='color:", color, "'>", emoji, " Overall: ", code_to_label[overall], "</span><br/>",
-          "<div style='opacity:.8'>",
+          "<span style='color:", color, "'>Overall: ", code_to_label[overall], "</span><br/>",
+          "<div style='opacity:.9'>",
           "Chl-a: ", ifelse(is.na(CHL_A),"–",sprintf('%.1f µg/L', CHL_A)), " · ",
           "NTU: ", ifelse(is.na(Turb),"–",sprintf('%.2f', Turb)), " · ",
           "DO: ", ifelse(is.na(DO_mg),"–",sprintf('%.1f mg/L', DO_mg)), "<br/>",
@@ -281,150 +481,177 @@ server <- function(input, output, session){
         )
       )
   })
+  
+  # Toggle map wash overlay
+  observe({ session$sendCustomMessage('toggleMapWash', list(show = isTRUE(input$funmap))) })
+  session$onFlushed(function() {
+    session$sendCustomMessage('toggleMapWash', list(show = TRUE))
+  }, once = TRUE)
+  
+  # Marker click: select site AND force zoom immediately
   observeEvent(input$map_marker_click, ignoreInit=TRUE, {
     id <- input$map_marker_click$id
-    if (!is.null(id) && id %in% all_sites) updateSelectInput(session, "site", selected=id)
+    if (!is.null(id) && id %in% all_sites) {
+      updateSelectInput(session, "site", selected=id)
+      mdf <- map_data(); req(nrow(mdf) > 0)
+      r <- mdf %>% dplyr::filter(site_name_short == id) %>% dplyr::slice(1)
+      leafletProxy("map") %>% setView(lng = r$longitude[1], lat = r$latitude[1], zoom = 12)
+    }
   })
   
-  # titles
+  # Auto-fit / auto-zoom on changes
+  observeEvent(list(input$site, input$date), {
+    mdf <- map_data(); req(nrow(mdf) > 0)
+    proxy <- leafletProxy("map", data = mdf)
+    if (!is.null(input$site) && input$site != "All sites" && any(mdf$site_name_short == input$site)) {
+      r <- mdf %>% dplyr::filter(site_name_short == input$site) %>% dplyr::slice(1)
+      proxy %>% setView(lng = r$longitude[1], lat = r$latitude[1], zoom = 12)
+    } else {
+      proxy %>% fitBounds(
+        lng1 = min(mdf$longitude, na.rm=TRUE), lat1 = min(mdf$latitude, na.rm=TRUE),
+        lng2 = max(mdf$longitude, na.rm=TRUE), lat2 = max(mdf$latitude, na.rm=TRUE)
+      )
+    }
+  }, ignoreInit = TRUE)
+  
+  # Reset
+  observeEvent(input$resetView, {
+    updateSelectInput(session, "site", selected = "All sites")
+    updateDateInput(session, "date", value = max_d)
+  })
+  
+  # TITLES
   output$panel_title <- renderUI({
     if (is.null(input$site) || input$site=="All sites")
-      HTML(paste0("<b>All sites</b> — ", format(as.Date(input$date), "%d %B %Y")))
+      HTML(paste0("<b>All sites</b> - ", format(as.Date(input$date), "%d %B %Y")))
     else {
       row <- current_row(); validate(need(!is.null(row) && nrow(row)==1, "No data for this site/date."))
       oc <- overall_code(code_algae(row$CHL_A), code_clarity(row$Turb),
                          code_oxygen(row$DO_mg), code_nutr(row$N_TOTAL), code_temp(row$Temperature))
-      HTML(paste0("<b>", row$site_name_short, "</b> — ", format(row$date, "%d %B %Y"),
-                  " &nbsp;&nbsp;<span style='color:", code_to_color[oc], "'>",
-                  code_to_emoji[oc], " ", code_to_label[oc], "</span>"))
+      HTML(paste0("<b>", row$site_name_short, "</b> - ", format(row$date, "%d %B %Y"),
+                  " &nbsp;<span style='color:", code_to_color[oc], "'>", code_to_label[oc], "</span>"))
     }
   })
   
-  # speech/summary
-  speech_text <- function(oc){
-    if (oc=="green") "“Yippee! The water looks great today — let’s go find fish!” 🐟"
-    else if (oc=="amber") "“Hmm… today needs a little care. Let’s choose a safe spot and be ocean kind.” 🌊"
-    else "“Uh-oh! Not the best for a splash — let’s help by keeping rubbish out of drains.” 🐧"
+  # STORY
+  make_story <- function(row){
+    oc <- overall_code(code_algae(row$CHL_A), code_clarity(row$Turb),
+                       code_oxygen(row$DO_mg), code_nutr(row$N_TOTAL), code_temp(row$Temperature))
+    opener <- if (oc=="green") "Splash-tastic today!"
+    else if (oc=="amber") "Look closely today - pick the clearest patch to paddle."
+    else "Better for sandcastles today - let the waves rest."
+    
+    p1 <- paste0("<b>Today’s Story:</b> ", opener,
+                 " The water here is checked with real tests. ",
+                 "We look at how clear it is, how many bubbles help fish breathe, how much algae there is, ",
+                 "and how warm the water feels.")
+    p2 <- paste0("<b>What it means right now:</b> ",
+                 "Clarity - ", kidline("Clarity", code_clarity(row$Turb)), " ",
+                 "Oxygen - ", kidline("Oxygen", code_oxygen(row$DO_mg)), " ",
+                 "Algae - ",  kidline("Algal Bloom", code_algae(row$CHL_A)), " ",
+                 "Temperature - ", kidline("Temperature", code_temp(row$Temperature)), ".")
+    p3 <- paste0("<b>Try this here:</b> bring a small clear jar and scoop some water. ",
+                 "Can you spot tiny bits or sand? If it looks cloudy, wait for a clearer day or walk the shore and count shells.")
+    p4 <- "<b>Be a Bay Helper:</b> use bins, keep soaps out of drains, and teach a friend one water fact today."
+    HTML(paste(p1, p2, p3, p4, sep = "<br/><br/>"))
   }
-  output$speech_or_summary <- renderUI({
+  
+  output$story_block <- renderUI({
     if (is.null(input$site) || input$site=="All sites") {
       mdf <- map_data()
       counts <- table(factor(mdf$overall, levels=c("green","amber","red")))
       best <- mdf %>% arrange(match(overall, c("green","amber","red")), desc(date)) %>% slice_head(n=3)
-      div(class="speech-bubble",
-          style="background:#fff;border:3px solid #333;border-radius:18px;padding:14px 16px;font-size:1.05rem;",
-          HTML(paste0(
-            "Today’s tally: ",
-            "<span style='color:",code_to_color['green'],"'>",code_to_emoji['green']," ",counts[['green']],"</span> · ",
-            "<span style='color:",code_to_color['amber'],"'>",code_to_emoji['amber']," ",counts[['amber']],"</span> · ",
-            "<span style='color:",code_to_color['red'],"'>",code_to_emoji['red']," ",counts[['red']],"</span><br/>",
-            "🏆 <b>Top spots:</b> ", paste(best$site_name_short, collapse=" • ")
-          )))
+      HTML(paste0(
+        "<b>Across the bay today</b> - ",
+        "<span style='color:",code_to_color['green'],"'>",counts[['green']],"</span> green, ",
+        "<span style='color:",code_to_color['amber'],"'>",counts[['amber']],"</span> amber, ",
+        "<span style='color:",code_to_color['red'],"'>",counts[['red']],"</span> red.<br/><br/>",
+        "<b>Where to explore:</b> ", paste(best$site_name_short, collapse=' • '), "<br/><br/>",
+        "<b>Idea:</b> pick a beach and compare its story with yesterday. What changed?"
+      ))
     } else {
-      row <- current_row(); validate(need(!is.null(row) && nrow(row)==1, "No data for this site/date."))
-      oc <- overall_code(code_algae(row$CHL_A), code_clarity(row$Turb),
-                         code_oxygen(row$DO_mg), code_nutr(row$N_TOTAL), code_temp(row$Temperature))
-      div(class="speech-bubble",
-          style="position:relative;background:#fff;border:3px solid #333;border-radius:18px;padding:14px 16px;font-size:1.05rem;",
-          speech_text(oc),
-          tags$div(style="position:absolute; left:15px; bottom:-18px; width:0; height:0;
-                        border-left:12px solid transparent;border-right:12px solid transparent;border-top:18px solid #333;"),
-          tags$div(style="position:absolute; left:15px; bottom:-14px; width:0; height:0;
-                        border-left:10px solid transparent;border-right:10px solid transparent;border-top:14px solid #fff;")
-      )
+      row <- current_row(); validate(need(!is.null(row) && nrow(row)==1, "No data."))
+      make_story(row)
     }
   })
   
-  # badges
-  output$badges_title <- renderUI({
-    if (is.null(input$site) || input$site=="All sites") "Legend — What the colours mean"
-    else "Today’s Ocean Health — Traffic Lights"
-  })
-  
-  badge_chip <- function(title, code, value_text=NULL){
-    pulse <- switch(code, green="pulse-green", amber="pulse-amber", red="pulse-red", "")
-    div(class="badge-chip",
-        div(style="font-size:1.6rem;line-height:1;", span(class=pulse, code_to_emoji[code])),
-        div(HTML(paste0("<b>",title,":</b> ",
-                        "<span style='color:",code_to_color[code],"'>",code_to_label[code],"</span>",
-                        if (!is.null(value_text)) paste0(" &nbsp;<span style='opacity:.6'>", value_text, "</span>") else ""))))
+  # BADGES
+  badge_chip <- function(title, code, value_text=NULL, icon=NULL){
+    div(class="d-flex align-items-center gap-2 my-1",
+        span(class=paste("badge-dot", switch(code, green="dot-green", amber="dot-amber", red="dot-red"))),
+        if (!is.null(icon)) span(style="color:#333;", icon_svg(icon)),
+        HTML(paste0("<b>",title,":</b> ",
+                    "<span style='color:",code_to_color[code],"'>",code_to_label[code],"</span>",
+                    if (!is.null(value_text)) paste0(" <span style='opacity:.7'>", value_text, "</span>") else "")))
   }
+  
+  output$badges_title <- renderUI({
+    if (is.null(input$site) || input$site=="All sites") "Legend - what colours mean"
+    else "Today’s traffic-light reasons"
+  })
   
   output$badges <- renderUI({
     if (is.null(input$site) || input$site=="All sites") {
       div(
-        badge_chip("Overall","green","Great for a splash!"),
-        badge_chip("Overall","amber","Take care, choose a clear spot."),
-        badge_chip("Overall","red","Better to wait for a clearer day.")
+        badge_chip("Overall","green","Good for a splash", "wave"),
+        badge_chip("Overall","amber","Take care", "wave"),
+        badge_chip("Overall","red","Try another day", "wave")
       )
     } else {
       row <- current_row(); validate(need(!is.null(row) && nrow(row)==1, "No data."))
       tagList(
         badge_chip("Algal Bloom", code_algae(row$CHL_A),
-                   paste0("Chl-a: ", ifelse(is.na(row$CHL_A),"–", sprintf('%.1f µg/L', row$CHL_A)))),
+                   paste0("Chl-a: ", ifelse(is.na(row$CHL_A),"–", sprintf('%.1f µg/L', row$CHL_A))), "wave"),
         badge_chip("Clarity", code_clarity(row$Turb),
-                   paste0("Turbidity: ", ifelse(is.na(row$Turb),"–", sprintf('%.2f NTU', row$Turb)))),
+                   paste0("Turbidity: ", ifelse(is.na(row$Turb),"–", sprintf('%.2f NTU', row$Turb))), "drop"),
         badge_chip("Oxygen", code_oxygen(row$DO_mg),
-                   paste0("DO: ", ifelse(is.na(row$DO_mg),"–", sprintf('%.1f mg/L', row$DO_mg)))),
+                   paste0("DO: ", ifelse(is.na(row$DO_mg),"–", sprintf('%.1f mg/L', row$DO_mg))), "fish"),
         badge_chip("Nutrients", code_nutr(row$N_TOTAL),
-                   paste0("Total N: ", ifelse(is.na(row$N_TOTAL),"–", sprintf('%.0f µg/L', row$N_TOTAL)))),
+                   paste0("Total N: ", ifelse(is.na(row$N_TOTAL),"–", sprintf('%.0f µg/L', row$N_TOTAL))), "leaf"),
         badge_chip("Temperature", code_temp(row$Temperature),
-                   paste0("Temp: ", ifelse(is.na(row$Temperature),"–", sprintf('%.1f °C', row$Temperature))))
+                   paste0("Temp: ", ifelse(is.na(row$Temperature),"–", sprintf('%.1f °C', row$Temperature))), "thermo")
       )
     }
   })
   
-  # insights
-  insight_bullet <- function(emoji, text) {
-    div(style="margin:6px 0; display:flex; gap:10px; align-items:flex-start;",
-        div(style="font-size:1.2rem; width:1.6rem; text-align:center;", emoji),
-        div(class="insight-line", text))
+  # INSIGHTS
+  insight_line <- function(icon_name, title, text){
+    div(class="my-1",
+        span(style="margin-right:6px;vertical-align:middle;", icon_svg(icon_name, 18)),
+        HTML(paste0("<b>", title, ":</b> ", text)))
   }
   
   make_insights_single <- function(row, prev){
     codes <- list(
-      algae = code_algae(row$CHL_A),
-      clar  = code_clarity(row$Turb),
-      oxy   = code_oxygen(row$DO_mg),
-      nutr  = code_nutr(row$N_TOTAL),
+      algae = code_algae(row$CHL_A), clar  = code_clarity(row$Turb),
+      oxy   = code_oxygen(row$DO_mg), nutr  = code_nutr(row$N_TOTAL),
       temp  = code_temp(row$Temperature)
     )
-    bullets <- list(
-      insight_bullet("👁️",  kidline("Clarity", codes$clar)),
-      insight_bullet("🫧",  kidline("Oxygen",  codes$oxy)),
-      insight_bullet("🌱",  kidline("Nutrients", codes$nutr)),
-      insight_bullet("🧪",  kidline("Algal Bloom", codes$algae)),
-      insight_bullet("🌡️", kidline("Temperature", codes$temp))
+    tagList(
+      insight_line("drop",  "Can we see clearly?", kidline("Clarity", codes$clar)),
+      insight_line("fish",  "Can fish breathe well?", kidline("Oxygen",  codes$oxy)),
+      insight_line("leaf",  "Is there too much 'food' for algae?", kidline("Nutrients", codes$nutr)),
+      insight_line("wave",  "Are algae quiet or busy?", kidline("Algal Bloom", codes$algae)),
+      insight_line("thermo","How warm is the water?", kidline("Temperature", codes$temp)),
+      tags$hr(),
+      HTML("<b>Be a Bay Helper:</b> use bins, keep soaps out of drains, and share one new water fact today."),
+      div(class="mt-2 p-2 rounded", style="background:#f2f8ff;border:2px dashed #1a7bd6;",
+          HTML("<b>Fun fact:</b> <span id='funfacts'>Seahorses are fish that swim upright!</span>"))
     )
-    if (nrow(prev)==1) {
-      t_ntu <- trend_arrow(row$Turb, prev$Turb, TRUE)
-      t_chl <- trend_arrow(row$CHL_A, prev$CHL_A, TRUE)
-      t_do  <- trend_arrow(row$DO_mg, prev$DO_mg, FALSE)
-      t_tn  <- trend_arrow(row$N_TOTAL, prev$N_TOTAL, TRUE)
-      t_tc  <- trend_arrow(row$Temperature, prev$Temperature, NA)
-      trends <- c(
-        if(nchar(t_ntu)) paste0("Clarity: ", t_ntu),
-        if(nchar(t_chl)) paste0("Algae: ",   t_chl),
-        if(nchar(t_do))  paste0("Oxygen: ",  t_do),
-        if(nchar(t_tn))  paste0("Nutrients: ", t_tn),
-        if(nchar(t_tc))  paste0("Temp: ",    t_tc)
-      )
-      if (length(trends)) bullets <- append(bullets, list(
-        insight_bullet("📈", paste(trends, collapse = "  •  "))
-      ))
-    }
-    tagList(bullets)
   }
   
   make_insights_all <- function(mdf){
     counts <- table(factor(mdf$overall, levels=c("green","amber","red")))
     best <- mdf %>% arrange(match(overall, c("green","amber","red")), desc(date)) %>% slice_head(n=3)
     tagList(
-      insight_bullet("🗺️", paste0("We checked ", nrow(mdf), " beaches today.")),
-      insight_bullet("🏅", paste0("Top spots: ", paste(best$site_name_short, collapse=" • "), ".")),
-      insight_bullet(code_to_emoji["green"], paste0(counts[["green"]], " places look great for a splash!")),
-      insight_bullet(code_to_emoji["amber"], paste0(counts[["amber"]], " places need a little care.")),
-      insight_bullet(code_to_emoji["red"],   paste0(counts[["red"]],   " places might be better another day."))
+      insight_line("wave","What we checked", paste0(nrow(mdf), " beaches today.")),
+      insight_line("fish","Great right now", paste0(counts[["green"]], " beaches look friendly.")),
+      insight_line("leaf","Needs care",       paste0(counts[["amber"]], " beaches need careful choices.")),
+      insight_line("drop","Try later",        paste0(counts[["red"]], " beaches might be better another day.")),
+      tags$hr(),
+      HTML("<b>After rain:</b> wait a day before swimming - drains can carry dirty water into the bay."),
+      div(class="mt-2 p-2 rounded", style="background:#f2f8ff;border:2px dashed #1a7bd6;",
+          HTML("<b>Fun fact:</b> <span id='funfacts'>Clear water helps you spot shells and crabs!</span>"))
     )
   }
   
@@ -437,7 +664,7 @@ server <- function(input, output, session){
     }
   })
   
-  # 🎉 CONFETTI when overall rating improves vs previous sample
+  # 🎉 CONFETTI
   observe({
     if (is.null(input$site) || input$site=="All sites") return()
     row  <- current_row(); if (is.null(row) || nrow(row)!=1) return()
@@ -448,7 +675,25 @@ server <- function(input, output, session){
                               code_oxygen(row$DO_mg), code_nutr(row$N_TOTAL), code_temp(row$Temperature))
     prev_code <- overall_code(code_algae(prev$CHL_A), code_clarity(prev$Turb),
                               code_oxygen(prev$DO_mg), code_nutr(prev$N_TOTAL), code_temp(prev$Temperature))
-    if (score[[now_code]] > score[[prev_code]]) session$sendCustomMessage("confetti", list(n=140))
+    if (score[[now_code]] > score[[prev_code]] || now_code=="green")
+      session$sendCustomMessage("confetti", list(n = if (now_code=="green") 170 else 130))
+  })
+  
+  # Avatar fun-fact modals
+  observeEvent(input$meet_turtle, {
+    showModal(modalDialog(title="Turtle says",
+                          "I love clear water - it helps me find jellyfish snacks!",
+                          easyClose=TRUE, footer = modalButton("Close")))
+  })
+  observeEvent(input$meet_dolphin, {
+    showModal(modalDialog(title="Dolphin says",
+                          "We breathe air like you - clean water makes hunting easier!",
+                          easyClose=TRUE, footer = modalButton("Close")))
+  })
+  observeEvent(input$meet_crab, {
+    showModal(modalDialog(title="Crab says",
+                          "Cloudy water makes me hide - I like sandy spots!",
+                          easyClose=TRUE, footer = modalButton("Close")))
   })
 }
 
