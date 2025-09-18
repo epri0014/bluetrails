@@ -53,11 +53,7 @@
     <!-- Left: Ocean Hero scene + bubble -->
     <section class="left character">
       <div id="sceneHost" class="scene-host" aria-label="ocean hero scene"></div>
-      <div class="scene-controls">
-        <button id="prevScene" class="btn small">⟵</button>
-        <span class="pill">Ocean Hero Scene</span>
-        <button id="nextScene" class="btn small">⟶</button>
-      </div>
+      <!-- Removed scene-controls with arrows and label -->
       <div class="bubble" id="bubble">Let’s go! Sort the trash!</div>
       <div class="hint">Drop items into the correct bin ⤵</div>
     </section>
@@ -142,9 +138,9 @@
   </main>
 
   <!-- External JS modules -->
-    <script type="module" src="./data.js"></script>
-    <script type="module" src="./sfx.js"></script>
-    <script type="module" src="./scenes.js"></script>
-    <script type="module" src="./game.js"></script>
+  <script type="module" src="./data.js"></script>
+  <script type="module" src="./sfx.js"></script>
+  <script type="module" src="./scenes.js"></script>
+  <script type="module" src="./game.js"></script>
 </body>
 </html>
