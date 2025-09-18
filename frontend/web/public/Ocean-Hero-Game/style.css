@@ -200,3 +200,22 @@ h1 { margin: 0; font-size: 20px }
 .btn:active { transform:translateY(1px) }
 .medal { font-size:48px; filter: drop-shadow(0 4px 0 rgba(0,0,0,.15)); }
 .summary { font-weight:900; margin:8px 0 14px }
+
+/* 悬浮音乐按钮（覆盖 overlay） */
+.music-fab{
+  position: fixed;
+  top: 14px;
+  right: 120px;              /* 可按需要调整，避免挡到 Restart */
+  z-index: 1000;             /* 比 overlay 的 10 高很多 */
+  background:#475569;        /* 关：灰色 */
+  border-color:#1f2937;
+  box-shadow:0 6px 0 #1f2937;
+  font-weight:900;
+  padding:8px 14px;
+}
+
+.music-fab.music-on{
+  background:#10b981;        /* 开：绿色 */
+  border-color:#0b7a5e;
+  box-shadow:0 6px 0 #0b7a5e;
+}

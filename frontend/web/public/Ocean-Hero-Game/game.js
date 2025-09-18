@@ -7,58 +7,107 @@ import { SCENES } from './scenes.js';
 import { sfx } from './sfx.js';
 
 // ---------- DOM references ----------
-const scoreEl = document.getElementById('score');
-const timeEl  = document.getElementById('time');
-const trayEl  = document.getElementById('tray');
-const bubble  = document.getElementById('bubble');
-const resetBtn= document.getElementById('reset');
+const scoreEl   = document.getElementById('score');
+const timeEl    = document.getElementById('time');
+const trayEl    = document.getElementById('tray');
+const bubble    = document.getElementById('bubble');
+const resetBtn  = document.getElementById('reset');
 
 const startOverlay = document.getElementById('startOverlay');
 const endOverlay   = document.getElementById('endOverlay');
 const btnStart     = document.getElementById('btnStart');
 const btnAgain     = document.getElementById('btnAgain');
-const btnClose     = document.getElementById('btnClose');
-const endTitle     = document.getElementById('endTitle');
-const finalScore   = document.getElementById('finalScore');
-const medalBlock   = document.getElementById('medalBlock');
-const medalEmoji   = document.getElementById('medalEmoji');
-const medalText    = document.getElementById('medalText');
-const badgeChip    = document.getElementById('badgeChip');
-const badgeName    = document.getElementById('badgeName');
-const badgeEmoji   = document.getElementById('badgeEmoji');
+const btnExit      = document.getElementById('btnExit') || document.getElementById('btnClose');
 
-// ---------- Ocean Hero scenes (random on load; arrows to switch) ----------
+const endTitle   = document.getElementById('endTitle');
+const finalScore = document.getElementById('finalScore');
+const medalBlock = document.getElementById('medalBlock');
+const medalEmoji = document.getElementById('medalEmoji');
+const medalText  = document.getElementById('medalText');
+const badgeChip  = document.getElementById('badgeChip');
+const badgeName  = document.getElementById('badgeName');
+const badgeEmoji = document.getElementById('badgeEmoji');
+
+// ---------- Background music (two linked buttons) ----------
+const bgMusic = document.getElementById('bgMusic');
+const musicButtons = Array.from(document.querySelectorAll('.js-music-toggle'));
+
+// 默认静音（false）；读取本地偏好
+let musicOn = localStorage.getItem('jj_music_on') === 'true';
+
+function persistMusicPref() {
+  localStorage.setItem('jj_music_on', String(musicOn));
+}
+
+function playMusic() {
+  if (!bgMusic) return;
+  try {
+    if (bgMusic.paused) bgMusic.currentTime = 0;
+    const p = bgMusic.play();
+    if (p && typeof p.then === 'function') p.catch(() => {});
+  } catch {
+    /* ignore */
+  }
+}
+
+function pauseMusic() {
+  if (!bgMusic) return;
+  bgMusic.pause();
+}
+
+// 反转样式：
+//   - 静音 (musicOn=false)  => 绿色 + 🔊 Music
+//   - 播放 (musicOn=true)   => 灰色 + 🔇 Music
+function refreshMusicButtonsUI() {
+  musicButtons.forEach(btn => {
+    btn.textContent = musicOn ? '🔇 Music' : '🔊 Music';
+    if (musicOn) {
+      btn.style.background  = '#475569';    // gray
+      btn.style.borderColor = '#1f2937';
+      btn.style.boxShadow   = '0 6px 0 #1f2937';
+      btn.style.color       = '#fff';
+    } else {
+      btn.style.background  = '#10b981';    // green
+      btn.style.borderColor = '#0b7a5e';
+      btn.style.boxShadow   = '0 6px 0 #0b7a5e';
+      btn.style.color       = '#fff';
+    }
+  });
+}
+refreshMusicButtonsUI();
+
+musicButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    musicOn = !musicOn;            // toggle
+    persistMusicPref();
+    refreshMusicButtonsUI();
+    if (musicOn) playMusic();
+    else pauseMusic();
+  });
+});
+
+// ---------- Ocean Hero scenes ----------
 let sceneIdx = Math.floor(Math.random() * SCENES.length);
 const sceneHost = document.getElementById('sceneHost');
-
-function renderScene(i){
-  sceneHost.innerHTML = SCENES[i];
-}
+function renderScene(i){ sceneHost.innerHTML = SCENES[i]; }
 renderScene(sceneIdx);
 
-// Optional scene switch controls (safe-guard if buttons are removed)
+// 可选左右键（容错）
 const prevBtn = document.getElementById('prevScene');
 const nextBtn = document.getElementById('nextScene');
 if (prevBtn && nextBtn){
-  prevBtn.onclick = () => {
-    sceneIdx = (sceneIdx + SCENES.length - 1) % SCENES.length;
-    renderScene(sceneIdx);
-  };
-  nextBtn.onclick = () => {
-    sceneIdx = (sceneIdx + 1) % SCENES.length;
-    renderScene(sceneIdx);
-  };
+  prevBtn.onclick = () => { sceneIdx = (sceneIdx + SCENES.length - 1) % SCENES.length; renderScene(sceneIdx); };
+  nextBtn.onclick = () => { sceneIdx = (sceneIdx + 1) % SCENES.length; renderScene(sceneIdx); };
 }
 
 // ---------- Game state ----------
 let items = [];
 let score = 0;
-let remainingTime = 90;     // 90 seconds
+let remainingTime = 90;
 let timerId = null;
 let running = false;
 let bestBadge = null;
 
-// Small utility to shuffle an array in-place (sufficient for casual game)
 const shuffle = arr => arr.sort(() => Math.random() - 0.5);
 
 // ---------- UI helpers ----------
@@ -66,7 +115,6 @@ function setBubble(msg, kind){
   bubble.classList.remove('good','bad','show');
   if(kind) bubble.classList.add(kind);
   bubble.textContent = msg;
-  // force reflow to restart CSS animation
   void bubble.offsetWidth;
   bubble.classList.add('show');
   setTimeout(() => bubble.classList.remove('show'), 2200);
@@ -120,14 +168,12 @@ function setupBins(){
       const card = trayEl.querySelector(`[data-id="${data.id}"]`);
       if(!card) return;
 
-      // One try per item: remove the card regardless of correctness
       const correct = data.type === bin.dataset.type;
 
       if(correct){
         score += 20;
         scoreEl.textContent = score;
         sfx.correct();
-
         const facts = {
           paper:  "Paper and card can be recycled into new paper.",
           mpg:    "Metal/Plastic/Glass can be recycled again and again.",
@@ -137,7 +183,6 @@ function setupBins(){
         setBubble('✅ ' + (facts[bin.dataset.type] || 'Correct!'), 'good');
         updateBadge();
       }else{
-        // Deduct but never below zero
         score = Math.max(0, score - 10);
         scoreEl.textContent = score;
         setBubble('❌ Oops! One try only—watch the label!', 'bad');
@@ -146,13 +191,11 @@ function setupBins(){
         setTimeout(()=>bin.classList.remove('shake'), 300);
       }
 
-      // Remove visual card and from state
       card.style.transform = 'scale(.9)';
       card.style.opacity = '.3';
       setTimeout(() => card.remove(), 90);
       items = items.filter(x => x.id !== data.id);
 
-      // End early if everything is sorted
       if(items.length === 0){
         running = false;
         clearInterval(timerId);
@@ -206,6 +249,9 @@ function showEnd(title){
   medalText.textContent = text;
   endTitle.textContent = title || 'Time’s Up!';
   endOverlay.classList.remove('hide');
+
+  // 结束时不强制改状态，只暂停播放
+  pauseMusic();
 }
 
 function hideOverlays(){
@@ -218,7 +264,6 @@ function startGame(){
   score = 0; scoreEl.textContent = '0';
   remainingTime = 90; timeEl.textContent = remainingTime;
 
-  // One-shot pool: do not refill after items are gone
   items = shuffle([...POOL]);
 
   bestBadge = null;
@@ -231,13 +276,33 @@ function startGame(){
   running = true;
   startTimer();
   sfx.start();
+
+  // 开始时若开关为开，则播放
+  if (musicOn) playMusic();
 }
 
 // ---------- Wire up UI events ----------
 btnStart.addEventListener('click', () => { hideOverlays(); startGame(); });
-resetBtn.addEventListener('click', startGame);
-btnAgain.addEventListener('click', () => { endOverlay.classList.add('hide'); startGame(); });
-btnClose.addEventListener('click', () => { endOverlay.classList.add('hide'); startOverlay.classList.remove('hide'); });
+
+resetBtn.addEventListener('click', () => {
+  // 重置：照开关状态决定是否播放（先停，再按状态播放）
+  pauseMusic();
+  startGame();
+  if (musicOn) playMusic();
+});
+
+btnAgain.addEventListener('click', () => {
+  endOverlay.classList.add('hide');
+  startGame();
+  if (musicOn) playMusic();
+});
+
+if (btnExit) {
+  btnExit.addEventListener('click', () => {
+    pauseMusic();
+    window.location.href = "/";
+  });
+}
 
 // Initialize drag-and-drop targets
 setupBins();

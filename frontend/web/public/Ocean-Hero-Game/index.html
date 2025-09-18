@@ -4,13 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Junk Jumble — Ocean Hero Beach Cleanup</title>
-  <!-- External CSS -->
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <!-- Header with HUD -->
+  <!-- Header HUD -->
   <header>
     <h1>Junk Jumble — Beach Cleanup</h1>
+
     <div id="hud">
       <div class="chip">Score: <span id="score">0</span></div>
       <div class="chip">Time: <span id="time">90</span>s</div>
@@ -18,7 +18,14 @@
         Badge: <span id="badgeName"></span> <span id="badgeEmoji"></span>
       </div>
     </div>
-    <button id="reset">Restart</button>
+
+    <!-- 右侧控件：音乐开关（游戏中可用）+ Restart -->
+    <div style="display:flex; gap:10px; align-items:center">
+      <button id="musicToggleHeader" class="btn js-music-toggle" aria-label="Toggle background music">
+        🔊 Music
+      </button>
+      <button id="reset">Restart</button>
+    </div>
   </header>
 
   <!-- Start overlay -->
@@ -28,7 +35,14 @@
       <p class="summary">Drag each item into the correct bin. <b>One try per item!</b></p>
       <p style="margin:8px 0 16px">Scoring: +20 correct · −10 wrong (not below 0) · <b>90s</b> timer</p>
       <div style="margin-bottom:14px">Badges: 🥉 60+ · 🥈 90+ · 🥇 120+</div>
-      <button id="btnStart" class="btn">🎮 Let’s Go!</button>
+
+      <div style="display:flex; justify-content:center; gap:12px; margin-top:12px">
+        <!-- Overlay 里的音乐按钮 -->
+        <button id="musicToggle" class="btn js-music-toggle" aria-label="Toggle background music">
+          🔊 Music
+        </button>
+        <button id="btnStart" class="btn">🎮 Let’s Go!</button>
+      </div>
     </div>
   </div>
 
@@ -43,22 +57,21 @@
       </div>
       <div style="margin-top:16px; display:flex; gap:10px; justify-content:center">
         <button id="btnAgain" class="btn">🔁 Play Again</button>
-        <button id="btnClose" class="btn" style="background:#228be6; border-color:#1b6ac0; box-shadow:0 6px 0 #1b6ac0">✅ OK</button>
+        <button id="btnExit" class="btn" style="background:#228be6; border-color:#1b6ac0; box-shadow:0 6px 0 #1b6ac0">
+          🚪 Exit
+        </button>
       </div>
     </div>
   </div>
 
   <!-- Main stage -->
   <main class="stage" aria-live="polite">
-    <!-- Left: Ocean Hero scene + bubble -->
     <section class="left character">
       <div id="sceneHost" class="scene-host" aria-label="ocean hero scene"></div>
-      <!-- Removed scene-controls with arrows and label -->
       <div class="bubble" id="bubble">Let’s go! Sort the trash!</div>
       <div class="hint">Drop items into the correct bin ⤵</div>
     </section>
 
-    <!-- Right: draggable items + bins -->
     <section class="right">
       <div class="titlebar">
         <div>Beach Finds</div><div class="pill">Drag & Drop</div>
@@ -136,6 +149,9 @@
       </div>
     </section>
   </main>
+
+  <!-- 背景音乐（与 index.html 同级的 mp3） -->
+  <audio id="bgMusic" src="./Oceanhero.mp3" loop></audio>
 
   <!-- External JS modules -->
   <script type="module" src="./data.js"></script>
