@@ -1,4 +1,4 @@
-# ====================== app.R (Two Regions + Region Zoom + Bottom Quick Help) ======================
+# ====================== app.R (Two Regions + Region Zoom + Bottom Quick Help + Clickable Pins) ======================
 # ---------- paths ----------
 suppressWarnings({
   app_dir <- tryCatch({
@@ -379,7 +379,7 @@ ui <- bslib::page_navbar(
   bslib::nav_panel(
     "Explore",
     div(class="container-lg pt-2",
-        # Intro (kept)
+        # Intro
         div(class="card-cute mb-2",
             tags$div(style="font-weight:900; font-size:1.35rem;", "Ocean Heroes - Find today’s best splash spots!"),
             HTML("
@@ -388,7 +388,7 @@ ui <- bslib::page_navbar(
               with clarity, bubbles, algae, and temperature.</p>
             ")
         ),
-        # Main two-column layout (unchanged)
+        # Main two-column layout
         div(class="top-grid",
             # LEFT: Map + Insights
             div(
@@ -400,7 +400,7 @@ ui <- bslib::page_navbar(
                           uiOutput("insights")
               )
             ),
-            # RIGHT: Pickers + Story (no Quick Help here anymore)
+            # RIGHT: Pickers + Story
             div(class="rightcol",
                 bslib::card(class="card-cute", id="pickCard",
                             div(class="big-step","Pick a region"),
@@ -421,9 +421,9 @@ ui <- bslib::page_navbar(
                 )
             )
         ),
-        # ---- BOTTOM: Quick Help (collapsible, like your screenshot) ----
+        # ---- BOTTOM: Quick Help (collapsible) ----
         div(class="mt-3", id="quickHelpBottom",
-            tags$details(class="quickhelp", open=NA,  # collapsed by default
+            tags$details(class="quickhelp", open=NA,
                          tags$summary(HTML("🌎 Quick Help for Kids")),
                          div(class="qh-line", HTML("🌿 <b>Algae</b> - Tiny plants. A little is okay - <i>too much</i> makes fish tired.")),
                          div(class="qh-line", HTML("👀 <b>Clarity</b> - Clear like a window is best. Cloudy like lemonade? Look first.")),
@@ -549,7 +549,6 @@ server <- function(input, output, session){
         row <- pick_latest_with_temp(sub)
         codes <- list(a=code_algae(row$CHL_A), c=code_clarity(row$Turb), o=code_oxygen(row$DO_mg),
                       n=code_nutr(row$N_TOTAL), t=code_temp(row$Temperature))
-        # fixed typo here:
         if (overall_code(codes$a,codes$c,codes$o,codes$n,codes$t)=="green") celebrate_safe()
       }
     }
@@ -608,9 +607,12 @@ server <- function(input, output, session){
     r <- current_row(); if (is.null(r)) return(NULL); prev_row(r$site_name_short[1], r$date[1])
   })
   
-  # map
+  # -------- map (with panes) --------
   output$map <- renderLeaflet({
     leaflet(options = leafletOptions(minZoom=7, maxZoom=16)) %>%
+      addMapPane("regions", zIndex = 410) %>%
+      addMapPane("region-labels", zIndex = 420) %>%
+      addMapPane("site-markers", zIndex = 630) %>%
       addProviderTiles(providers$Esri.OceanBasemap)
   })
   
@@ -646,7 +648,7 @@ server <- function(input, output, session){
     regions_present <- sort(unique(c(mdf$region, names(polys))))
     proxy <- add_dynamic_legends(proxy, regions_present)
     
-    # polygons (selected region stands out)
+    # polygons (selected region stands out) -> in "regions" pane
     for (nm in names(polys)){
       poly <- polys[[nm]]
       if (!is.null(poly) && nrow(poly) > 2){
@@ -656,11 +658,12 @@ server <- function(input, output, session){
           fillColor = region_fills[[nm]], fillOpacity = if (sel) 0.45 else 0.18,
           color = if (sel) "#000" else region_border, weight = if (sel) 3 else 2, opacity = 0.9,
           layerId = paste0("poly_", nm), group = nm,
-          highlightOptions = highlightOptions(weight = 3, color = "#000", fillOpacity = 0.5, bringToFront = TRUE)
+          options = pathOptions(pane = "regions"),
+          highlightOptions = highlightOptions(weight = 3, color = "#000", fillOpacity = 0.5, bringToFront = FALSE)
         )
       }
     }
-    # region name labels (centroid)
+    # region name labels (centroid) -> in "region-labels" pane, pointer-events none
     if (length(cents)){
       lab_lng <- sapply(cents, `[[`, "lon")
       lab_lat <- sapply(cents, `[[`, "lat")
@@ -669,25 +672,28 @@ server <- function(input, output, session){
         lng = lab_lng, lat = lab_lat, label = lab_txt, group = "region_labels",
         labelOptions = labelOptions(noHide = TRUE, direction = "center",
                                     textsize = "14px", textOnly = TRUE,
-                                    style = list("font-weight"="900","color"="#083344",
-                                                 "text-shadow"="0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff"))
+                                    style = list("font-weight"="900","color"="#083344","pointer-events"="none",
+                                                 "text-shadow"="0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff")),
+        options = pathOptions(pane = "region-labels")
       )
     }
     
-    # markers
+    # markers -> in "site-markers" pane
     if (nrow(mdf)>0){
       if (!is.null(rv$site_sel) && rv$site_sel != "All sites" && any(mdf$site_name_short==rv$site_sel)) {
         sel <- mdf %>% dplyr::filter(site_name_short == rv$site_sel) %>% dplyr::slice(1)
         proxy %>% addCircleMarkers(
           lng=sel$longitude, lat=sel$latitude, radius=15,
           color="#222", weight=2, fillOpacity=0.96, fillColor=sel$color,
-          label=sel$label_txt, popup=sel$popup_txt, layerId=sel$site_name_short, group=sel$region
+          label=sel$label_txt, popup=sel$popup_txt, layerId=sel$site_name_short, group=sel$region,
+          options = pathOptions(pane = "site-markers")
         ) %>% setView(lng=sel$longitude, lat=sel$latitude, zoom=11)
       } else {
         proxy %>% addCircleMarkers(
           lng=mdf$longitude, lat=mdf$latitude, radius=12,
           color="#222", weight=2, fillOpacity=0.95, fillColor=mdf$color,
-          label=mdf$label_txt, popup=mdf$popup_txt, layerId=mdf$site_name_short, group=mdf$region
+          label=mdf$label_txt, popup=mdf$popup_txt, layerId=mdf$site_name_short, group=mdf$region,
+          options = pathOptions(pane = "site-markers")
         ) %>% fitBounds(
           lng1=min(mdf$longitude, na.rm=TRUE), lat1=min(mdf$latitude, na.rm=TRUE),
           lng2=max(mdf$longitude, na.rm=TRUE), lat2=max(mdf$latitude, na.rm=TRUE)
@@ -737,16 +743,34 @@ server <- function(input, output, session){
     clarity_score <- ifelse(is.na(p_clear), NA_real_, 100 - p_clear)
     oxygen_score  <- p_oxy
     algae_score   <- ifelse(is.na(p_chl), NA_real_, 100 - p_chl)
-    
-    clarity_line <- band_phrase(clarity_score, "One of the clearest today", "Clearer than most nearby", "About average clarity", "A bit cloudier than most", "One of the cloudiest today")
-    oxygen_line  <- band_phrase(oxygen_score,  "Bubbles near the top", "More bubbles than most", "About average bubbles", "Fewer bubbles than most", "Very low bubbles today")
-    algae_line   <- band_phrase(algae_score,   "Less algae than almost anywhere", "Less algae than most", "About average algae", "More algae than most", "Algae is high today")
     temp_line <- if (!is.na(p_temp)) {
       if (p_temp >= 85) "One of the warmer spots"
       else if (p_temp >= 70) "Warmer than most"
       else if (p_temp >= 40 && p_temp <= 60) "About mid temperature"
       else if (p_temp >= 25) "On the cooler side"
       else "One of the cooler spots"
+    } else NULL
+    
+    clarity_line <- if (!is.na(clarity_score)) {
+      if (clarity_score >= 85) "One of the clearest today"
+      else if (clarity_score >= 70) "Clearer than most nearby"
+      else if (clarity_score >= 45) "About average clarity"
+      else if (clarity_score >= 25) "A bit cloudier than most"
+      else "One of the cloudiest today"
+    } else NULL
+    oxygen_line <- if (!is.na(oxygen_score)) {
+      if (oxygen_score >= 85) "Bubbles near the top"
+      else if (oxygen_score >= 70) "More bubbles than most"
+      else if (oxygen_score >= 45) "About average bubbles"
+      else if (oxygen_score >= 25) "Fewer bubbles than most"
+      else "Very low bubbles today"
+    } else NULL
+    algae_line <- if (!is.na(algae_score)) {
+      if (algae_score >= 85) "Less algae than almost anywhere"
+      else if (algae_score >= 70) "Less algae than most"
+      else if (algae_score >= 45) "About average algae"
+      else if (algae_score >= 25) "More algae than most"
+      else "Algae is high today"
     } else NULL
     
     codes <- list(a = code_algae(row$CHL_A), c = code_clarity(row$Turb), o = code_oxygen(row$DO_mg),
