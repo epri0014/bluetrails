@@ -429,15 +429,15 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 .drawer{
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
-  z-index: 999;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(15px);
+  z-index: 1001;
   display: flex;
   justify-content: flex-end;
 }
 
 .panel{
-  background: linear-gradient(135deg, rgba(14, 165, 233, 0.95) 0%, rgba(6, 182, 212, 0.95) 100%);
+  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
   backdrop-filter: blur(20px);
   width: min(320px, 85vw);
   height: 100%;
@@ -445,7 +445,8 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   display: flex;
   flex-direction: column;
   gap: 16px;
-  border-left: 2px solid rgba(255, 255, 255, 0.2);
+  border-left: 4px solid rgba(255, 255, 255, 0.6);
+  box-shadow: -15px 0 40px rgba(14, 165, 233, 0.5);
 }
 
 .close{
@@ -476,15 +477,19 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   font-size: 16px;
   padding: 16px 20px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
   transition: all .3s ease;
+  text-shadow: 0 2px 6px rgba(0,0,0,.8);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .dlink:hover{
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.4);
   transform: translateX(8px);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 .dlink .icon{
@@ -512,15 +517,19 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 .mobile-language-selector .language-selector .language-select {
   width: 100%;
   min-width: auto;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.4);
   font-size: 14px;
   padding: 12px 16px;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .mobile-language-selector .language-selector .language-select:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 @media (max-width: 920px){
