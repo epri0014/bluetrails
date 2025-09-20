@@ -535,6 +535,81 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 @media (max-width: 920px){
   .links{ display: none; }
   .hamburger{ display: inline-grid; place-items: center; }
+
+  /* Mobile navbar styling matching NewHomeView theme */
+  .dlink {
+    color: #1e293b !important;
+    background: linear-gradient(135deg, #fff 0%, #f8fafc 100%) !important;
+    border: 3px solid #40E0D0 !important;
+    text-shadow: none !important;
+    font-weight: 700 !important;
+    box-shadow: 0 8px 25px rgba(64, 224, 208, 0.3) !important;
+  }
+
+  .dlink:hover {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+    color: #fff !important;
+    border-color: #f59e0b !important;
+    transform: translateY(-2px) translateX(8px) !important;
+    box-shadow: 0 12px 35px rgba(251, 191, 36, 0.4) !important;
+  }
+
+  .dlink .icon {
+    color: #40E0D0 !important;
+    filter: none !important;
+    transition: color 0.3s ease !important;
+  }
+
+  .dlink:hover .icon {
+    color: #fff !important;
+  }
+
+  .close {
+    background: linear-gradient(135deg, #fff 0%, #f8fafc 100%) !important;
+    color: #1e293b !important;
+    border: 3px solid #40E0D0 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 8px 25px rgba(64, 224, 208, 0.3) !important;
+  }
+
+  .close:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+    color: #fff !important;
+    border-color: #dc2626 !important;
+    box-shadow: 0 12px 35px rgba(220, 38, 38, 0.4) !important;
+  }
+
+  /* Language selector matching the same theme */
+  .mobile-language-selector .language-selector .language-select {
+    background: linear-gradient(135deg, #fff 0%, #f8fafc 100%) !important;
+    color: #1e293b !important;
+    border: 3px solid #40E0D0 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 8px 25px rgba(64, 224, 208, 0.3) !important;
+    border-radius: 16px !important;
+    padding: 16px 20px !important;
+    font-size: 16px !important;
+  }
+
+  .mobile-language-selector .language-selector .language-select:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%) !important;
+    color: #fff !important;
+    border-color: #7c3aed !important;
+    box-shadow: 0 12px 35px rgba(124, 58, 237, 0.4) !important;
+  }
+
+  .mobile-language-selector .language-selector .language-select option {
+    background: #fff !important;
+    color: #1e293b !important;
+    padding: 8px 12px !important;
+  }
+
+  /* Panel styling to match ocean theme */
+  .panel {
+    background: linear-gradient(135deg, #008B8B 0%, #20B2AA 50%, #40E0D0 100%) !important;
+    border-left: 4px solid #fbbf24 !important;
+    box-shadow: -15px 0 40px rgba(64, 224, 208, 0.3) !important;
+  }
 }
 
 </style>
