@@ -87,29 +87,35 @@
     <div v-if="open" class="drawer" @click.self="open = false">
       <nav class="panel" aria-label="Mobile">
         <button class="close" @click="open = false" aria-label="Close">×</button>
+
+        <!-- Mobile Language Selector -->
+        <div class="mobile-language-selector">
+          <LanguageSelector />
+        </div>
+
         <RouterLink class="dlink" to="/animals" @click="open=false; resetNavbarStates()">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c.64.16 1.31.26 2 .26s1.36-.1 2-.26V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm-2 7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm4 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
           </svg>
-          <span>Meet Our Ocean Friends</span>
+          <span>{{ $t('nav.meetOceanFriends') }}</span>
         </RouterLink>
         <RouterLink class="dlink" to="/water" @click="open=false; resetNavbarStates()">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2S6.5 8 6.5 14c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5C17.5 8 12 2 12 2z"/>
           </svg>
-          <span>Visit Ocean Friends Home</span>
+          <span>{{ $t('nav.visitOceanHome') }}</span>
         </RouterLink>
         <RouterLink class="dlink" to="/game" @click="open=false">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M17.5 7c-1.66 0-3 1.34-3 3 0 .35.07.69.18 1H16v2h-1.32c-.11.31-.18.65-.18 1 0 1.66 1.34 3 3 3s3-1.34 3-3V10c0-1.66-1.34-3-3-3zM8 9c0-1.66-1.34-3-3-3S2 7.34 2 10v3c0 1.66 1.34 3 3 3s3-1.34 3-3c0-.35-.07-.69-.18-1H9v-2H7.82c.11-.31.18-.65.18-1zm8-2V5c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h6c.55 0 1-.45 1-1z"/>
           </svg>
-          <span>Play Ocean Fun Games</span>
+          <span>{{ $t('nav.playGames') }}</span>
         </RouterLink>
         <RouterLink class="dlink" to="/" @click="open=false">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
           </svg>
-          <span>Practice Ocean Quiz</span>
+          <span>{{ $t('nav.practiceQuiz') }}</span>
         </RouterLink>
       </nav>
     </div>
@@ -495,6 +501,26 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   .link{
     padding: 12px;
   }
+}
+
+/* Mobile Language Selector Styles */
+.mobile-language-selector {
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+.mobile-language-selector .language-selector .language-select {
+  width: 100%;
+  min-width: auto;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 14px;
+  padding: 12px 16px;
+}
+
+.mobile-language-selector .language-selector .language-select:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 @media (max-width: 920px){
