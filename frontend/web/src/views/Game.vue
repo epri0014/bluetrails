@@ -1,7 +1,7 @@
 <template>
   <div class="game-container">
     <div class="iframe-wrap">
-      <LoadingOverlay v-if="loading" message="🎮 Loading Ocean Hero Game..." />
+      <LoadingOverlay v-if="loading" :message="`🎮 ${$t('loading.game')}`" />
       <iframe
         ref="gameFrame"
         src="https://oceanhero-game.pages.dev/"

@@ -10,13 +10,15 @@
 
       <!-- Desktop links (right) -->
       <nav class="links" aria-label="Primary">
+        <!-- Language Selector -->
+        <LanguageSelector />
         <!-- Ocean Friends Dropdown -->
         <div class="dropdown" @mouseenter="showOceanFriendsDropdown = true" @mouseleave="hideOceanFriendsDropdown">
           <div class="link dropdown-trigger" :class="{ 'highlight-bounce': shouldHighlightOceanFriends }">
             <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c.64.16 1.31.26 2 .26s1.36-.1 2-.26V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm-2 7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm4 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
             </svg>
-            <span>Ocean Friends</span>
+            <span>{{ $t('nav.oceanFriends') }}</span>
             <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="currentColor">
               <path d="M7 10l5 5 5-5z"/>
             </svg>
@@ -27,13 +29,13 @@
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c.64.16 1.31.26 2 .26s1.36-.1 2-.26V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm-2 7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm4 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
                 </svg>
-                <span>Meet Our Ocean Friends</span>
+                <span>{{ $t('nav.meetOceanFriends') }}</span>
               </RouterLink>
               <RouterLink class="dropdown-item" to="/water" data-nav-index="1" @click="resetNavbarStates">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2S6.5 8 6.5 14c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5C17.5 8 12 2 12 2z"/>
                 </svg>
-                <span>Visit Ocean Friends Home</span>
+                <span>{{ $t('nav.visitOceanHome') }}</span>
               </RouterLink>
             </div>
           </Transition>
@@ -45,7 +47,7 @@
             <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
               <path d="M17.5 7c-1.66 0-3 1.34-3 3 0 .35.07.69.18 1H16v2h-1.32c-.11.31-.18.65-.18 1 0 1.66 1.34 3 3 3s3-1.34 3-3V10c0-1.66-1.34-3-3-3zM8 9c0-1.66-1.34-3-3-3S2 7.34 2 10v3c0 1.66 1.34 3 3 3s3-1.34 3-3c0-.35-.07-.69-.18-1H9v-2H7.82c.11-.31.18-.65.18-1zm8-2V5c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h6c.55 0 1-.45 1-1z"/>
             </svg>
-            <span>Play & Practice</span>
+            <span>{{ $t('nav.playPractice') }}</span>
             <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="currentColor">
               <path d="M7 10l5 5 5-5z"/>
             </svg>
@@ -56,13 +58,13 @@
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M17.5 7c-1.66 0-3 1.34-3 3 0 .35.07.69.18 1H16v2h-1.32c-.11.31-.18.65-.18 1 0 1.66 1.34 3 3 3s3-1.34 3-3V10c0-1.66-1.34-3-3-3zM8 9c0-1.66-1.34-3-3-3S2 7.34 2 10v3c0 1.66 1.34 3 3 3s3-1.34 3-3c0-.35-.07-.69-.18-1H9v-2H7.82c.11-.31.18-.65.18-1zm8-2V5c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h6c.55 0 1-.45 1-1z"/>
                 </svg>
-                <span>Play Ocean Fun Games</span>
+                <span>{{ $t('nav.playGames') }}</span>
               </RouterLink>
               <RouterLink class="dropdown-item" to="/" data-nav-index="3">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
                 </svg>
-                <span>Practice Ocean Quiz</span>
+                <span>{{ $t('nav.practiceQuiz') }}</span>
               </RouterLink>
             </div>
           </Transition>
@@ -73,7 +75,7 @@
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
           </svg>
-          <span>About Us</span>
+          <span>{{ $t('nav.aboutUs') }}</span>
         </RouterLink>
       </nav>
 
@@ -117,6 +119,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import LanguageSelector from './LanguageSelector.vue'
 
 const router = useRouter()
 const route = useRoute()

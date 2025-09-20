@@ -3,7 +3,7 @@
     <div class="spinner">
       <div></div><div></div><div></div>
     </div>
-    <p>{{ message }}</p>
+    <p>{{ message || $t('loading.default') }}</p>
   </div>
 </template>
 
@@ -11,7 +11,7 @@
 defineProps({
   message: {
     type: String,
-    default: 'Loading...'
+    default: ''
   }
 })
 </script>

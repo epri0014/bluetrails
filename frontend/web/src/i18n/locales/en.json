@@ -1,0 +1,289 @@
+{
+  "nav": {
+    "oceanFriends": "Ocean Friends",
+    "meetOceanFriends": "Meet Our Ocean Friends",
+    "visitOceanHome": "Visit Ocean Friends Home",
+    "playPractice": "Play & Practice",
+    "playGames": "Play Ocean Fun Games",
+    "practiceQuiz": "Practice Ocean Quiz",
+    "aboutUs": "About Us"
+  },
+  "hero": {
+    "title": "Protect Our Ocean",
+    "description": "Our ocean is home to amazing life. Pollution and climate change put it at risk. Learn what harms the sea and how small actions every day can protect it.",
+    "animalsAtRisk": "Animals at Risk",
+    "beOceanHero": "Be an Ocean Hero",
+    "knowYourWater": "Know your Water",
+    "moreComing": "More coming soon",
+    "caption": "Be an Ocean Hero: reduce single-use plastic, recycle, save water, choose reef-safe products, and share what you learn."
+  },
+  "animals": {
+    "pageTitle": "Meet Our Ocean Friends",
+    "showRealImage": "Show Real Image",
+    "showCartoonAvatar": "Show Cartoon Avatar",
+    "backToHome": "Back to Home",
+    "goToOceanHome": "Go to Ocean Friends Home",
+    "hiIm": "Hi! I'm",
+    "tapMe": "Tap me!",
+    "openInfoFor": "Open info for",
+    "messageFrom": "Message from",
+    "close": "Close",
+    "commonName": "Common name",
+    "scientificName": "Scientific name",
+    "type": "Type",
+    "habitat": "Habitat",
+    "whatHurtsMe": "What hurts me",
+    "howYouCanHelp": "How you can help",
+    "funFact": "Fun fact",
+    "cartoon": "Cartoon",
+    "photo": "Photo",
+    "previous": "Previous",
+    "next": "Next",
+    "chooseAnimal": "Choose an animal",
+    "oceanStage": "Ocean stage",
+    "learnPlayAct": "Learn • Play • Act"
+  },
+  "animalDetail": {
+    "back": "Back",
+    "meetThe": "Meet the",
+    "whyTheyMatter": "Why they matter",
+    "howPollutionHurts": "How pollution hurts them",
+    "howYouCanHelp": "How you can help",
+    "notFound": "Sorry, we couldn't find that animal.",
+    "commonName": "COMMON NAME:",
+    "scientificName": "SCIENTIFIC NAME:",
+    "group": "GROUP:",
+    "type": "TYPE:",
+    "size": "SIZE:",
+    "diet": "DIET:",
+    "status": "STATUS:"
+  },
+  "footer": {
+    "mainText": "BlueTrails - Victoria's Ocean Heroes",
+    "subText": "© 2025 MindMerge - Protecting Our Victorian Ocean Together"
+  },
+  "loading": {
+    "default": "Loading...",
+    "game": "Loading Ocean Hero Game...",
+    "water": "Loading Ocean Friends Home..."
+  },
+  "newHome": {
+    "toggleMusic": "Toggle background music",
+    "welcomeTitle": "Welcome to BlueTrails",
+    "welcomeSubtitle": "Let's protect Our Victorian Ocean Together and Be Ocean Heroes!",
+    "start": "Start",
+    "back": "<< Back",
+    "clickContinue": "Click to continues >>",
+    "restart": "Restart >>",
+    "speeches": [
+      "Hi! 🐠 We are Victorian Ocean Friends! 🌊 We need your help to protect our home. Join us in learning about the ocean and how you can make a difference! 🐢",
+      "Know us better by hovering over the <span class='nav-highlight'>Ocean Friends</span> 🐙 section in the navigation menu above, then click <span class='nav-highlight'>Meet Our Ocean Friends</span>. Let's explore and have fun together! ⭐",
+      "Oh, Hey! 🦈 you can visit our home too! Hover over the <span class='nav-highlight'>Ocean Friends</span> 🏠 section in the top navigation bar, then click <span class='nav-highlight'>Visit Ocean Friends Home</span> to see where we live and how you can help keep it safe and clean! 🌊",
+      "Already know us and where we live? Great! 🎮 Let's play some fun games together! Hover over the <span class='nav-highlight'>Play & Practice</span> 🎯 section in the navigation menu, then click <span class='nav-highlight'>Play Ocean Fun Games</span> to start playing and learning! 🐠",
+      "Want to test your ocean knowledge? 📚 Hover over the <span class='nav-highlight'>Play & Practice</span> 🧠 section in the navigation menu, then click <span class='nav-highlight'>Practice Ocean Quiz</span> to challenge yourself with fun questions about marine life! 🤓",
+      "Thank you for visiting us! 🙏 We hope you have a great time exploring and learning about the ocean. 🌊 Remember, every little action counts in protecting our beautiful Victorian Ocean. Let's be Ocean Heroes together! 🦸‍♂️🌊"
+    ]
+  },
+  "animalData": {
+    "burrunan-dolphin": {
+      "name": "Burrunan Dolphin",
+      "type": "Marine mammal",
+      "habitat": "Bays and coastal waters of Victoria",
+      "lines": [
+        "Please bin your rubbish and cut loops – ghost lines can tangle my fins.",
+        "I'm scared of plastic bags and fishing lines.",
+        "Choose reusable bottles. Less plastic, safer oceans!"
+      ],
+      "sadText": "I get trouble when plastic bags float around - I might think they're jellyfish to eat! Ghost fishing lines can tangle around my fins and hurt me really bad.",
+      "happyText": "I'm happy when the water is clean and clear! I can play with my dolphin friends and talk to them with clicking sounds. Clean oceans mean healthy fish for me to eat!",
+      "threats": [
+        "Plastic bags and fishing lines can entangle fins and be swallowed.",
+        "Boat noise makes it hard to communicate.",
+        "Polluted water hurts our skin and health."
+      ],
+      "help": [
+        "Bin rubbish and cut plastic loops.",
+        "Choose reusable bottles and keep boats slow near dolphins.",
+        "Join a beach clean-up with an adult."
+      ],
+      "fun": [
+        "We sleep with one half of our brain at a time!"
+      ]
+    },
+    "southern-right-whale": {
+      "name": "Southern Right Whale",
+      "type": "Marine mammal",
+      "habitat": "Southern Ocean and Victorian coastline during winter",
+      "lines": [
+        "Keep balloons away from beaches – we can swallow them by mistake.",
+        "Slow boats and \"quiet seas\" help us talk to our calves.",
+        "Support rescue teams that free entangled whales."
+      ],
+      "sadText": "I get trouble when balloons fall in the water - they look like yummy jellyfish but make my tummy hurt! Loud boat noises make it hard to talk to my baby whale.",
+      "happyText": "I'm happy when the ocean is quiet and clean! I can sing beautiful whale songs to my family and teach my baby how to swim and find food.",
+      "threats": [
+        "Entanglement in nets and ropes.",
+        "Ship strikes and underwater noise.",
+        "Ingestion of floating plastics."
+      ],
+      "help": [
+        "Keep balloons away from beaches.",
+        "Support whale rescue teams.",
+        "Enjoy whales from a safe distance."
+      ],
+      "fun": [
+        "Mothers and calves rest close to the coast in winter."
+      ]
+    },
+    "australian-fur-seal": {
+      "name": "Australian Fur Seal",
+      "type": "Marine mammal",
+      "habitat": "Rocky islands and beaches around Bass Strait",
+      "lines": [
+        "Plastic rings/straps tighten as we grow. Snip them before you bin!",
+        "Ghost nets are scary – they trap our necks.",
+        "Watch wildlife from a distance. We need space to rest."
+      ],
+      "sadText": "I get trouble when plastic rings get stuck around my neck - they get tighter as I grow bigger! Ghost nets are scary and can trap me underwater.",
+      "happyText": "I'm happy when I can rest on clean rocks with my seal friends! I love diving for fish in clear water and playing in the waves with my pups.",
+      "threats": [
+        "Plastic rings and straps tighten as we grow.",
+        "Ghost nets can trap our necks.",
+        "Disturbance at resting sites."
+      ],
+      "help": [
+        "Snip plastic rings/straps before binning.",
+        "Watch wildlife from a distance.",
+        "Take fishing gear home."
+      ],
+      "fun": [
+        "We \"walk\" on land using all four flippers!"
+      ]
+    },
+    "little-penguin": {
+      "name": "Little Penguin",
+      "type": "Seabird",
+      "habitat": "Rocky shores and islands including Phillip Island",
+      "lines": [
+        "Keep beaches clean and dark – lights confuse our chicks.",
+        "Please take your fishing hooks home.",
+        "Join a mini clean-up with an adult – every small piece helps!"
+      ],
+      "sadText": "I get trouble when bright lights shine at night - my baby penguins get confused and can't find their way home to our burrow! Sharp fishing hooks hurt my feet too.",
+      "happyText": "I'm happy when beaches are dark at night so my chicks can find me! I love waddling on clean sand and diving for little fish in the clear water.",
+      "threats": [
+        "Bright lights confuse chicks at night.",
+        "Hooks and lines injure penguins.",
+        "Oil and plastics damage feathers and stomachs."
+      ],
+      "help": [
+        "Keep beaches clean and dark.",
+        "Take fishing hooks and lines home.",
+        "Join a mini clean-up with an adult."
+      ],
+      "fun": [
+        "We are the world's smallest penguins!"
+      ]
+    },
+    "weedy-seadragon": {
+      "name": "Weedy Seadragon",
+      "type": "Fish (seahorse family)",
+      "habitat": "Kelp and seagrass beds along southern Australia",
+      "lines": [
+        "We love healthy seagrass. Don't trample seagrass beds.",
+        "Choose reef-safe sunscreen.",
+        "Share what you learn – ocean heroes inspire more heroes!"
+      ],
+      "sadText": "I get trouble when people step on my seagrass home - it's where I hide and find tiny shrimp to eat! Chemicals from sunscreen make the water yucky for me.",
+      "happyText": "I'm happy when my seagrass forest is healthy and green! I can hide among the leafy plants and dance with the gentle currents while looking for tasty treats.",
+      "threats": [
+        "Loss of seagrass and kelp habitat.",
+        "Poor water quality.",
+        "Disturbance from careless diving."
+      ],
+      "help": [
+        "Don't trample seagrass beds.",
+        "Choose reef-safe sunscreen.",
+        "Share what you learn to inspire ocean heroes!"
+      ],
+      "fun": [
+        "It's the dads who carry the eggs!"
+      ]
+    },
+    "australian-fairy-tern": {
+      "name": "Australian Fairy Tern",
+      "type": "Seabird",
+      "habitat": "Sandy beaches and estuaries",
+      "lines": [
+        "Please stay outside our nesting areas on sandy beaches.",
+        "Keep dogs on leash near shorebirds.",
+        "Tiny plastic looks like food – pick it up!"
+      ],
+      "sadText": "I get trouble when people walk too close to my nest in the sand - it scares me and I might leave my eggs! Tiny plastic pieces look like fish but make me sick.",
+      "happyText": "I'm happy when I can build my nest safely on clean sand! I love diving into clear water to catch small fish for my baby chicks.",
+      "threats": [
+        "Nests on open sand—easy to trample.",
+        "Dogs and people scare parents from eggs.",
+        "Tiny plastics look like food."
+      ],
+      "help": [
+        "Stay outside signed nesting areas.",
+        "Keep dogs on a leash near shorebirds.",
+        "Pick up small plastics."
+      ],
+      "fun": [
+        "We nest in little scrapes on the sand!"
+      ]
+    },
+    "hooded-plover": {
+      "name": "Hooded Plover (Vic)",
+      "type": "Shorebird",
+      "habitat": "Open ocean beaches and dune edges",
+      "lines": [
+        "We nest right on the sand – give us space and follow signs.",
+        "Leave no holes/forts on beaches – chicks can fall in.",
+        "Take your litter – wind can carry it into the sea."
+      ],
+      "sadText": "I get trouble when people dig holes in the sand - my tiny chicks might fall in and can't get out! Litter blows around and hurts my beach home.",
+      "happyText": "I'm happy when the beach is flat and clean! I can run along the sand looking for tiny crabs and worms while my chicks follow me safely.",
+      "threats": [
+        "Nests right on sand—easily trampled.",
+        "Holes/forts trap chicks.",
+        "Loose dogs disturb parents."
+      ],
+      "help": [
+        "Follow beach signs and give us space.",
+        "Flatten sand forts and fill holes before you leave.",
+        "Keep dogs leashed near shorebirds."
+      ],
+      "fun": [
+        "Our eggs look like tiny speckled stones!"
+      ]
+    },
+    "short-tailed-shearwater": {
+      "name": "Short-tailed Shearwater",
+      "type": "Seabird",
+      "habitat": "Burrows on islands; long ocean migrations",
+      "lines": [
+        "Lights at night can confuse us – shield lights near the coast.",
+        "Oil and plastics hurt our feathers and stomachs.",
+        "Choose reusables. Small actions make big waves!"
+      ],
+      "sadText": "I get trouble when bright lights at night confuse me - I might crash into buildings! Oil and plastic make my feathers dirty and my tummy hurt.",
+      "happyText": "I'm happy when I can fly over dark, clean waters at night! I love traveling long distances with my bird friends and diving for fish in the sparkling ocean.",
+      "threats": [
+        "Bright lights at night can disorient us.",
+        "Oil & plastics harm feathers and stomachs.",
+        "Predators at nesting colonies."
+      ],
+      "help": [
+        "Shield lights near the coast during fledging.",
+        "Reduce plastic use and join beach clean-ups.",
+        "Observe colonies quietly from a distance."
+      ],
+      "fun": [
+        "We fly to the Arctic and back every year!"
+      ]
+    }
+  }
+}

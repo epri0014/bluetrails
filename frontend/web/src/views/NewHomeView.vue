@@ -11,7 +11,7 @@
         class="music-control"
         @click="toggleMusic"
         :class="{ active: isPlaying }"
-        aria-label="Toggle background music"
+        :aria-label="$t('newHome.toggleMusic')"
       >
         <svg v-if="isPlaying" class="icon" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
@@ -65,11 +65,11 @@
     <Transition name="instant">
       <section v-if="currentContent === 1" class="welcome-content">
         <div class="welcome-text">
-          <h1 class="main-title bounce-animation">Welcome to BlueTrails</h1>
-          <p class="subtitle wave-animation">Let's protect Our Victorian Ocean Together and Be Ocean Heroes!</p>
+          <h1 class="main-title bounce-animation">{{ $t('newHome.welcomeTitle') }}</h1>
+          <p class="subtitle wave-animation">{{ $t('newHome.welcomeSubtitle') }}</p>
         </div>
         <button class="start-btn aggressive-blink" @click="goToContent2">
-          <span>Start</span>
+          <span>{{ $t('newHome.start') }}</span>
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M8 5v14l11-7z"/>
           </svg>
@@ -95,10 +95,10 @@
           <div class="speech-bubble" @click="nextSpeech">
             <div class="speech-text" v-html="currentSpeechText"></div>
             <div class="speech-controls" v-if="!isTyping">
-              <div class="back-text" v-if="currentSpeechIndex > 0" @click.stop="previousSpeech">&lt;&lt; Back</div>
+              <div class="back-text" v-if="currentSpeechIndex > 0" @click.stop="previousSpeech">{{ $t('newHome.back') }}</div>
               <div class="spacer" v-if="currentSpeechIndex === 0"></div>
               <div class="click-continue aggressive-blink-text">
-                {{ isLastSpeech ? 'Restart >>' : 'Click to continues >>' }}
+                {{ isLastSpeech ? $t('newHome.restart') : $t('newHome.clickContinue') }}
               </div>
             </div>
           </div>
@@ -110,7 +110,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t, tm, locale } = useI18n()
 
 // Audio control
 const backgroundMusic = ref(null)
@@ -155,56 +158,34 @@ const CDN = 'https://gvwrmcyksmswvduehrtd.supabase.co/storage/v1/object/public'
 const BUCKET = 'bluetrails'
 const PRIMARY_DIR = 'animal-page'
 
-const animals = [
-  {
-    slug: 'burrunan-dolphin',
-    name: 'Burrunan Dolphin',
-    cartoon: 'dolphin-cartoon.png'
-  },
-  {
-    slug: 'southern-right-whale',
-    name: 'Southern Right Whale',
-    cartoon: 'whale-cartoon.png'
-  },
-  {
-    slug: 'australian-fur-seal',
-    name: 'Australian Fur Seal',
-    cartoon: 'seal-cartoon.png'
-  },
-  {
-    slug: 'little-penguin',
-    name: 'Little Penguin',
-    cartoon: 'penguin-cartoon.png'
-  },
-  {
-    slug: 'weedy-seadragon',
-    name: 'Weedy Seadragon',
-    cartoon: 'seadragon-cartoon.png'
-  },
-  {
-    slug: 'australian-fairy-tern',
-    name: 'Australian Fairy Tern',
-    cartoon: 'tern-cartoon.png'
-  }
+// Base animal data (static info only)
+const baseAnimals = [
+  { slug: 'burrunan-dolphin', cartoon: 'dolphin-cartoon.png' },
+  { slug: 'southern-right-whale', cartoon: 'whale-cartoon.png' },
+  { slug: 'australian-fur-seal', cartoon: 'seal-cartoon.png' },
+  { slug: 'little-penguin', cartoon: 'penguin-cartoon.png' },
+  { slug: 'weedy-seadragon', cartoon: 'seadragon-cartoon.png' },
+  { slug: 'australian-fairy-tern', cartoon: 'tern-cartoon.png' }
 ]
+
+// Computed animals with translations
+const animals = computed(() => {
+  return baseAnimals.map(animal => ({
+    ...animal,
+    name: t(`animalData.${animal.slug}.name`)
+  }))
+})
 
 const getAvatarImage = (file) => `${CDN}/${BUCKET}/${PRIMARY_DIR}/${file}`
 
-// Speech system
-const speechTexts = [
-  "Hi! 🐠 We are Victorian Ocean Friends! 🌊 We need your help to protect our home. Join us in learning about the ocean and how you can make a difference! 🐢",
-  "Know us better by hovering over the <span class='nav-highlight'>Ocean Friends</span> 🐙 section in the navigation menu above, then click <span class='nav-highlight'>Meet Our Ocean Friends</span>. Let's explore and have fun together! ⭐",
-  "Oh, Hey! 🦈 you can visit our home too! Hover over the <span class='nav-highlight'>Ocean Friends</span> 🏠 section in the top navigation bar, then click <span class='nav-highlight'>Visit Ocean Friends Home</span> to see where we live and how you can help keep it safe and clean! 🌊",
-  "Already know us and where we live? Great! 🎮 Let's play some fun games together! Hover over the <span class='nav-highlight'>Play & Practice</span> 🎯 section in the navigation menu, then click <span class='nav-highlight'>Play Ocean Fun Games</span> to start playing and learning! 🐠",
-  "Want to test your ocean knowledge? 📚 Hover over the <span class='nav-highlight'>Play & Practice</span> 🧠 section in the navigation menu, then click <span class='nav-highlight'>Practice Ocean Quiz</span> to challenge yourself with fun questions about marine life! 🤓",
-  "Thank you for visiting us! 🙏 We hope you have a great time exploring and learning about the ocean. 🌊 Remember, every little action counts in protecting our beautiful Victorian Ocean. Let's be Ocean Heroes together! 🦸‍♂️🌊"
-]
+// Speech system - using translations
+const speechTexts = computed(() => tm('newHome.speeches'))
 
 const currentSpeechIndex = ref(0)
 const currentSpeechText = ref('')
 const isTyping = ref(false)
 const skipTyping = ref(false)
-const isLastSpeech = computed(() => currentSpeechIndex.value === speechTexts.length - 1)
+const isLastSpeech = computed(() => currentSpeechIndex.value === speechTexts.value.length - 1)
 const showArrows = ref(false)
 const arrowText = ref('')
 
@@ -227,11 +208,23 @@ const typeText = async (text) => {
 
   isTyping.value = false
 
-  // Show arrows for specific speech texts
+  // Show arrows for specific speech texts, reset on final speech
   if (currentSpeechIndex.value >= 1 && currentSpeechIndex.value <= 4) {
     showNavigationArrow()
+  } else if (currentSpeechIndex.value === 5) {
+    // Reset navbar animations on final "thank you" speech
+    const allElements = document.querySelectorAll('.highlight-bounce')
+    allElements.forEach(el => el.classList.remove('highlight-bounce'))
   }
 }
+
+// Watch for language changes and update current speech text
+watch(locale, () => {
+  if (currentContent.value === 2 && !isTyping.value) {
+    // Update current speech text immediately when language changes
+    currentSpeechText.value = speechTexts.value[currentSpeechIndex.value]
+  }
+})
 
 const nextSpeech = () => {
   // If typing is in progress, skip to the end
@@ -251,10 +244,10 @@ const nextSpeech = () => {
     // Reset to first speech
     currentSpeechIndex.value = 0
   } else {
-    currentSpeechIndex.value = (currentSpeechIndex.value + 1) % speechTexts.length
+    currentSpeechIndex.value = (currentSpeechIndex.value + 1) % speechTexts.value.length
   }
 
-  typeText(speechTexts[currentSpeechIndex.value])
+  typeText(speechTexts.value[currentSpeechIndex.value])
 }
 
 const previousSpeech = () => {
@@ -273,13 +266,13 @@ const previousSpeech = () => {
   }
 
   currentSpeechIndex.value = currentSpeechIndex.value === 0
-    ? speechTexts.length - 1
+    ? speechTexts.value.length - 1
     : currentSpeechIndex.value - 1
-  typeText(speechTexts[currentSpeechIndex.value])
+  typeText(speechTexts.value[currentSpeechIndex.value])
 }
 
 const startSpeechSequence = () => {
-  typeText(speechTexts[0])
+  typeText(speechTexts.value[0])
 }
 
 // Navigation highlighting
@@ -288,7 +281,7 @@ const showNavigationArrow = () => {
   const allElements = document.querySelectorAll('.highlight-bounce')
   allElements.forEach(el => el.classList.remove('highlight-bounce'))
 
-  // Map speech index to navigation elements
+  // Map speech index to navigation elements (currentSpeechIndex is 1-based, so subtract 1)
   const speechIndex = currentSpeechIndex.value - 1
 
   if (speechIndex >= 0) {
@@ -297,16 +290,23 @@ const showNavigationArrow = () => {
       // Find the appropriate dropdown trigger to animate
       let triggerToAnimate = null
 
-      if (speechIndex <= 1) {
-        // Ocean Friends group (speechIndex 0 = Meet Our Ocean Friends, speechIndex 1 = Visit Ocean Friends Home)
-        triggerToAnimate = document.querySelector('.dropdown:first-child .dropdown-trigger')
-      } else if (speechIndex >= 2 && speechIndex <= 3) {
-        // Play & Practice group (speechIndex 2 = Play Ocean Fun Games, speechIndex 3 = Practice Ocean Quiz)
-        triggerToAnimate = document.querySelector('.dropdown:nth-child(2) .dropdown-trigger')
-      }
+      // Look in the navbar which should be in the header
+      const navbar = document.querySelector('header.nav')
+      if (navbar) {
+        // Find all dropdown triggers in the links section
+        const dropdownTriggers = navbar.querySelectorAll('.links .dropdown .dropdown-trigger')
 
-      if (triggerToAnimate) {
-        triggerToAnimate.classList.add('highlight-bounce')
+        if (speechIndex <= 1) {
+          // Speech 1 & 2: Ocean Friends group (Meet Our Ocean Friends, Visit Ocean Friends Home)
+          triggerToAnimate = dropdownTriggers[0] // First dropdown (Ocean Friends)
+        } else if (speechIndex >= 2 && speechIndex <= 3) {
+          // Speech 3 & 4: Play & Practice group (Play Ocean Fun Games, Practice Ocean Quiz)
+          triggerToAnimate = dropdownTriggers[1] // Second dropdown (Play & Practice)
+        }
+
+        if (triggerToAnimate) {
+          triggerToAnimate.classList.add('highlight-bounce')
+        }
       }
     }, 100)
   }

@@ -1,7 +1,7 @@
 <template>
   <div class="water-container">
     <div class="iframe-wrap">
-      <LoadingOverlay v-if="loading" message="🌊 Loading Ocean Friends Home..." />
+      <LoadingOverlay v-if="loading" :message="`🌊 ${$t('loading.water')}`" />
       <iframe
         ref="frame"
         src="https://019911fb-5550-ad05-7994-5cd5737f0ef1.share.connect.posit.cloud/"

@@ -7,8 +7,8 @@
         <div class="wave wave3"></div>
       </div>
       <div class="footer-text">
-        <div class="main-text">🌊 BlueTrails - Victoria's Ocean Heroes 🐠</div>
-        <div class="sub-text">© 2025 MindMerge - Protecting Our Victorian Ocean Together</div>
+        <div class="main-text">🌊 {{ $t('footer.mainText') }} 🐠</div>
+        <div class="sub-text">{{ $t('footer.subText') }}</div>
       </div>
     </div>
   </footer>

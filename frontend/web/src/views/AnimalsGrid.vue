@@ -1,10 +1,10 @@
 <template>
   <main class="page" aria-labelledby="title">
-    <h1 id="title" class="visually-hidden">Animals Play — Learn • Play • Act</h1>
+    <h1 id="title" class="visually-hidden">{{ $t('animals.pageTitle') }} — {{ $t('animals.learnPlayAct') }}</h1>
 
     <section class="wrap">
       <div class="carousel glass" ref="railBox" role="tablist" aria-label="Choose an animal">
-        <button class="nav left" @click="scrollBy(-1)" aria-label="Previous">‹</button>
+        <button class="nav left" @click="scrollBy(-1)" :aria-label="$t('animals.previous')">‹</button>
 
         <ul class="rail" ref="rail">
           <li
@@ -23,11 +23,11 @@
           </li>
         </ul>
 
-        <button class="nav right" @click="scrollBy(1)" aria-label="Next">›</button>
+        <button class="nav right" @click="scrollBy(1)" :aria-label="$t('animals.next')">›</button>
 
         <div class="mode">
-          <button class="btn" :class="{ on: mode === 'cartoon' }" @click="mode = 'cartoon'">Cartoon</button>
-          <button class="btn" :class="{ on: mode === 'photo' }" @click="mode = 'photo'">Photo</button>
+          <button class="btn" :class="{ on: mode === 'cartoon' }" @click="mode = 'cartoon'">{{ $t('animals.cartoon') }}</button>
+          <button class="btn" :class="{ on: mode === 'photo' }" @click="mode = 'photo'">{{ $t('animals.photo') }}</button>
         </div>
       </div>
 
@@ -71,7 +71,7 @@
         </div>
 
         <div v-show="!infoOpen" class="tap-hint" :style="{ left: arrowLeft, top: hintTop }" aria-hidden="true">
-          <span class="tap-badge">Tap me!</span>
+          <span class="tap-badge">{{ $t('animals.tapMe') }}</span>
           <span class="tap-hand">👆</span>
         </div>
 
@@ -83,7 +83,7 @@
             ref="animalEl"
             @click="openInfo"
             role="button"
-            :aria-label="'Open info for ' + current.name"
+            :aria-label="$t('animals.openInfoFor') + ' ' + current.name"
             tabindex="0"
             @keydown.enter.prevent="openInfo"
           >
@@ -109,10 +109,10 @@
             v-if="current"
             class="bubble"
             role="dialog"
-            :aria-label="'Message from ' + current.name"
+            :aria-label="$t('animals.messageFrom') + ' ' + current.name"
             :style="{ '--arrow-left': arrowLeft }"
           >
-            <div class="bubble-title">Hi! I’m {{ current.name }} 🫧</div>
+            <div class="bubble-title">{{ $t('animals.hiIm') }} {{ current.name }} 🫧</div>
             <ul>
               <li v-for="line in current.lines" :key="line">{{ line }}</li>
             </ul>
@@ -129,43 +129,43 @@
             :aria-label="current.name + ' facts'"
           >
             <article class="fact-sheet" @click.stop>
-              <button class="sheet-close" @click="closeInfo" aria-label="Close">×</button>
+              <button class="sheet-close" @click="closeInfo" :aria-label="$t('animals.close')">×</button>
 
               <header class="sheet-header">
                 <img :src="imgSrc(mode==='cartoon' ? current.cartoon : current.file)" :alt="current.name" class="sheet-avatar" @error="onImgError" />
                 <div class="sheet-title">
-                  <div class="eyebrow">Common name</div>
+                  <div class="eyebrow">{{ $t('animals.commonName') }}</div>
                   <h2>{{ current.name }}</h2>
-                  <div v-if="current.sci" class="sci">Scientific name: <i>{{ current.sci }}</i></div>
+                  <div v-if="current.sci" class="sci">{{ $t('animals.scientificName') }}: <i>{{ current.sci }}</i></div>
                 </div>
               </header>
 
               <section class="sheet-grid">
                 <div class="row">
-                  <div class="term">Type</div>
+                  <div class="term">{{ $t('animals.type') }}</div>
                   <div class="val">{{ current.type }}</div>
                 </div>
                 <div class="row">
-                  <div class="term">Habitat</div>
+                  <div class="term">{{ $t('animals.habitat') }}</div>
                   <div class="val">{{ current.habitat }}</div>
                 </div>
 
                 <div class="row">
-                  <div class="term">What hurts me</div>
+                  <div class="term">{{ $t('animals.whatHurtsMe') }}</div>
                   <ul class="val">
                     <li v-for="x in current.threats" :key="x">{{ x }}</li>
                   </ul>
                 </div>
 
                 <div class="row">
-                  <div class="term">How you can help</div>
+                  <div class="term">{{ $t('animals.howYouCanHelp') }}</div>
                   <ul class="val">
                     <li v-for="x in current.help" :key="x">{{ x }}</li>
                   </ul>
                 </div>
 
                 <div v-if="current.fun && current.fun.length" class="row">
-                  <div class="term">Fun fact</div>
+                  <div class="term">{{ $t('animals.funFact') }}</div>
                   <ul class="val">
                     <li v-for="x in current.fun" :key="x">{{ x }}</li>
                   </ul>
@@ -181,185 +181,43 @@
 
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t, tm } = useI18n()
 
 const CDN = 'https://gvwrmcyksmswvduehrtd.supabase.co/storage/v1/object/public'
 const BUCKET = 'bluetrails'
 const PRIMARY_DIR = 'animal-page'
 const FALLBACK_DIR = 'animal%20page'
 
-const animals = [
-  {
-    slug:'burrunan-dolphin', name:'Burrunan Dolphin', sci:'Tursiops australis',
-    file:'burranan.png', cartoon:'dolphin-cartoon.png', type:'Marine mammal',
-    habitat:'Bays and coastal waters of Victoria',
-    threats:[
-      'Plastic bags and fishing lines can entangle fins and be swallowed.',
-      'Boat noise makes it hard to communicate.',
-      'Polluted water hurts our skin and health.'
-    ],
-    help:[
-      'Bin rubbish and cut plastic loops.',
-      'Choose reusable bottles and keep boats slow near dolphins.',
-      'Join a beach clean-up with an adult.'
-    ],
-    fun:['We sleep with one half of our brain at a time!'],
-    lines:[
-      'Please bin your rubbish and cut loops – ghost lines can tangle my fins.',
-      'I’m scared of plastic bags and fishing lines.',
-      'Choose reusable bottles. Less plastic, safer oceans!'
-    ]
-  },
-  {
-    slug:'southern-right-whale', name:'Southern Right Whale', sci:'Eubalaena australis',
-    file:'Southern-Right-Whale.jpg', cartoon:'whale-cartoon.png', type:'Marine mammal',
-    habitat:'Southern Ocean and Victorian coastline during winter',
-    threats:[
-      'Entanglement in nets and ropes.',
-      'Ship strikes and underwater noise.',
-      'Ingestion of floating plastics.'
-    ],
-    help:[
-      'Keep balloons away from beaches.',
-      'Support whale rescue teams.',
-      'Enjoy whales from a safe distance.'
-    ],
-    fun:['Mothers and calves rest close to the coast in winter.'],
-    lines:[
-      'Keep balloons away from beaches – we can swallow them by mistake.',
-      'Slow boats and “quiet seas” help us talk to our calves.',
-      'Support rescue teams that free entangled whales.'
-    ]
-  },
-  {
-    slug:'australian-fur-seal', name:'Australian Fur Seal', sci:'Arctocephalus pusillus doriferus',
-    file:'Australian-Fur-Seal.jpg', cartoon:'seal-cartoon.png', type:'Marine mammal',
-    habitat:'Rocky islands and beaches around Bass Strait',
-    threats:[
-      'Plastic rings and straps tighten as we grow.',
-      'Ghost nets can trap our necks.',
-      'Disturbance at resting sites.'
-    ],
-    help:[
-      'Snip plastic rings/straps before binning.',
-      'Watch wildlife from a distance.',
-      'Take fishing gear home.'
-    ],
-    fun:['We “walk” on land using all four flippers!'],
-    lines:[
-      'Plastic rings/straps tighten as we grow. Snip them before you bin!',
-      'Ghost nets are scary – they trap our necks.',
-      'Watch wildlife from a distance. We need space to rest.'
-    ]
-  },
-  {
-    slug:'little-penguin', name:'Little Penguin', sci:'Eudyptula minor',
-    file:'little-penguin.jpg', cartoon:'penguin-cartoon.png', type:'Seabird',
-    habitat:'Rocky shores and islands including Phillip Island',
-    threats:[
-      'Bright lights confuse chicks at night.',
-      'Hooks and lines injure penguins.',
-      'Oil and plastics damage feathers and stomachs.'
-    ],
-    help:[
-      'Keep beaches clean and dark.',
-      'Take fishing hooks and lines home.',
-      'Join a mini clean-up with an adult.'
-    ],
-    fun:['We are the world’s smallest penguins!'],
-    lines:[
-      'Keep beaches clean and dark – lights confuse our chicks.',
-      'Please take your fishing hooks home.',
-      'Join a mini clean-up with an adult – every small piece helps!'
-    ]
-  },
-  {
-    slug:'weedy-seadragon', name:'Weedy Seadragon', sci:'Phyllopteryx taeniolatus',
-    file:'Weedy-seadragon.jpg', cartoon:'seadragon-cartoon.png', type:'Fish (seahorse family)',
-    habitat:'Kelp and seagrass beds along southern Australia',
-    threats:[
-      'Loss of seagrass and kelp habitat.',
-      'Poor water quality.',
-      'Disturbance from careless diving.'
-    ],
-    help:[
-      'Don’t trample seagrass beds.',
-      'Choose reef-safe sunscreen.',
-      'Share what you learn to inspire ocean heroes!'
-    ],
-    fun:['It’s the dads who carry the eggs!'],
-    lines:[
-      'We love healthy seagrass. Don’t trample seagrass beds.',
-      'Choose reef-safe sunscreen.',
-      'Share what you learn – ocean heroes inspire more heroes!'
-    ]
-  },
-  {
-    slug:'australian-fairy-tern', name:'Australian Fairy Tern', sci:'Sternula nereis',
-    file:'Australian-Fairy-Tern.jpg', cartoon:'tern-cartoon.png', type:'Seabird',
-    habitat:'Sandy beaches and estuaries',
-    threats:[
-      'Nests on open sand—easy to trample.',
-      'Dogs and people scare parents from eggs.',
-      'Tiny plastics look like food.'
-    ],
-    help:[
-      'Stay outside signed nesting areas.',
-      'Keep dogs on a leash near shorebirds.',
-      'Pick up small plastics.'
-    ],
-    fun:['We nest in little scrapes on the sand!'],
-    lines:[
-      'Please stay outside our nesting areas on sandy beaches.',
-      'Keep dogs on leash near shorebirds.',
-      'Tiny plastic looks like food – pick it up!'
-    ]
-  },
-  {
-    slug:'hooded-plover', name:'Hooded Plover (Vic)', sci:'Thinornis cucullatus',
-    file:'Larissa-Hill-Hooded-Plover.jpg', cartoon:'pover-cartoon.png', type:'Shorebird',
-    habitat:'Open ocean beaches and dune edges',
-    threats:[
-      'Nests right on sand—easily trampled.',
-      'Holes/forts trap chicks.',
-      'Loose dogs disturb parents.'
-    ],
-    help:[
-      'Follow beach signs and give us space.',
-      'Flatten sand forts and fill holes before you leave.',
-      'Keep dogs leashed near shorebirds.'
-    ],
-    fun:['Our eggs look like tiny speckled stones!'],
-    lines:[
-      'We nest right on the sand – give us space and follow signs.',
-      'Leave no holes/forts on beaches – chicks can fall in.',
-      'Take your litter – wind can carry it into the sea.'
-    ]
-  },
-  {
-    slug:'short-tailed-shearwater', name:'Short-tailed Shearwater', sci:'Ardenna tenuirostris',
-    file:'Short-tailed-Shearwater.jpg', cartoon:'shearwater.png', type:'Seabird',
-    habitat:'Burrows on islands; long ocean migrations',
-    threats:[
-      'Bright lights at night can disorient us.',
-      'Oil & plastics harm feathers and stomachs.',
-      'Predators at nesting colonies.'
-    ],
-    help:[
-      'Shield lights near the coast during fledging.',
-      'Reduce plastic use and join beach clean-ups.',
-      'Observe colonies quietly from a distance.'
-    ],
-    fun:['We fly to the Arctic and back every year!'],
-    lines:[
-      'Lights at night can confuse us – shield lights near the coast.',
-      'Oil and plastics hurt our feathers and stomachs.',
-      'Choose reusables. Small actions make big waves!'
-    ]
-  }
+// Base animal data (static info only)
+const baseAnimals = [
+  { slug:'burrunan-dolphin', sci:'Tursiops australis', file:'burranan.png', cartoon:'dolphin-cartoon.png' },
+  { slug:'southern-right-whale', sci:'Eubalaena australis', file:'Southern-Right-Whale.jpg', cartoon:'whale-cartoon.png' },
+  { slug:'australian-fur-seal', sci:'Arctocephalus pusillus doriferus', file:'Australian-Fur-Seal.jpg', cartoon:'seal-cartoon.png' },
+  { slug:'little-penguin', sci:'Eudyptula minor', file:'little-penguin.jpg', cartoon:'penguin-cartoon.png' },
+  { slug:'weedy-seadragon', sci:'Phyllopteryx taeniolatus', file:'Weedy-seadragon.jpg', cartoon:'seadragon-cartoon.png' },
+  { slug:'australian-fairy-tern', sci:'Sternula nereis', file:'Australian-Fairy-Tern.jpg', cartoon:'tern-cartoon.png' },
+  { slug:'hooded-plover', sci:'Thinornis cucullatus', file:'Larissa-Hill-Hooded-Plover.jpg', cartoon:'pover-cartoon.png' },
+  { slug:'short-tailed-shearwater', sci:'Ardenna tenuirostris', file:'Short-tailed-Shearwater.jpg', cartoon:'shearwater.png' }
 ]
 
+// Computed animals with translations
+const animals = computed(() => {
+  return baseAnimals.map(animal => ({
+    ...animal,
+    name: t(`animalData.${animal.slug}.name`),
+    type: t(`animalData.${animal.slug}.type`),
+    habitat: t(`animalData.${animal.slug}.habitat`),
+    lines: tm(`animalData.${animal.slug}.lines`),
+    threats: tm(`animalData.${animal.slug}.threats`) || [],
+    help: tm(`animalData.${animal.slug}.help`) || [],
+    fun: tm(`animalData.${animal.slug}.fun`) || []
+  }))
+})
+
 const idx = ref(0)
-const current = computed(() => animals[idx.value])
+const current = computed(() => animals.value[idx.value])
 
 const rail = ref(null)
 const railBox = ref(null)
@@ -371,7 +229,7 @@ function select(i){
     el?.scrollIntoView?.({ behavior:'smooth', inline:'center', block:'nearest' })
   })
 }
-function scrollBy(step){ select((idx.value + step + animals.length) % animals.length) }
+function scrollBy(step){ select((idx.value + step + animals.value.length) % animals.value.length) }
 
 const mode = ref('cartoon')
 
@@ -410,10 +268,10 @@ function updateArrow(){
   hintTop.value = railRect ? Math.min(Math.max(12, Math.round(railRect.bottom - stage.top + safe)), 64) + 'px' : '16px'
 }
 
-const prevIndex = computed(() => (idx.value - 1 + animals.length) % animals.length)
-const nextIndex = computed(() => (idx.value + 1) % animals.length)
-const prevAnimal = computed(() => animals[prevIndex.value])
-const nextAnimal = computed(() => animals[nextIndex.value])
+const prevIndex = computed(() => (idx.value - 1 + animals.value.length) % animals.value.length)
+const nextIndex = computed(() => (idx.value + 1) % animals.value.length)
+const prevAnimal = computed(() => animals.value[prevIndex.value])
+const nextAnimal = computed(() => animals.value[nextIndex.value])
 function prev(){ select(prevIndex.value) }
 function next(){ select(nextIndex.value) }
 
@@ -515,8 +373,8 @@ onMounted(() => {
 }
 .fact-sheet{
   width:min(980px, 92vw);
-  background:#2f6f1f; 
-  border:6px solid #f2c94c; 
+  background:#2f6f1f;
+  border:6px solid #f2c94c;
   border-radius:16px;
   color:#fff;
   box-shadow:0 20px 50px rgba(0,0,0,.45);

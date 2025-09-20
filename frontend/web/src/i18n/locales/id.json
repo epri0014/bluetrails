@@ -1,0 +1,291 @@
+{
+  "nav": {
+    "oceanFriends": "Sahabat Laut",
+    "meetOceanFriends": "Temui Sahabat Laut Kita",
+    "visitOceanHome": "Kunjungi Rumah Sahabat Laut",
+    "playPractice": "Bermain & Berlatih",
+    "playGames": "Mainkan Permainan Laut yang Menyenangkan",
+    "practiceQuiz": "Latihan Kuis Laut",
+    "aboutUs": "Tentang Kami"
+  },
+  "hero": {
+    "title": "Lindungi Laut Kita",
+    "description": "Laut kita adalah rumah bagi kehidupan yang menakjubkan. Polusi dan perubahan iklim membahayakannya. Pelajari apa yang merusak laut dan bagaimana tindakan kecil setiap hari dapat melindunginya.",
+    "animalsAtRisk": "Hewan Terancam",
+    "beOceanHero": "Jadilah Pahlawan Laut",
+    "knowYourWater": "Kenali Air Anda",
+    "moreComing": "Lebih banyak akan datang",
+    "caption": "Jadilah Pahlawan Laut: kurangi plastik sekali pakai, daur ulang, hemat air, pilih produk ramah terumbu karang, dan bagikan apa yang Anda pelajari."
+  },
+  "animals": {
+    "pageTitle": "Temui Sahabat Laut Kita",
+    "showRealImage": "Tampilkan Gambar Asli",
+    "showCartoonAvatar": "Tampilkan Avatar Kartun",
+    "backToHome": "Kembali ke Beranda",
+    "goToOceanHome": "Pergi ke Rumah Sahabat Laut",
+    "hiIm": "Hai! Saya",
+    "tapMe": "Ketuk saya!",
+    "openInfoFor": "Buka info untuk",
+    "messageFrom": "Pesan dari",
+    "close": "Tutup",
+    "commonName": "Nama umum",
+    "scientificName": "Nama ilmiah",
+    "type": "Jenis",
+    "habitat": "Habitat",
+    "whatHurtsMe": "Apa yang menyakiti saya",
+    "howYouCanHelp": "Bagaimana Anda dapat membantu",
+    "funFact": "Fakta menarik",
+    "cartoon": "Kartun",
+    "photo": "Foto",
+    "previous": "Sebelumnya",
+    "next": "Selanjutnya",
+    "chooseAnimal": "Pilih hewan",
+    "oceanStage": "Panggung laut",
+    "learnPlayAct": "Belajar • Bermain • Bertindak"
+  },
+  "animalDetail": {
+    "back": "Kembali",
+    "meetThe": "Temui",
+    "whyTheyMatter": "Mengapa mereka penting",
+    "howPollutionHurts": "Bagaimana polusi menyakiti mereka",
+    "howYouCanHelp": "Bagaimana Anda dapat membantu",
+    "notFound": "Maaf, kami tidak dapat menemukan hewan tersebut.",
+    "commonName": "NAMA UMUM:",
+    "scientificName": "NAMA ILMIAH:",
+    "group": "KELOMPOK:",
+    "type": "JENIS:",
+    "size": "UKURAN:",
+    "diet": "MAKANAN:",
+    "status": "STATUS:"
+  },
+  "footer": {
+    "mainText": "BlueTrails - Pahlawan Laut Victoria",
+    "subText": "© 2025 MindMerge - Melindungi Laut Victoria Kita Bersama"
+  },
+  "loading": {
+    "default": "Memuat...",
+    "game": "Memuat Permainan Pahlawan Laut...",
+    "water": "Memuat Rumah Sahabat Laut..."
+  },
+  "newHome": {
+    "toggleMusic": "Beralih musik latar belakang",
+    "welcomeTitle": "Selamat Datang di BlueTrails",
+    "welcomeSubtitle": "Mari lindungi Laut Victoria kita bersama dan menjadi Pahlawan Laut!",
+    "start": "Mulai",
+    "back": "<< Kembali",
+    "clickContinue": "Klik untuk melanjutkan >>",
+    "restart": "Mulai Ulang >>",
+    "speeches": [
+      "Hai! 🐠 Kami adalah Sahabat Laut Victoria! 🌊 Kami membutuhkan bantuan Anda untuk melindungi rumah kami. Bergabunglah dengan kami dalam belajar tentang laut dan bagaimana Anda dapat membuat perbedaan! 🐢",
+      "Kenali kami lebih baik dengan mengarahkan kursor ke bagian <span class='nav-highlight'>Sahabat Laut</span> 🐙 di menu navigasi di atas, lalu klik <span class='nav-highlight'>Temui Sahabat Laut Kita</span>. Mari jelajahi dan bersenang-senang bersama! ⭐",
+      "Oh, Hai! 🦈 Anda juga bisa mengunjungi rumah kami! Arahkan kursor ke bagian <span class='nav-highlight'>Sahabat Laut</span> 🏠 di bilah navigasi atas, lalu klik <span class='nav-highlight'>Kunjungi Rumah Sahabat Laut</span> untuk melihat tempat kami tinggal dan bagaimana Anda dapat membantu menjaganya tetap aman dan bersih! 🌊",
+      "Sudah mengenal kami dan tempat tinggal kami? Bagus! 🎮 Mari mainkan beberapa permainan menyenangkan bersama! Arahkan kursor ke bagian <span class='nav-highlight'>Bermain & Berlatih</span> 🎯 di menu navigasi, lalu klik <span class='nav-highlight'>Mainkan Permainan Laut yang Menyenangkan</span> untuk mulai bermain dan belajar! 🐠",
+      "Ingin menguji pengetahuan laut Anda? 📚 Arahkan kursor ke bagian <span class='nav-highlight'>Bermain & Berlatih</span> 🧠 di menu navigasi, lalu klik <span class='nav-highlight'>Latihan Kuis Laut</span> untuk menantang diri Anda dengan pertanyaan menyenangkan tentang kehidupan laut! 🤓",
+      "Terima kasih telah mengunjungi kami! 🙏 Kami harap Anda bersenang-senang menjelajahi dan belajar tentang laut. 🌊 Ingat, setiap tindakan kecil penting dalam melindungi Laut Victoria kita yang indah. Mari menjadi Pahlawan Laut bersama! 🦸‍♂️🌊"
+    ]
+  },
+  "animalData": {
+    "burrunan-dolphin": {
+      "name": "Lumba-lumba Burrunan",
+      "type": "Mamalia laut",
+      "habitat": "Teluk dan perairan pesisir Victoria",
+      "lines": [
+        "Tolong buang sampah dan potong lingkaran – tali hantu bisa melilit siripku.",
+        "Aku takut dengan kantong plastik dan tali pancing.",
+        "Pilih botol yang bisa digunakan ulang. Sedikit plastik, laut lebih aman!"
+      ],
+      "sadText": "Aku bermasalah ketika kantong plastik mengapung - aku mungkin mengira itu ubur-ubur untuk dimakan! Tali pancing hantu bisa melilit siripku dan menyakitiku sangat parah.",
+      "happyText": "Aku bahagia ketika air bersih dan jernih! Aku bisa bermain dengan teman lumba-lumbaku dan berbicara dengan mereka menggunakan suara klik. Laut bersih berarti ikan sehat untukku makan!",
+      "threats": [
+        "Kantong plastik dan tali pancing bisa melilit sirip dan tertelan.",
+        "Kebisingan kapal menyulitkan komunikasi.",
+        "Air tercemar melukai kulit dan kesehatan kami."
+      ],
+      "help": [
+        "Buang sampah dan potong lingkaran plastik.",
+        "Pilih botol yang bisa digunakan ulang dan jaga kapal tetap lambat di dekat lumba-lumba.",
+        "Ikut pembersihan pantai dengan orang dewasa."
+      ],
+      "fun": [
+        "Kami tidur dengan setengah otak setiap saat!"
+      ]
+    },
+    "southern-right-whale": {
+      "name": "Paus Kanan Selatan",
+      "type": "Mamalia laut",
+      "habitat": "Samudra Selatan dan garis pantai Victoria selama musim dingin",
+      "lines": [
+        "Jauhkan balon dari pantai – kami bisa menelannya secara tidak sengaja.",
+        "Kapal lambat dan \"laut tenang\" membantu kami berbicara dengan anak kami.",
+        "Dukung tim penyelamat yang membebaskan paus yang terjerat."
+      ],
+      "sadText": "Aku bermasalah ketika balon jatuh ke air - mereka terlihat seperti ubur-ubur lezat tapi membuat perutku sakit! Suara kapal yang keras membuat sulit berbicara dengan anak pausku.",
+      "happyText": "Aku bahagia ketika laut tenang dan bersih! Aku bisa menyanyikan lagu paus yang indah untuk keluargaku dan mengajari anakku cara berenang dan mencari makanan.",
+      "threats": [
+        "Terjerat jaring dan tali.",
+        "Tabrakan kapal dan kebisingan bawah air.",
+        "Menelan plastik yang mengapung."
+      ],
+      "help": [
+        "Jauhkan balon dari pantai.",
+        "Dukung tim penyelamat paus.",
+        "Nikmati paus dari jarak aman."
+      ],
+      "fun": [
+        "Ibu dan anak beristirahat dekat pantai di musim dingin."
+      ]
+    },
+    "australian-fur-seal": {
+      "name": "Anjing Laut Bulu Australia",
+      "type": "Mamalia laut",
+      "habitat": "Pulau berbatu dan pantai di sekitar Selat Bass",
+      "lines": [
+        "Cincin/tali plastik mengencang saat kami tumbuh. Potong sebelum dibuang!",
+        "Jaring hantu menakutkan – mereka menjerat leher kami.",
+        "Amati satwa liar dari jarak jauh. Kami butuh ruang untuk istirahat."
+      ],
+      "sadText": "Aku bermasalah ketika cincin plastik tersangkut di leherku - mereka mengencang saat aku tumbuh lebih besar! Jaring hantu menakutkan dan bisa menjebakku di bawah air.",
+      "happyText": "Aku bahagia ketika bisa beristirahat di bebatuan bersih dengan teman anjing lautku! Aku suka menyelam mencari ikan di air jernih dan bermain di ombak dengan anak-anakku.",
+      "threats": [
+        "Cincin dan tali plastik mengencang saat kami tumbuh.",
+        "Jaring hantu bisa menjerat leher kami.",
+        "Gangguan di tempat kami beristirahat."
+      ],
+      "help": [
+        "Potong cincin/tali plastik sebelum dibuang.",
+        "Amati satwa liar dari jarak jauh.",
+        "Bawa pulang perlengkapan pancingmu."
+      ],
+      "fun": [
+        "Kami bisa ‘berjalan’ di darat dengan keempat sirip kami!"
+      ]
+    },
+    "little-penguin": {
+      "name": "Penguin Kecil",
+      "type": "Burung laut",
+      "habitat": "Pantai berbatu dan pulau termasuk Pulau Phillip",
+      "lines": [
+        "Jaga pantai tetap bersih dan gelap – cahaya membingungkan anak kami.",
+        "Tolong bawa pulang kail pancingmu.",
+        "Bergabunglah dalam pembersihan mini dengan orang dewasa – setiap potongan kecil membantu!"
+      ],
+      "sadText": "Aku bermasalah ketika lampu terang menyinari malam - anak penguinku jadi bingung dan tidak bisa menemukan jalan pulang ke liang kami! Kail pancing yang tajam juga melukai kakiku.",
+      "happyText": "Aku bahagia ketika pantai gelap di malam hari sehingga anak-anakku bisa menemukanku! Aku suka berjalan di pasir bersih dan menyelam mencari ikan kecil di air jernih.",
+      "threats": [
+        "Cahaya terang di malam hari membingungkan anak penguin.",
+        "Kail dan tali pancing melukai kami.",
+        "Minyak dan plastik merusak bulu serta perut kami."
+      ],
+      "help": [
+        "Jaga pantai tetap bersih dan gelap.",
+        "Bawa pulang kail dan tali pancing.",
+        "Ikut pembersihan mini bersama orang dewasa."
+      ],
+      "fun": [
+        "Kami adalah penguin terkecil di dunia!"
+      ]
+    },
+    "weedy-seadragon": {
+      "name": "Naga Laut Rumput",
+      "type": "Ikan (keluarga kuda laut)",
+      "habitat": "Hutan rumput laut dan lamun di sepanjang Australia selatan",
+      "lines": [
+        "Kami suka lamun yang sehat. Jangan injak-injak hamparan rumput laut ya.",
+        "Pilih tabir surya yang aman untuk terumbu karang.",
+        "Bagikan apa yang kamu pelajari – pahlawan laut kecil bisa menginspirasi lebih banyak pahlawan! 🌊"
+      ],
+      "sadText": "Aku sedih kalau orang menginjak rumah rumput lautku – di situlah aku bersembunyi dan mencari udang kecil untuk dimakan! Bahan kimia dari tabir surya bikin air jadi tidak enak untukku.",
+      "happyText": "Aku senang kalau hutan rumput lautku sehat dan hijau! Aku bisa bersembunyi di antara tanaman dan menari bersama arus sambil mencari camilan lezat.",
+      "threats": [
+        "Hilangnya rumah rumput laut dan kelp.",
+        "Air kotor bikin sulit hidup.",
+        "Penyelaman yang ceroboh bisa mengganggu kami."
+      ],
+      "help": [
+        "Jangan injak-injak lamun atau rumput laut.",
+        "Gunakan tabir surya ramah terumbu.",
+        "Ceritakan ilmumu, supaya makin banyak pahlawan laut!"
+      ],
+      "fun": [
+        "Ayah naga laut yang menjaga telur di perutnya!"
+      ]
+    },
+    "australian-fairy-tern": {
+      "name": "Dara Laut Peri Australia",
+      "type": "Burung laut",
+      "habitat": "Pantai berpasir dan muara",
+      "lines": [
+        "Tolong jangan masuk ke area sarang kami di pasir.",
+        "Ikat anjing dengan tali kalau dekat burung pantai.",
+        "Plastik kecil mirip makanan – ayo pungut!"
+      ],
+      "sadText": "Aku sedih kalau orang berjalan terlalu dekat sarangku di pasir – aku bisa takut dan meninggalkan telurnya! Potongan plastik kecil terlihat seperti ikan tapi bikin aku sakit.",
+      "happyText": "Aku senang kalau bisa membangun sarang di pasir bersih dengan aman! Aku suka menyelam ke laut jernih untuk menangkap ikan kecil buat anak-anakku.",
+      "threats": [
+        "Sarang di pasir terbuka gampang terinjak.",
+        "Orang dan anjing bikin induk takut dan meninggalkan telur.",
+        "Plastik kecil terlihat seperti makanan."
+      ],
+      "help": [
+        "Tetap di luar area sarang yang diberi tanda.",
+        "Ikat anjing dengan tali kalau di pantai.",
+        "Ambil plastik kecil yang kamu lihat."
+      ],
+      "fun": [
+        "Kami bikin sarang berupa cekungan kecil di pasir!"
+      ]
+    },
+    "hooded-plover": {
+      "name": "Cerek Berkerudung (Vic)",
+      "type": "Burung pantai",
+      "habitat": "Pantai terbuka dan tepi bukit pasir",
+      "lines": [
+        "Kami bersarang langsung di pasir – beri ruang dan ikuti rambu.",
+        "Jangan tinggalkan lubang atau benteng di pantai – anak bisa jatuh.",
+        "Bawa pulang sampahmu – angin bisa menerbangkannya ke laut."
+      ],
+      "sadText": "Aku sedih kalau orang menggali lubang di pasir – anak kecilku bisa jatuh dan tidak bisa keluar! Sampah juga bisa terbawa angin dan merusak rumahku.",
+      "happyText": "Aku senang kalau pantai datar dan bersih! Aku bisa berlari di pasir mencari kepiting kecil bersama anak-anakku dengan aman.",
+      "threats": [
+        "Sarang di pasir mudah terinjak.",
+        "Lubang atau benteng bisa menjebak anak.",
+        "Anjing tanpa tali mengganggu induk."
+      ],
+      "help": [
+        "Ikuti rambu pantai dan beri ruang untuk kami.",
+        "Ratakan benteng dan tutup lubang sebelum pulang.",
+        "Ikat anjing dengan tali di dekat pantai."
+      ],
+      "fun": [
+        "Telur kami mirip batu kecil berbintik!"
+      ]
+    },
+    "short-tailed-shearwater": {
+      "name": "Burung Shearwater Ekor Pendek",
+      "type": "Burung laut",
+      "habitat": "Membuat liang di pulau; migrasi jauh melintasi laut",
+      "lines": [
+        "Lampu di malam hari bisa bikin kami bingung – lindungi lampu dekat pantai.",
+        "Minyak dan plastik merusak bulu dan perut kami.",
+        "Gunakan barang yang bisa dipakai ulang. Tindakan kecil bikin ombak besar!"
+      ],
+      "sadText": "Aku sedih kalau lampu terang di malam hari bikin aku bingung – aku bisa menabrak gedung! Minyak dan plastik bikin buluku kotor dan perutku sakit.",
+      "happyText": "Aku senang kalau bisa terbang di atas laut gelap yang bersih di malam hari! Aku suka bepergian jauh dengan teman-temanku dan menyelam mencari ikan.",
+      "threats": [
+        "Lampu terang di malam hari bikin bingung.",
+        "Minyak & plastik merusak bulu dan perut.",
+        "Pemangsa di koloni sarang."
+      ],
+      "help": [
+        "Lindungi lampu dekat pantai saat anak belajar terbang.",
+        "Kurangi plastik dan ikut pembersihan pantai.",
+        "Amati burung dengan tenang dari kejauhan."
+      ],
+      "fun": [
+        "Kami terbang sampai ke Kutub Utara lalu kembali setiap tahun!"
+      ]
+    }
+
+
+  }
+}
