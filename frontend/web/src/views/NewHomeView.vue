@@ -2,7 +2,7 @@
   <main class="home-page">
     <!-- Background Music -->
     <audio ref="backgroundMusic" loop preload="auto">
-      <source src="/playful-kids-toys-vlog-music-246603.mp3" type="audio/mpeg">
+      <source src="/sound/playful-kids-toys-vlog-music-246603.mp3" type="audio/mpeg">
     </audio>
 
     <!-- Music Controls -->

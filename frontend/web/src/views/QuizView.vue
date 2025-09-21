@@ -370,9 +370,9 @@ const playAnswerSound = (isCorrect) => {
   try {
     const audio = new Audio()
     if (isCorrect) {
-      audio.src = '/src/assets/sound/sonido-correcto-331225.mp3'
+      audio.src = '/sound/sonido-correcto-331225.mp3'
     } else {
-      audio.src = '/src/assets/sound/party-blower-4-207163.mp3'
+      audio.src = '/sound/party-blower-4-207163.mp3'
     }
     audio.volume = 0.3
     audio.play().catch(e => console.log('Audio play failed:', e))
@@ -384,7 +384,7 @@ const playAnswerSound = (isCorrect) => {
 const playResultSound = () => {
   try {
     const audio = new Audio()
-    audio.src = '/src/assets/sound/children-saying-yay-praise-and-worship-jesus-299607.mp3'
+    audio.src = '/sound/children-saying-yay-praise-and-worship-jesus-299607.mp3'
     audio.volume = 0.4
     audio.play().catch(e => console.log('Result audio play failed:', e))
   } catch (error) {
