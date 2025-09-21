@@ -7,6 +7,7 @@ import AvatarSelect from '../views/AvatarSelect.vue'
 import OceanHealth from '../views/OceanHealth.vue'
 import CausePage from '@/views/CausePage.vue'
 import Game from '../views/Game.vue'
+import QuizView from '../views/QuizView.vue'
 
 const routes = [
   { path: '/', name: 'home', component: Home },
@@ -17,6 +18,7 @@ const routes = [
   { path: '/health', component: OceanHealth },
   { path: '/cause', component: CausePage },
   { path: '/game', name: 'game', component: Game },
+  { path: '/quiz', name: 'quiz', component: QuizView },
   { path: '/:pathMatch(.*)*', redirect: '/' }
 ]
 

@@ -84,6 +84,31 @@
       "Thank you for visiting us! 🙏 We hope you have a great time exploring and learning about the ocean. 🌊 Remember, every little action counts in protecting our beautiful Victorian Ocean. Let's be Ocean Heroes together! 🦸‍♂️🌊"
     ]
   },
+  "quiz": {
+    "title": "Ocean Friends Quiz!",
+    "subtitle": "Test your knowledge about our ocean friends and learn how to protect them!",
+    "timeLeft": "Time Left:",
+    "score": "Score:",
+    "outOf": "out of",
+    "correct": "Correct!",
+    "incorrect": "Oops! The correct answer is",
+    "nextQuestion": "Next Question",
+    "finish": "Finish Quiz",
+    "funFact": "Fun Fact",
+    "yourScore": "You scored",
+    "retakeQuiz": "Retake Quiz",
+    "goHome": "Go to Homepage",
+    "categories": {
+      "waste": "Waste & Pollution",
+      "ocean": "Ocean Protection",
+      "animal": "Marine Animals"
+    },
+    "resultMessages": {
+      "low": "Keep trying! You can learn more about our ocean friends and try again.",
+      "good": "Great job! You have a good understanding of our ocean friends.",
+      "excellent": "Excellent! You are an ocean hero!"
+    }
+  },
   "animalData": {
     "burrunan-dolphin": {
       "name": "Burrunan Dolphin",
