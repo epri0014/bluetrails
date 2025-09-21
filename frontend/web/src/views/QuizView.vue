@@ -15,8 +15,7 @@
     <div class="quiz-content">
       <!-- Title Section -->
       <div class="title-section">
-        <h1 class="quiz-title">Ocean Friends Quiz!</h1>
-        <p class="quiz-subtitle">Test your knowledge about our ocean friends and learn how to protect them!</p>
+        <h1 class="quiz-title">Practice your ocean knowledge</h1>
       </div>
 
       <!-- Loading State -->
@@ -29,8 +28,8 @@
       <div v-else-if="!showResult && currentQuestion" class="quiz-card">
         <!-- Question Section -->
         <div class="question-section" :style="{ background: getQuestionBackground() }">
-          <div class="question-content">
-            <div v-if="!showFunFact" class="question-front">
+          <div class="question-content" :class="{ flipped: showFunFact }">
+            <div class="question-front">
               <div class="category-badge">
                 <span class="category-icon">{{ getCategoryIcon(currentQuestion.category) }}</span>
                 <span class="category-text">{{ getCategoryName(currentQuestion.category) }}</span>
@@ -38,7 +37,7 @@
               <h2 class="question-text">{{ currentQuestion.question }}</h2>
             </div>
 
-            <div v-else class="question-back">
+            <div class="question-back">
               <div class="fun-fact-header">
                 <span class="fun-fact-icon">💡</span>
                 <span class="fun-fact-title">Fun Fact</span>
@@ -46,6 +45,21 @@
               <p class="fun-fact-text">{{ currentQuestion.funFact }}</p>
             </div>
           </div>
+
+          <!-- Timer moved to top right corner of quiz card -->
+          <div class="timer-section-new">
+            <div class="timer">
+              <span class="timer-label">Time Left:</span>
+              <span class="timer-value">{{ formatTime(timeLeft) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next Question Button (between question and options) -->
+        <div v-if="selectedAnswer && showFunFact" class="next-section-middle">
+          <button class="next-btn" @click="nextQuestion">
+            {{ currentQuestionIndex === selectedQuestions.length - 1 ? 'Finish Quiz' : 'Next Question' }}
+          </button>
         </div>
 
         <!-- Answer Options -->
@@ -62,27 +76,16 @@
           </button>
         </div>
 
-        <!-- Feedback Section -->
-        <div v-if="selectedAnswer" class="feedback-section">
-          <div class="feedback-bubble" :class="{ correct: isCorrect, incorrect: !isCorrect }">
-            <div class="feedback-text">
-              <span v-if="isCorrect" class="feedback-message correct">Correct!</span>
-              <span v-else class="feedback-message incorrect">
-                Oops! The correct answer is {{ currentQuestion.correctAnswer }}.
-              </span>
-            </div>
-          </div>
+      </div>
 
-          <button class="next-btn" @click="nextQuestion">
-            {{ currentQuestionIndex === selectedQuestions.length - 1 ? 'Finish Quiz' : 'Next Question' }}
-          </button>
-        </div>
-
-        <!-- Timer -->
-        <div class="timer-section">
-          <div class="timer">
-            <span class="timer-label">Time Left:</span>
-            <span class="timer-value">{{ formatTime(timeLeft) }}</span>
+      <!-- Feedback Overlay -->
+      <div v-if="selectedAnswer && !showFunFact" class="feedback-overlay">
+        <div class="feedback-bubble-overlay" :class="{ correct: isCorrect, incorrect: !isCorrect }">
+          <div class="feedback-text">
+            <span v-if="isCorrect" class="feedback-message correct">🎉 Correct!</span>
+            <span v-else class="feedback-message incorrect">
+              😔 Oops! The correct answer is {{ currentQuestion.correctAnswer }}.
+            </span>
           </div>
         </div>
       </div>
@@ -221,10 +224,10 @@ const selectAnswer = (answer) => {
     correct: correct
   })
 
-  // Show fun fact after 1 second
+  // Show fun fact after 2 seconds (after feedback overlay disappears)
   setTimeout(() => {
     showFunFact.value = true
-  }, 1000)
+  }, 2000)
 }
 
 const nextQuestion = () => {
@@ -432,34 +435,26 @@ onBeforeUnmount(() => {
   z-index: 10;
   width: 100%;
   max-width: 900px;
-  padding: 40px 20px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 20px;
 }
 
 /* Title Section */
 .title-section {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
+  padding: 10px 20px;
 }
 
 .quiz-title {
-  font-size: clamp(36px, 6vw, 64px);
+  font-size: clamp(28px, 5vw, 48px);
   font-weight: 900;
   color: #fff;
   text-shadow: 0 4px 8px rgba(0, 0, 0, 0.7), 0 2px 4px rgba(0, 0, 0, 0.8);
-  margin-bottom: 15px;
+  margin-bottom: 0;
   animation: bounce-text 2s ease-in-out infinite;
-}
-
-.quiz-subtitle {
-  font-size: clamp(16px, 2.5vw, 24px);
-  font-weight: 700;
-  color: #fff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-  max-width: 600px;
-  margin: 0 auto;
 }
 
 @keyframes bounce-text {
@@ -508,10 +503,64 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  perspective: 1000px;
 }
 
 .question-content {
   width: 100%;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+.question-content.flipped {
+  transform: rotateY(180deg);
+}
+
+.question-front,
+.question-back {
+  backface-visibility: hidden;
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 120px;
+}
+
+.question-back {
+  transform: rotateY(180deg) translateY(-50%);
+}
+
+/* Timer positioned at top right corner */
+.timer-section-new {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.timer-section-new .timer {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.timer-section-new .timer-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.timer-section-new .timer-value {
+  font-size: 16px;
+  font-weight: 800;
 }
 
 .category-badge {
@@ -606,61 +655,90 @@ onBeforeUnmount(() => {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   border-color: #059669;
-  animation: glow-green 1s ease-in-out;
+  animation: glow-green 1.5s ease-in-out infinite;
 }
 
 .option-btn.incorrect {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
   border-color: #dc2626;
-  animation: shake 0.5s ease-in-out;
+  animation: shake-vibrate 0.6s ease-in-out;
 }
 
 .option-btn.neutral {
   opacity: 0.6;
 }
 
+
 @keyframes glow-green {
   0%, 100% { box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3); }
   50% { box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6); }
 }
 
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
+@keyframes shake-vibrate {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  10% { transform: translateX(-3px) rotate(-1deg); }
+  20% { transform: translateX(3px) rotate(1deg); }
+  30% { transform: translateX(-3px) rotate(-1deg); }
+  40% { transform: translateX(3px) rotate(1deg); }
+  50% { transform: translateX(-2px) rotate(-0.5deg); }
+  60% { transform: translateX(2px) rotate(0.5deg); }
+  70% { transform: translateX(-1px) rotate(-0.25deg); }
+  80% { transform: translateX(1px) rotate(0.25deg); }
+  90% { transform: translateX(-0.5px) rotate(-0.1deg); }
 }
 
-/* Feedback Section */
-.feedback-section {
-  padding: 20px 40px 30px;
+/* Feedback Overlay */
+.feedback-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 20px;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: none;
+  animation: feedback-overlay-show 2s ease-out;
 }
 
-.feedback-bubble {
+.feedback-bubble-overlay {
   background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
-  border-radius: 20px;
-  padding: 20px 30px;
-  border: 3px solid;
-  animation: zoom-in 0.5s ease-out;
+  border-radius: 25px;
+  padding: 30px 40px;
+  border: 4px solid;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: feedback-zoom-in 0.3s ease-out, feedback-zoom-out 0.3s ease-in 1.7s;
+  backdrop-filter: blur(10px);
 }
 
-.feedback-bubble.correct {
+.feedback-bubble-overlay.correct {
   border-color: #10b981;
   color: #065f46;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
 }
 
-.feedback-bubble.incorrect {
+.feedback-bubble-overlay.incorrect {
   border-color: #ef4444;
   color: #991b1b;
+  background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
 }
 
-.feedback-message {
-  font-size: 18px;
-  font-weight: 700;
+.feedback-bubble-overlay .feedback-message {
+  font-size: 24px;
+  font-weight: 800;
+  text-align: center;
+}
+
+/* Next Section - positioned between question and options */
+.next-section-middle {
+  padding: 20px 40px;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .next-btn {
@@ -683,39 +761,23 @@ onBeforeUnmount(() => {
   box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
 }
 
-@keyframes zoom-in {
-  0% { transform: scale(0.8); opacity: 0; }
+/* Feedback Overlay Animations */
+@keyframes feedback-overlay-show {
+  0% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes feedback-zoom-in {
+  0% { transform: scale(0.5); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* Timer Section */
-.timer-section {
-  position: absolute;
-  bottom: 20px;
-  right: 30px;
+@keyframes feedback-zoom-out {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.5); opacity: 0; }
 }
 
-.timer {
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.timer-label {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.timer-value {
-  font-size: 18px;
-  font-weight: 800;
-  font-family: monospace;
-}
 
 /* Score Section */
 .score-section {
