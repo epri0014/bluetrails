@@ -15,13 +15,13 @@
     <div class="quiz-content">
       <!-- Title Section -->
       <div class="title-section">
-        <h1 class="quiz-title">Practice your ocean knowledge</h1>
+        <h1 class="quiz-title">{{ $t('quiz.title') }}</h1>
       </div>
 
       <!-- Loading State -->
       <div v-if="isLoading" class="loading-section">
         <div class="loading-spinner">🌊</div>
-        <p class="loading-text">Loading Ocean Quiz...</p>
+        <p class="loading-text">{{ $t('quiz.loading') }}</p>
       </div>
 
       <!-- Quiz Card -->
@@ -45,7 +45,7 @@
             <div class="question-back">
               <div class="fun-fact-header">
                 <span class="fun-fact-icon">💡</span>
-                <span class="fun-fact-title">Fun Fact</span>
+                <span class="fun-fact-title">{{ $t('quiz.funFact') }}</span>
               </div>
               <p class="fun-fact-text">{{ currentQuestion.funFact }}</p>
             </div>
@@ -54,7 +54,7 @@
           <!-- Timer moved to top right corner of quiz card -->
           <div class="timer-section-new">
             <div class="timer">
-              <span class="timer-label">Time Left:</span>
+              <span class="timer-label">{{ $t('quiz.timeLeft') }}</span>
               <span class="timer-value">{{ formatTime(timeLeft) }}</span>
             </div>
           </div>
@@ -64,7 +64,7 @@
         <Transition name="next-button" appear>
           <div v-if="selectedAnswer && showFunFact" class="next-section-middle">
             <button class="next-btn fade-in-btn" @click="nextQuestion">
-              {{ currentQuestionIndex === selectedQuestions.length - 1 ? 'Finish Quiz' : 'Next Question' }}
+              {{ currentQuestionIndex === selectedQuestions.length - 1 ? $t('quiz.finish') : $t('quiz.nextQuestion') }}
             </button>
           </div>
         </Transition>
@@ -94,9 +94,9 @@
       <div v-if="showFeedback" class="feedback-overlay">
         <div class="feedback-bubble-overlay" :class="{ correct: isAnswerCorrect, incorrect: !isAnswerCorrect }">
           <div class="feedback-text">
-            <span v-if="isAnswerCorrect" class="feedback-message correct">🎉 Correct!</span>
+            <span v-if="isAnswerCorrect" class="feedback-message correct">🎉 {{ $t('quiz.correct') }}</span>
             <span v-else class="feedback-message incorrect">
-              😔 Oops! The correct answer is {{ currentQuestion.correctAnswer }}.
+              😔 {{ $t('quiz.incorrect') }} {{ currentQuestion.correctAnswer }}.
             </span>
           </div>
         </div>
@@ -105,8 +105,8 @@
       <!-- Score Section -->
       <div v-if="!isLoading" class="score-section">
         <div class="score-display">
-          <span class="score-label">Score:</span>
-          <span class="score-value">{{ score }} out of {{ totalQuestions }}</span>
+          <span class="score-label">{{ $t('quiz.score') }}</span>
+          <span class="score-value">{{ score }} {{ $t('quiz.outOf') }} {{ totalQuestions }}</span>
         </div>
 
         <div class="progress-bar">
@@ -122,7 +122,7 @@
       <!-- Result Page -->
       <div v-if="showResult" class="result-section">
         <div class="result-card">
-          <h2 class="result-title">You scored {{ score }} out of {{ totalQuestions }}!</h2>
+          <h2 class="result-title">{{ $t('quiz.yourScore') }} {{ score }} {{ $t('quiz.outOf') }} {{ totalQuestions }}!</h2>
 
           <div class="result-message">
             <div class="result-icon">{{ getResultIcon() }}</div>
@@ -134,14 +134,14 @@
               <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
               </svg>
-              Retake Quiz
+              {{ $t('quiz.retakeQuiz') }}
             </button>
 
             <button class="home-btn" @click="goHome">
               <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="m20 8-6-5.26a3 3 0 0 0-4 0L4 8a3 3 0 0 0-1 2.26V19a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-8.74A3 3 0 0 0 20 8ZM14 20h-4v-6h4v6Z"/>
               </svg>
-              Go to Homepage
+              {{ $t('quiz.goHome') }}
             </button>
           </div>
         </div>
@@ -153,13 +153,15 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { quizQuestions, getCategoryBackground, getCategoryIcon } from '../data/quizQuestions.js'
+import { useI18n } from 'vue-i18n'
+import { getCategoryBackground, getCategoryIcon } from '../data/quizQuestions.js'
 
 const router = useRouter()
+const { t, tm } = useI18n()
 
 // Quiz state
 const currentQuestionIndex = ref(0)
-const selectedQuestions = ref([])
+const selectedQuestionIds = ref([])
 const selectedAnswer = ref(null)
 const score = ref(0)
 const timeLeft = ref(120) // 2 minutes in seconds
@@ -173,7 +175,18 @@ const isLoading = ref(true)
 // Timer
 let timer = null
 
-// Computed properties
+// Computed properties - reactive to language changes
+const allQuestions = computed(() => {
+  return tm('quiz.questions') || []
+})
+
+const selectedQuestions = computed(() => {
+  const questions = allQuestions.value
+  return selectedQuestionIds.value.map(id =>
+    questions.find(q => q.id === id)
+  ).filter(Boolean)
+})
+
 const currentQuestion = computed(() => {
   const question = selectedQuestions.value[currentQuestionIndex.value]
   return question || null
@@ -192,9 +205,14 @@ const initializeQuiz = () => {
   try {
     console.log('Initializing quiz')
 
-    // Randomly select 5 questions
-    const shuffled = [...quizQuestions].sort(() => 0.5 - Math.random())
-    selectedQuestions.value = shuffled.slice(0, totalQuestions)
+    // Get questions from i18n
+    const quizQuestions = tm('quiz.questions') || []
+
+    // Randomly select 5 question IDs (preserve selection across language changes)
+    if (selectedQuestionIds.value.length === 0) {
+      const shuffled = [...quizQuestions].sort(() => 0.5 - Math.random())
+      selectedQuestionIds.value = shuffled.slice(0, totalQuestions).map(q => q.id)
+    }
 
     // Reset state
     currentQuestionIndex.value = 0
@@ -203,6 +221,7 @@ const initializeQuiz = () => {
     timeLeft.value = 120
     showResult.value = false
     showFunFact.value = false
+    showFeedback.value = false
     answerHistory.value = []
     isLoading.value = false
 
@@ -284,6 +303,8 @@ const endQuiz = () => {
 }
 
 const retakeQuiz = () => {
+  // Reset question selection for new random questions
+  selectedQuestionIds.value = []
   initializeQuiz()
 }
 
@@ -304,12 +325,7 @@ const getQuestionBackground = () => {
 }
 
 const getCategoryName = (category) => {
-  const names = {
-    waste: 'Waste & Pollution',
-    ocean: 'Ocean Protection',
-    animal: 'Marine Animals'
-  }
-  return names[category] || 'Ocean Protection'
+  return t(`quiz.categories.${category}`) || t('quiz.categories.ocean')
 }
 
 const getOptionClass = (option) => {
@@ -342,11 +358,11 @@ const getResultIcon = () => {
 
 const getResultMessage = () => {
   if (score.value <= 2) {
-    return 'Keep trying! You can learn more about our ocean friends and try again.'
+    return t('quiz.resultMessages.low')
   } else if (score.value <= 4) {
-    return 'Great job! You have a good understanding of our ocean friends.'
+    return t('quiz.resultMessages.good')
   }
-  return 'Excellent! You are an ocean hero!'
+  return t('quiz.resultMessages.excellent')
 }
 
 // Sound effects

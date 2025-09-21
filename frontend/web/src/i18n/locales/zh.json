@@ -84,6 +84,154 @@
       "感谢你的访问！🙏 我们希望你在探索和学习海洋方面度过愉快的时光。🌊 记住，每一个小行动都对保护我们美丽的维多利亚海洋很重要。让我们一起成为海洋英雄！🦸‍♂️🌊"
     ]
   },
+  "quiz": {
+  "title": "测试你的海洋知识",
+  "subtitle": "来考考你对海洋朋友的了解，并学习如何保护他们吧！",
+  "timeLeft": "剩余时间：",
+  "loading": "正在加载海洋问答...",
+  "score": "得分：",
+  "outOf": "共",
+  "correct": "答对了！",
+  "incorrect": "哎呀！正确答案是",
+  "nextQuestion": "下一题",
+  "finish": "完成问答",
+  "funFact": "趣味小知识",
+  "yourScore": "你的分数是",
+  "retakeQuiz": "再玩一次",
+  "goHome": "回到首页",
+  "categories": {
+    "waste": "垃圾与污染",
+    "ocean": "海洋保护",
+    "animal": "海洋动物"
+  },
+  "resultMessages": {
+    "low": "继续加油！你可以多了解一些海洋朋友，再来挑战哦。",
+    "good": "太棒了！你对海洋朋友已经很了解了。",
+    "excellent": "优秀！你是真正的海洋小英雄！"
+  },
+  "questions": [
+    {
+      "id": 1,
+      "question": "街道上的大多数塑料垃圾如果进入下水道，最后会流向哪里？",
+      "correctAnswer": "大海",
+      "options": ["大海", "森林", "回收工厂"],
+      "funFact": "雨水沟直接通向大海，只有雨水才应该进入下水道！",
+      "category": "waste"
+    },
+    {
+      "id": 2,
+      "question": "为什么大雨过后不建议马上去海里游泳？",
+      "correctAnswer": "雨水会把垃圾和细菌冲进海里",
+      "options": ["雨水会把垃圾和细菌冲进海里", "水可能太冷了", "鱼不喜欢热闹"],
+      "funFact": "大雨后最好等 24–48 小时再下海更安全。",
+      "category": "ocean"
+    },
+    {
+      "id": 3,
+      "question": "海龟有时会把塑料袋误认为是什么？",
+      "correctAnswer": "水母",
+      "options": ["水母", "螃蟹", "气球"],
+      "funFact": "海龟常常把塑料看成水母。用环保袋可以保护它们哦！",
+      "category": "waste"
+    },
+    {
+      "id": 4,
+      "question": "在维多利亚州，企鹅宝宝住在哪里？",
+      "correctAnswer": "圣基尔达码头",
+      "options": ["圣基尔达码头", "墨尔本动物园", "沙漠"],
+      "funFact": "圣基尔达的小企鹅世界闻名，干净的海滩让它们更健康。",
+      "category": "animal"
+    },
+    {
+      "id": 5,
+      "question": "以下哪种是保护海洋的最好方法？",
+      "correctAnswer": "以上都对",
+      "options": ["以上都对", "捡垃圾", "带上环保水瓶"],
+      "funFact": "小小行动汇聚成大力量，三个都做，你就是海洋英雄！",
+      "category": "ocean"
+    },
+    {
+      "id": 6,
+      "question": "维多利亚的布鲁南海豚需要什么才能健康生活？",
+      "correctAnswer": "干净的水",
+      "options": ["干净的水", "塑料瓶", "嘈杂的船引擎"],
+      "funFact": "海豚靠声音交流，嘈杂和污染的水让它们很难受。",
+      "category": "animal"
+    },
+    {
+      "id": 7,
+      "question": "哪个物品应该放进回收箱？",
+      "correctAnswer": "塑料水瓶",
+      "options": ["塑料水瓶", "香蕉皮", "脏纸巾"],
+      "funFact": "回收可以防止塑料进入大海，还能让它们获得新生命！",
+      "category": "waste"
+    },
+    {
+      "id": 8,
+      "question": "为什么海马需要海草床？",
+      "correctAnswer": "用来藏身保持安全",
+      "options": ["用来藏身保持安全", "踢足球", "建巢"],
+      "funFact": "健康的海草 = 开心的海马。污染会破坏它们的藏身地。",
+      "category": "animal"
+    },
+    {
+      "id": 9,
+      "question": "以下哪样东西绝对不能倒进水槽或下水道？",
+      "correctAnswer": "食用油",
+      "options": ["食用油", "水", "肥皂"],
+      "funFact": "油会粘在管道里，还会污染水源。请装进容器后扔进垃圾桶。",
+      "category": "waste"
+    },
+    {
+      "id": 10,
+      "question": "一根塑料吸管在海洋里能存在多久？",
+      "correctAnswer": "200 年",
+      "options": ["200 年", "5 周", "5 年"],
+      "funFact": "拒绝使用塑料吸管，它们在海洋里能存在 200 年！",
+      "category": "waste"
+    },
+    {
+      "id": 11,
+      "question": "企鹅宝宝游泳有多快？",
+      "correctAnswer": "比奥运游泳选手还快",
+      "options": ["比奥运游泳选手还快", "比人类慢", "它们不会游泳"],
+      "funFact": "企鹅在水中能以每小时 6 公里以上的速度穿梭，比很多游泳选手都快！",
+      "category": "animal"
+    },
+    {
+      "id": 12,
+      "question": "什么会伤害海洋动物？",
+      "correctAnswer": "过多的水下噪音",
+      "options": ["过多的水下噪音", "安静的海洋", "轻柔的海浪"],
+      "funFact": "嘈杂的船只和声呐会让鲸鱼和海豚迷路。安静的海洋 = 安全的海洋。",
+      "category": "ocean"
+    },
+    {
+      "id": 13,
+      "question": "在海滩上，你最容易做到的环保行为是什么？",
+      "correctAnswer": "捡 3 个垃圾",
+      "options": ["捡 3 个垃圾", "在沙子里挖大坑", "追海鸥"],
+      "funFact": "为大海捡 3 个垃圾，每一小片垃圾都能帮助海洋生物。",
+      "category": "ocean"
+    },
+    {
+      "id": 14,
+      "question": "在菲利普港湾可以发现哪些动物？",
+      "correctAnswer": "布鲁南海豚",
+      "options": ["布鲁南海豚", "狮子", "大象"],
+      "funFact": "布鲁南海豚只生活在维多利亚和塔斯马尼亚，保护它们的家园很重要。",
+      "category": "animal"
+    },
+    {
+      "id": 15,
+      "question": "为什么塑料对海鸟有危险？",
+      "correctAnswer": "它们可能会误食",
+      "options": ["它们可能会误食", "能让它们飞得更快", "能用来做鸟巢"],
+      "funFact": "海鸟常常把塑料当成食物。保持海滩干净能保护它们安全。",
+      "category": "waste"
+    }
+  ]
+},
     "animalData": {
   "burrunan-dolphin": {
     "name": "伯鲁南海豚",
