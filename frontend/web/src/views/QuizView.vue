@@ -27,7 +27,12 @@
       <!-- Quiz Card -->
       <div v-else-if="!showResult && currentQuestion" class="quiz-card">
         <!-- Question Section -->
-        <div class="question-section" :style="{ background: getQuestionBackground() }">
+        <div class="question-section" :style="{ background: getQuestionBackground() }" :class="{ 'correct-confetti': selectedAnswer && isAnswerCorrect && !showFunFact, 'wrong-blink': selectedAnswer && !isAnswerCorrect && !showFunFact }">
+          <!-- Confetti Elements -->
+          <div v-if="selectedAnswer && isAnswerCorrect && !showFunFact" class="confetti-container">
+            <div v-for="i in 50" :key="i" class="confetti-piece" :style="getConfettiStyle(i)"></div>
+          </div>
+
           <div class="question-content" :class="{ flipped: showFunFact }">
             <div class="question-front">
               <div class="category-badge">
@@ -56,14 +61,21 @@
         </div>
 
         <!-- Next Question Button (between question and options) -->
-        <div v-if="selectedAnswer && showFunFact" class="next-section-middle">
-          <button class="next-btn" @click="nextQuestion">
-            {{ currentQuestionIndex === selectedQuestions.length - 1 ? 'Finish Quiz' : 'Next Question' }}
-          </button>
-        </div>
+        <Transition name="next-button" appear>
+          <div v-if="selectedAnswer && showFunFact" class="next-section-middle">
+            <button class="next-btn fade-in-btn" @click="nextQuestion">
+              {{ currentQuestionIndex === selectedQuestions.length - 1 ? 'Finish Quiz' : 'Next Question' }}
+            </button>
+          </div>
+        </Transition>
 
         <!-- Answer Options -->
-        <div class="options-section">
+        <div class="options-section" :class="{ 'correct-confetti': selectedAnswer && isAnswerCorrect && !showFunFact, 'wrong-blink': selectedAnswer && !isAnswerCorrect && !showFunFact, 'move-down': selectedAnswer && showFunFact }">
+          <!-- Answer Options Confetti -->
+          <div v-if="selectedAnswer && isAnswerCorrect && !showFunFact" class="confetti-container">
+            <div v-for="i in 30" :key="i" class="confetti-piece" :style="getConfettiStyle(i)"></div>
+          </div>
+
           <button
             v-for="(option, index) in currentQuestion.options"
             :key="index"
@@ -79,10 +91,10 @@
       </div>
 
       <!-- Feedback Overlay -->
-      <div v-if="selectedAnswer && !showFunFact" class="feedback-overlay">
-        <div class="feedback-bubble-overlay" :class="{ correct: isCorrect, incorrect: !isCorrect }">
+      <div v-if="showFeedback" class="feedback-overlay">
+        <div class="feedback-bubble-overlay" :class="{ correct: isAnswerCorrect, incorrect: !isAnswerCorrect }">
           <div class="feedback-text">
-            <span v-if="isCorrect" class="feedback-message correct">🎉 Correct!</span>
+            <span v-if="isAnswerCorrect" class="feedback-message correct">🎉 Correct!</span>
             <span v-else class="feedback-message incorrect">
               😔 Oops! The correct answer is {{ currentQuestion.correctAnswer }}.
             </span>
@@ -153,6 +165,7 @@ const score = ref(0)
 const timeLeft = ref(120) // 2 minutes in seconds
 const showResult = ref(false)
 const showFunFact = ref(false)
+const showFeedback = ref(false)
 const totalQuestions = 5
 const answerHistory = ref([])
 const isLoading = ref(true)
@@ -166,10 +179,13 @@ const currentQuestion = computed(() => {
   return question || null
 })
 
-const isCorrect = computed(() => {
+const isAnswerCorrect = computed(() => {
   if (!currentQuestion.value || !selectedAnswer.value) return false
   return selectedAnswer.value === currentQuestion.value.correctAnswer
 })
+
+// Backwards compatibility alias
+const isCorrect = computed(() => isAnswerCorrect.value)
 
 // Initialize quiz
 const initializeQuiz = () => {
@@ -214,6 +230,9 @@ const selectAnswer = (answer) => {
   selectedAnswer.value = answer
   const correct = answer === currentQuestion.value.correctAnswer
 
+  // Play sound effect
+  playAnswerSound(correct)
+
   if (correct) {
     score.value++
   }
@@ -224,15 +243,27 @@ const selectAnswer = (answer) => {
     correct: correct
   })
 
-  // Show fun fact after 2 seconds (after feedback overlay disappears)
+  // Show feedback overlay
+  showFeedback.value = true
+
+  // Match timing with sound effects duration
+  const soundDuration = correct ? 1000 : 2000 // Correct sound ~1s, incorrect sound ~2s
+  const feedbackDuration = correct ? 2500 : 3500 // Show feedback a bit longer than sound
+
   setTimeout(() => {
-    showFunFact.value = true
-  }, 2000)
+    showFeedback.value = false
+
+    // Show fun fact after feedback disappears
+    setTimeout(() => {
+      showFunFact.value = true
+    }, 300)
+  }, feedbackDuration)
 }
 
 const nextQuestion = () => {
   showFunFact.value = false
   selectedAnswer.value = null
+  showFeedback.value = false
 
   if (currentQuestionIndex.value === selectedQuestions.value.length - 1) {
     endQuiz()
@@ -247,6 +278,9 @@ const endQuiz = () => {
     timer = null
   }
   showResult.value = true
+
+  // Play children saying yay sound effect
+  playResultSound()
 }
 
 const retakeQuiz = () => {
@@ -313,6 +347,44 @@ const getResultMessage = () => {
     return 'Great job! You have a good understanding of our ocean friends.'
   }
   return 'Excellent! You are an ocean hero!'
+}
+
+// Sound effects
+const playAnswerSound = (isCorrect) => {
+  try {
+    const audio = new Audio()
+    if (isCorrect) {
+      audio.src = '/src/assets/sound/sonido-correcto-331225.mp3'
+    } else {
+      audio.src = '/src/assets/sound/party-blower-4-207163.mp3'
+    }
+    audio.volume = 0.3
+    audio.play().catch(e => console.log('Audio play failed:', e))
+  } catch (error) {
+    console.log('Audio error:', error)
+  }
+}
+
+const playResultSound = () => {
+  try {
+    const audio = new Audio()
+    audio.src = '/src/assets/sound/children-saying-yay-praise-and-worship-jesus-299607.mp3'
+    audio.volume = 0.4
+    audio.play().catch(e => console.log('Result audio play failed:', e))
+  } catch (error) {
+    console.log('Result audio error:', error)
+  }
+}
+
+// Confetti style generation
+const getConfettiStyle = (index) => {
+  const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b', '#eb4d4b', '#6c5ce7', '#a29bfe']
+  return {
+    left: Math.random() * 100 + '%',
+    backgroundColor: colors[Math.floor(Math.random() * colors.length)],
+    animationDelay: Math.random() * 0.5 + 's',
+    animationDuration: (1 + Math.random() * 1) + 's'
+  }
 }
 
 // Lifecycle
@@ -508,7 +580,7 @@ onBeforeUnmount(() => {
 
 .question-content {
   width: 100%;
-  transition: transform 0.8s;
+  transition: transform 1.8s ease-in-out;
   transform-style: preserve-3d;
   position: relative;
 }
@@ -533,6 +605,56 @@ onBeforeUnmount(() => {
 
 .question-back {
   transform: rotateY(180deg) translateY(-50%);
+}
+
+/* Confetti Effect */
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  animation: confetti-fall 2s ease-out forwards;
+  top: -10px;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(200px) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* Red Blinking Effect for Wrong Answers */
+.wrong-blink {
+  animation: red-blink 0.6s ease-in-out;
+}
+
+@keyframes red-blink {
+  0%, 100% {
+    filter: none;
+  }
+  25%, 75% {
+    filter: brightness(0.7) hue-rotate(0deg);
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.8);
+  }
+  50% {
+    filter: brightness(0.5) sepia(1) hue-rotate(-50deg) saturate(3);
+    box-shadow: 0 0 40px rgba(239, 68, 68, 1);
+  }
 }
 
 /* Timer positioned at top right corner */
@@ -700,7 +822,6 @@ onBeforeUnmount(() => {
   justify-content: center;
   z-index: 100;
   pointer-events: none;
-  animation: feedback-overlay-show 2s ease-out;
 }
 
 .feedback-bubble-overlay {
@@ -709,8 +830,15 @@ onBeforeUnmount(() => {
   padding: 30px 40px;
   border: 4px solid;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: feedback-zoom-in 0.3s ease-out, feedback-zoom-out 0.3s ease-in 1.7s;
   backdrop-filter: blur(10px);
+}
+
+.feedback-bubble-overlay.correct {
+  animation: feedback-bubble-correct 2.5s ease-in-out forwards;
+}
+
+.feedback-bubble-overlay.incorrect {
+  animation: feedback-bubble-incorrect 3.5s ease-in-out forwards;
 }
 
 .feedback-bubble-overlay.correct {
@@ -736,9 +864,8 @@ onBeforeUnmount(() => {
   padding: 20px 40px;
   display: flex;
   justify-content: center;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.5);
+  /* Removed borders and background for cleaner animation */
+  background: transparent;
 }
 
 .next-btn {
@@ -761,23 +888,149 @@ onBeforeUnmount(() => {
   box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
 }
 
-/* Feedback Overlay Animations */
-@keyframes feedback-overlay-show {
-  0% { opacity: 1; }
-  85% { opacity: 1; }
-  100% { opacity: 0; }
+/* Feedback Overlay Animations - Slower */
+@keyframes feedback-bubble-correct {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  20% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  85% {
+    transform: scale(0.95);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
 }
 
-@keyframes feedback-zoom-in {
-  0% { transform: scale(0.5); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+@keyframes feedback-bubble-incorrect {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  15% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  20% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  90% {
+    transform: scale(0.95);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
 }
 
-@keyframes feedback-zoom-out {
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(0.5); opacity: 0; }
+@keyframes feedback-fade-out {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
 }
 
+/* Next button fade-in animation */
+.fade-in-btn {
+  animation: fade-in-down 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes fade-in-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-100px) scale(0.3);
+  }
+  40% {
+    opacity: 0.4;
+    transform: translateY(-30px) scale(0.8);
+  }
+  80% {
+    opacity: 0.9;
+    transform: translateY(5px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Answer options move down animation */
+.options-section {
+  transition: transform 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), margin-top 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.options-section.move-down {
+  transform: translateY(5px);
+  margin-top: 0px;
+}
+
+@keyframes move-down-smooth {
+  0% {
+    transform: translateY(0);
+    margin-top: 0;
+  }
+  100% {
+    transform: translateY(5px);
+    margin-top: 0px;
+  }
+}
+
+/* Transition for next button fade-out */
+.next-button-enter-active {
+  transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.next-button-leave-active {
+  transition: all 0.8s ease-in;
+}
+
+.next-button-enter-from {
+  opacity: 0;
+  transform: translateY(-80px) scale(0.5);
+}
+
+.next-button-enter-to {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.next-button-leave-from {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.next-button-leave-to {
+  opacity: 0;
+  transform: translateY(-30px) scale(0.8);
+}
 
 /* Score Section */
 .score-section {
