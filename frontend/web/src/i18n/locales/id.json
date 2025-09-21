@@ -13,9 +13,9 @@
     "description": "Laut kita adalah rumah bagi kehidupan yang menakjubkan. Polusi dan perubahan iklim membahayakannya. Pelajari apa yang merusak laut dan bagaimana tindakan kecil setiap hari dapat melindunginya.",
     "animalsAtRisk": "Hewan Terancam",
     "beOceanHero": "Jadilah Pahlawan Laut",
-    "knowYourWater": "Kenali Air Anda",
+    "knowYourWater": "Kenali Air Kamu",
     "moreComing": "Lebih banyak akan datang",
-    "caption": "Jadilah Pahlawan Laut: kurangi plastik sekali pakai, daur ulang, hemat air, pilih produk ramah terumbu karang, dan bagikan apa yang Anda pelajari."
+    "caption": "Jadilah Pahlawan Laut: kurangi plastik sekali pakai, daur ulang, hemat air, pilih produk ramah terumbu karang, dan bagikan apa yang Kamu pelajari."
   },
   "animals": {
     "pageTitle": "Temui Sahabat Laut Kita",
@@ -33,7 +33,7 @@
     "type": "Jenis",
     "habitat": "Habitat",
     "whatHurtsMe": "Apa yang menyakiti saya",
-    "howYouCanHelp": "Bagaimana Anda dapat membantu",
+    "howYouCanHelp": "Bagaimana Kamu dapat membantu",
     "funFact": "Fakta menarik",
     "cartoon": "Kartun",
     "photo": "Foto",
@@ -48,7 +48,7 @@
     "meetThe": "Temui",
     "whyTheyMatter": "Mengapa mereka penting",
     "howPollutionHurts": "Bagaimana polusi menyakiti mereka",
-    "howYouCanHelp": "Bagaimana Anda dapat membantu",
+    "howYouCanHelp": "Bagaimana Kamu dapat membantu",
     "notFound": "Maaf, kami tidak dapat menemukan hewan tersebut.",
     "commonName": "NAMA UMUM:",
     "scientificName": "NAMA ILMIAH:",
@@ -76,12 +76,12 @@
     "clickContinue": "Klik untuk melanjutkan >>",
     "restart": "Mulai Ulang >>",
     "speeches": [
-      "Hai! 🐠 Kami adalah Sahabat Laut Victoria! 🌊 Kami membutuhkan bantuan Anda untuk melindungi rumah kami. Bergabunglah dengan kami dalam belajar tentang laut dan bagaimana Anda dapat membuat perbedaan! 🐢",
+      "Hai! 🐠 Kami adalah Sahabat Laut Victoria! 🌊 Kami membutuhkan bantuan Kamu untuk melindungi rumah kami. Bergabunglah dengan kami dalam belajar tentang laut dan bagaimana Kamu dapat membuat perbedaan! 🐢",
       "Kenali kami lebih baik dengan mengarahkan kursor ke bagian <span class='nav-highlight'>Sahabat Laut</span> 🐙 di menu navigasi di atas, lalu klik <span class='nav-highlight'>Temui Sahabat Laut Kita</span>. Mari jelajahi dan bersenang-senang bersama! ⭐",
-      "Oh, Hai! 🦈 Anda juga bisa mengunjungi rumah kami! Arahkan kursor ke bagian <span class='nav-highlight'>Sahabat Laut</span> 🏠 di bilah navigasi atas, lalu klik <span class='nav-highlight'>Kunjungi Rumah Sahabat Laut</span> untuk melihat tempat kami tinggal dan bagaimana Anda dapat membantu menjaganya tetap aman dan bersih! 🌊",
+      "Oh, Hai! 🦈 Kamu juga bisa mengunjungi rumah kami! Arahkan kursor ke bagian <span class='nav-highlight'>Sahabat Laut</span> 🏠 di bilah navigasi atas, lalu klik <span class='nav-highlight'>Kunjungi Rumah Sahabat Laut</span> untuk melihat tempat kami tinggal dan bagaimana Kamu dapat membantu menjaganya tetap aman dan bersih! 🌊",
       "Sudah mengenal kami dan tempat tinggal kami? Bagus! 🎮 Mari mainkan beberapa permainan menyenangkan bersama! Arahkan kursor ke bagian <span class='nav-highlight'>Bermain & Berlatih</span> 🎯 di menu navigasi, lalu klik <span class='nav-highlight'>Mainkan Permainan Laut yang Menyenangkan</span> untuk mulai bermain dan belajar! 🐠",
-      "Ingin menguji pengetahuan laut Anda? 📚 Arahkan kursor ke bagian <span class='nav-highlight'>Bermain & Berlatih</span> 🧠 di menu navigasi, lalu klik <span class='nav-highlight'>Latihan Kuis Laut</span> untuk menantang diri Anda dengan pertanyaan menyenangkan tentang kehidupan laut! 🤓",
-      "Terima kasih telah mengunjungi kami! 🙏 Kami harap Anda bersenang-senang menjelajahi dan belajar tentang laut. 🌊 Ingat, setiap tindakan kecil penting dalam melindungi Laut Victoria kita yang indah. Mari menjadi Pahlawan Laut bersama! 🦸‍♂️🌊"
+      "Ingin menguji pengetahuan laut Kamu? 📚 Arahkan kursor ke bagian <span class='nav-highlight'>Bermain & Berlatih</span> 🧠 di menu navigasi, lalu klik <span class='nav-highlight'>Latihan Kuis Laut</span> untuk menantang diri Kamu dengan pertanyaan menyenangkan tentang kehidupan laut! 🤓",
+      "Terima kasih telah mengunjungi kami! 🙏 Kami harap Kamu bersenang-senang menjelajahi dan belajar tentang laut. 🌊 Ingat, setiap tindakan kecil penting dalam melindungi Laut Victoria kita yang indah. Mari menjadi Pahlawan Laut bersama! 🦸‍♂️🌊"
     ]
   },
   "quiz": {

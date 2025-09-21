@@ -58,6 +58,13 @@
               <span class="timer-value">{{ formatTime(timeLeft) }}</span>
             </div>
           </div>
+
+          <!-- Question Progress Indicator - top left corner -->
+          <div class="progress-section-new">
+            <div class="progress-indicator">
+              <span class="progress-value">{{ currentQuestionIndex + 1 }}/{{ totalQuestions }}</span>
+            </div>
+          </div>
         </div>
 
         <!-- Next Question Button (between question and options) -->
@@ -621,6 +628,31 @@ onBeforeUnmount(() => {
 
 .question-back {
   transform: rotateY(180deg) translateY(-50%);
+}
+
+/* Question Progress Indicator - positioned like timer */
+.progress-section-new {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+}
+
+.progress-section-new .progress-indicator {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-section-new .progress-value {
+  font-size: 16px;
+  font-weight: 800;
+  min-width: 40px;
+  text-align: center;
 }
 
 /* Confetti Effect */
