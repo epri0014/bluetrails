@@ -53,7 +53,7 @@
 
           <!-- Timer moved to top right corner of quiz card -->
           <div class="timer-section-new">
-            <div class="timer">
+            <div class="timer" :class="{ 'timer-urgent': timeLeft <= 10 }">
               <span class="timer-label">{{ $t('quiz.timeLeft') }}</span>
               <span class="timer-value">{{ formatTime(timeLeft) }}</span>
             </div>
@@ -70,7 +70,7 @@
         <!-- Next Question Button (between question and options) -->
         <Transition name="next-button" appear>
           <div v-if="selectedAnswer && showFunFact" class="next-section-middle">
-            <button class="next-btn fade-in-btn" @click="nextQuestion">
+            <button class="next-btn fade-in-btn aggressive-blink" @click="nextQuestion">
               {{ currentQuestionIndex === selectedQuestions.length - 1 ? $t('quiz.finish') : $t('quiz.nextQuestion') }}
             </button>
           </div>
@@ -181,6 +181,7 @@ const isLoading = ref(true)
 
 // Timer
 let timer = null
+let urgentTimerSound = null
 
 // Computed properties - reactive to language changes
 const allQuestions = computed(() => {
@@ -243,8 +244,17 @@ const initializeQuiz = () => {
 const startTimer = () => {
   if (timer) clearInterval(timer)
   timer = setInterval(() => {
+    const previousTime = timeLeft.value
     timeLeft.value--
+
+    // Start urgent sound when reaching 10 seconds
+    if (timeLeft.value === 10 && previousTime === 11) {
+      playUrgentTimerSound()
+    }
+
+    // Stop urgent sound when timer ends or goes below 1
     if (timeLeft.value <= 0) {
+      stopUrgentTimerSound()
       endQuiz()
     }
   }, 1000)
@@ -303,6 +313,7 @@ const endQuiz = () => {
     clearInterval(timer)
     timer = null
   }
+  stopUrgentTimerSound()
   showResult.value = true
 
   // Play children saying yay sound effect
@@ -399,6 +410,34 @@ const playResultSound = () => {
   }
 }
 
+const playUrgentTimerSound = () => {
+  try {
+    if (urgentTimerSound) {
+      urgentTimerSound.pause()
+      urgentTimerSound.currentTime = 0
+    }
+    urgentTimerSound = new Audio()
+    urgentTimerSound.src = '/sound/time-passing-sound-effect-fast-clock-108403.mp3'
+    urgentTimerSound.volume = 0.3
+    urgentTimerSound.loop = true
+    urgentTimerSound.play().catch(e => console.log('Urgent timer audio play failed:', e))
+  } catch (error) {
+    console.log('Urgent timer audio error:', error)
+  }
+}
+
+const stopUrgentTimerSound = () => {
+  try {
+    if (urgentTimerSound) {
+      urgentTimerSound.pause()
+      urgentTimerSound.currentTime = 0
+      urgentTimerSound = null
+    }
+  } catch (error) {
+    console.log('Stop urgent timer audio error:', error)
+  }
+}
+
 // Confetti style generation
 const getConfettiStyle = (index) => {
   const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b', '#eb4d4b', '#6c5ce7', '#a29bfe']
@@ -421,6 +460,7 @@ onBeforeUnmount(() => {
     clearInterval(timer)
     timer = null
   }
+  stopUrgentTimerSound()
 })
 </script>
 
@@ -733,6 +773,29 @@ onBeforeUnmount(() => {
   font-weight: 800;
 }
 
+/* Timer urgent blinking animation when below 10 seconds */
+.timer-urgent {
+  animation: timer-urgent-blink 0.8s ease-in-out infinite !important;
+  background: rgba(251, 146, 60, 0.9) !important;
+  border: 2px solid #fb923c !important;
+  color: #1a1a1a !important;
+}
+
+@keyframes timer-urgent-blink {
+  0%, 100% {
+    background: rgba(251, 146, 60, 0.9) !important;
+    box-shadow: 0 0 20px rgba(251, 146, 60, 0.8);
+    transform: scale(1);
+    color: #1a1a1a !important;
+  }
+  50% {
+    background: rgba(234, 88, 12, 1) !important;
+    box-shadow: 0 0 30px rgba(251, 146, 60, 1);
+    transform: scale(1.05);
+    color: white !important;
+  }
+}
+
 .category-badge {
   display: inline-flex;
   align-items: center;
@@ -934,6 +997,24 @@ onBeforeUnmount(() => {
   background: linear-gradient(135deg, #0369a1 0%, #1e40af 100%);
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+}
+
+/* Aggressive Blinking Animation for Next Button */
+.aggressive-blink {
+  animation: aggressive-blink 1s ease-in-out infinite !important;
+}
+
+@keyframes aggressive-blink {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    box-shadow: 0 12px 40px rgba(14, 165, 233, 0.8);
+    transform: scale(1.02);
+  }
 }
 
 /* Feedback Overlay Animations - Slower */
