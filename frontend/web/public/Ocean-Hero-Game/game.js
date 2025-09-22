@@ -43,12 +43,12 @@ function playMusic(){
     if (bgMusic.paused) bgMusic.currentTime = 0;
     const p = bgMusic.play();
     if (p && typeof p.then === 'function') p.catch(() => {});
-  }catch{(2)}
+  }catch{2}
 }
 function pauseMusic(){ if (bgMusic) bgMusic.pause(); }
 
 function refreshMusicButtonsUI(){
-  // ✅ 修正显示：开=绿色 + 🔊，关=灰色 + 🔇
+  // 开=绿色 + 🔊，关=灰色 + 🔇
   musicButtons.forEach(btn => {
     if (musicOn){
       btn.textContent = '🔊 Music';
@@ -126,6 +126,7 @@ function renderNextItem(){
   if (itemProgress) itemProgress.textContent = `${currentIndex+1}/${items.length}`;
 }
 
+// —— 拖拽绑定（集成飞机 shake）——
 function attachDrag(el){
   el.addEventListener('dragstart', e => {
     if (!running) return e.preventDefault();
@@ -133,9 +134,18 @@ function attachDrag(el){
       id: el.dataset.id,
       type: el.dataset.type
     }));
+    // 飞机抖动：dragstart 时添加 .shake
+    const plane = document.querySelector('.plane');
+    if (plane) plane.classList.add('shake');
+
     document.querySelectorAll('.bin').forEach(b => b.classList.remove('shake'));
   });
+
   el.addEventListener('dragend', () => {
+    // 结束拖拽：移除 .shake
+    const plane = document.querySelector('.plane');
+    if (plane) plane.classList.remove('shake');
+
     document.querySelectorAll('.bin').forEach(b => b.classList.remove('hot'));
   });
 }
@@ -154,6 +164,10 @@ function setupBins(){
       e.preventDefault();
       bin.classList.remove('hot');
 
+      // 兜底：无论如何移除飞机抖动
+      const plane = document.querySelector('.plane');
+      if (plane) plane.classList.remove('shake');
+
       const dataText = e.dataTransfer.getData('text/plain');
       if (!dataText) return;
       const data = JSON.parse(dataText);
@@ -165,16 +179,16 @@ function setupBins(){
         if (scoreEl) scoreEl.textContent = String(score);
         sfx.correct();
         const facts = {
-          waste:   "Organics become compost that helps dune plants.",
-          recycle: "Recyclables can be made into new products.",
-          rubbish: "Some items do not belong in recycling bins."
+          waste:   "Food scraps go back to nature",
+          recycle: "Recycling makes new things",
+          rubbish: "This one just goes to the bin."
         };
         setBubble('✅ ' + (facts[bin.dataset.type] || 'Correct!'), 'good');
         updateBadge();
       }else{
         score = Math.max(0, score - 10);
         if (scoreEl) scoreEl.textContent = String(score);
-        setBubble('❌ Oops! One try only—watch the label!', 'bad');
+        setBubble('❌ Oops! Wrong', 'bad');
         sfx.wrong();
         bin.classList.add('shake');
         setTimeout(()=>bin.classList.remove('shake'), 300);

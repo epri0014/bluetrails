@@ -7,24 +7,25 @@
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <!-- 说明页（先显示） -->
-<div class="overlay" id="startOverlay" aria-modal="true" role="dialog">
-  <div class="panel">
-    <h2>Ready to Clean the Beach?</h2>
+  <!-- 开始说明页（已移除封面图） -->
+  <div class="overlay" id="startOverlay" aria-modal="true" role="dialog">
+    <div class="panel">
+      <!-- <img class="cover" src="./oceanhero.png" alt="Ocean Hero cover" />  已删除 -->
+      <h2>Ready to Clean the Beach?</h2>
 
-    <div class="rules">
-      <p><b>How to play:</b> Drag the item into the correct bin. One try per item.</p>
-      <p><b>Scoring:</b> +20 points for correct answers, -10 for wrong answers (not below 0).<br>
-         <b>Timer:</b> 90 seconds</p>
-      <p><b>Badges:</b> Bronze 60+ · Silver 90+ · Gold 120+</p>
-    </div>
+      <div class="rules">
+        <p><b>How to play:</b> Drag the item into the correct bin. One try per item.</p>
+        <p><b>Scoring:</b> +20 points for correct answers, -10 for wrong answers (not below 0).<br>
+           <b>Timer:</b> 90 seconds</p>
+        <p><b>Badges:</b> Bronze🥉60+  Silver🥈90+  Gold🥇120+</p>
+      </div>
 
-    <div style="margin-top:12px; display:flex; justify-content:center; gap:12px">
-      <button id="musicToggle" class="btn js-music-toggle" aria-label="Toggle background music">🔊 Music</button>
-      <button id="btnStart" class="btn">🎮 Let’s Go!</button>
+      <div style="margin-top:12px; display:flex; justify-content:center; gap:12px">
+        <button id="musicToggle" class="btn js-music-toggle">🔊 Music</button>
+        <button id="btnStart" class="btn">🎮 Let’s Go!</button>
+      </div>
     </div>
   </div>
-</div>
 
   <!-- 顶部 HUD -->
   <header>
@@ -37,18 +38,17 @@
       </div>
     </div>
     <div style="display:flex; gap:10px; align-items:center">
-      <button id="musicToggleHeader" class="btn js-music-toggle" aria-label="Toggle background music">🔊 Music</button>
+      <button id="musicToggleHeader" class="btn js-music-toggle">🔊 Music</button>
       <button id="reset">Restart</button>
     </div>
+    <div class="hint">Drop the item into the correct bin ⤵</div>
   </header>
 
   <!-- 背景动画层 -->
   <div class="beach-anim" aria-hidden="true">
-    <!-- 云朵 -->
     <div class="cloud c1"></div>
     <div class="cloud c2"></div>
     <div class="cloud c3"></div>
-    <!-- 海鸥 -->
     <svg class="gull g1" viewBox="0 0 64 32">
       <path d="M2 16 C18 6, 22 6, 32 16 C42 26, 46 26, 62 16"
             fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
@@ -59,9 +59,10 @@
     </svg>
   </div>
 
-  <!-- 结束页 -->
+  <!-- 结束页（已移除封面图） -->
   <div class="overlay hide" id="endOverlay" aria-modal="true" role="dialog">
     <div class="panel">
+      <!-- <img class="cover small" src="./oceanhero.png" alt="Ocean Hero cover small" /> 已删除 -->
       <h2 id="endTitle">Time’s Up!</h2>
       <div class="summary">Score: <span id="finalScore">0</span></div>
       <div id="medalBlock" style="display:none">
@@ -78,22 +79,27 @@
   <!-- 主舞台 -->
   <main class="stage hide" aria-live="polite">
     <section class="left character">
-      <div id="sceneHost" class="scene-host" aria-label="ocean hero scene"></div>
-      <div class="bubble" id="bubble">Let’s go! Sort the trash!</div>
-      <div class="hint">Drop the item into the correct bin ⤵</div>
+      <!-- 左下角吉祥物（保留） -->
+      <div class="mascot">
+        <img src="./oceanhero.png" alt="Ocean hero helper" />
+        <div class="bubble mascot" id="bubble">Let’s go! Sort the trash!</div>
+      </div>
     </section>
     <section class="right">
-      <div id="currentItem" class="current-item"></div>
+      <div class="airdrop">
+        <div class="plane" aria-hidden="true">✈️</div>
+        <div id="currentItem" class="current-item"></div>
+      </div>
       <div class="bins three" id="bins">
-        <div class="bin" data-type="waste" aria-label="Waste (Green)">
+        <div class="bin" data-type="waste">
           <div class="can">🗑️</div>
           <div class="label">WASTE</div>
         </div>
-        <div class="bin" data-type="recycle" aria-label="Recycle (Yellow)">
+        <div class="bin" data-type="recycle">
           <div class="can">♻️</div>
           <div class="label">RECYCLE</div>
         </div>
-        <div class="bin" data-type="rubbish" aria-label="Rubbish (Red)">
+        <div class="bin" data-type="rubbish">
           <div class="can">🚯</div>
           <div class="label">RUBBISH</div>
         </div>
@@ -104,7 +110,6 @@
   <!-- 背景音乐 -->
   <audio id="bgMusic" src="./Oceanhero.mp3" loop></audio>
 
-  <!-- External JS modules -->
   <script type="module" src="./data.js"></script>
   <script type="module" src="./sfx.js"></script>
   <script type="module" src="./scenes.js"></script>
