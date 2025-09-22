@@ -1,5 +1,5 @@
-// game.js — 单物品流 & 三分类
-// 保留原有：音乐联动、徽章系统、计时器、气泡提示、SFX
+// game.js — 单物品流 & 三分类（带 Start Overlay）
+// 依赖：data.js（POOL, BADGE_THRESHOLDS），scenes.js（SCENES），sfx.js（sfx）
 import { POOL, BADGE_THRESHOLDS } from './data.js';
 import { SCENES } from './scenes.js';
 import { sfx } from './sfx.js';
@@ -14,7 +14,7 @@ const startOverlay = document.getElementById('startOverlay');
 const endOverlay   = document.getElementById('endOverlay');
 const btnStart     = document.getElementById('btnStart');
 const btnAgain     = document.getElementById('btnAgain');
-const btnExit      = document.getElementById('btnExit') || document.getElementById('btnClose');
+const btnExit      = document.getElementById('btnExit');
 
 const endTitle   = document.getElementById('endTitle');
 const finalScore = document.getElementById('finalScore');
@@ -25,47 +25,38 @@ const badgeChip  = document.getElementById('badgeChip');
 const badgeName  = document.getElementById('badgeName');
 const badgeEmoji = document.getElementById('badgeEmoji');
 
-// 新增：单个物品容器
+// 单个物品容器
 const currentHost = document.getElementById('currentItem');
+// 游戏舞台
+const stage = document.querySelector('.stage');
 
-// ---------- Background music (two linked buttons) ----------
+// ---------- Background music ----------
 const bgMusic = document.getElementById('bgMusic');
 const musicButtons = Array.from(document.querySelectorAll('.js-music-toggle'));
 
-// 默认静音（false）；读取本地偏好
 let musicOn = localStorage.getItem('jj_music_on') === 'true';
+function persistMusicPref(){ localStorage.setItem('jj_music_on', String(musicOn)); }
 
-function persistMusicPref() {
-  localStorage.setItem('jj_music_on', String(musicOn));
-}
-
-function playMusic() {
+function playMusic(){
   if (!bgMusic) return;
-  try {
+  try{
     if (bgMusic.paused) bgMusic.currentTime = 0;
     const p = bgMusic.play();
     if (p && typeof p.then === 'function') p.catch(() => {});
-  } catch { /* ignore */ }
+  }catch{ /* ignore */ }
 }
+function pauseMusic(){ if (bgMusic) bgMusic.pause(); }
 
-function pauseMusic() {
-  if (!bgMusic) return;
-  bgMusic.pause();
-}
-
-// 反转样式（保持你原来的逻辑）：
-//   - 静音 (musicOn=false)  => 绿色 + 🔊 Music
-//   - 播放 (musicOn=true)   => 灰色 + 🔇 Music
-function refreshMusicButtonsUI() {
+function refreshMusicButtonsUI(){
   musicButtons.forEach(btn => {
     btn.textContent = musicOn ? '🔇 Music' : '🔊 Music';
-    if (musicOn) {
-      btn.style.background  = '#475569';    // gray
+    if (musicOn){
+      btn.style.background  = '#475569';
       btn.style.borderColor = '#1f2937';
       btn.style.boxShadow   = '0 6px 0 #1f2937';
       btn.style.color       = '#fff';
-    } else {
-      btn.style.background  = '#10b981';    // green
+    }else{
+      btn.style.background  = '#10b981';
       btn.style.borderColor = '#0b7a5e';
       btn.style.boxShadow   = '0 6px 0 #0b7a5e';
       btn.style.color       = '#fff';
@@ -86,16 +77,8 @@ musicButtons.forEach(btn => {
 // ---------- Ocean Hero scenes ----------
 let sceneIdx = Math.floor(Math.random() * SCENES.length);
 const sceneHost = document.getElementById('sceneHost');
-function renderScene(i){ sceneHost.innerHTML = SCENES[i]; }
+function renderScene(i){ if (sceneHost) sceneHost.innerHTML = SCENES[i]; }
 renderScene(sceneIdx);
-
-// 可选左右键（容错）
-const prevBtn = document.getElementById('prevScene');
-const nextBtn = document.getElementById('nextScene');
-if (prevBtn && nextBtn){
-  prevBtn.onclick = () => { sceneIdx = (sceneIdx + SCENES.length - 1) % SCENES.length; renderScene(sceneIdx); };
-  nextBtn.onclick = () => { sceneIdx = (sceneIdx + 1) % SCENES.length; renderScene(sceneIdx); };
-}
 
 // ---------- Game state ----------
 let items = [];
@@ -104,24 +87,23 @@ let remainingTime = 90;
 let timerId = null;
 let running = false;
 let bestBadge = null;
-
-// 单物品索引
 let currentIndex = 0;
 
 const shuffle = arr => arr.sort(() => Math.random() - 0.5);
 
 // ---------- UI helpers ----------
 function setBubble(msg, kind){
+  if (!bubble) return;
   bubble.classList.remove('good','bad','show');
-  if(kind) bubble.classList.add(kind);
+  if (kind) bubble.classList.add(kind);
   bubble.textContent = msg;
   void bubble.offsetWidth;
   bubble.classList.add('show');
   setTimeout(() => bubble.classList.remove('show'), 2200);
 }
 
-// ✅ 渲染“下一个单个物品”
 function renderNextItem(){
+  if (!currentHost) return;
   currentHost.innerHTML = '';
   if (currentIndex >= items.length){
     running = false;
@@ -142,7 +124,7 @@ function renderNextItem(){
 
 function attachDrag(el){
   el.addEventListener('dragstart', e => {
-    if(!running) return e.preventDefault();
+    if (!running) return e.preventDefault();
     e.dataTransfer.setData('text/plain', JSON.stringify({
       id: el.dataset.id,
       type: el.dataset.type
@@ -154,29 +136,29 @@ function attachDrag(el){
   });
 }
 
-// ---------- Bins DnD setup ----------
+// ---------- Bins setup ----------
 function setupBins(){
   document.querySelectorAll('.bin').forEach(bin => {
     bin.addEventListener('dragover', e => {
-      if(!running) return;
+      if (!running) return;
       e.preventDefault();
       bin.classList.add('hot');
     });
     bin.addEventListener('dragleave', () => bin.classList.remove('hot'));
     bin.addEventListener('drop', e => {
-      if(!running) return;
+      if (!running) return;
       e.preventDefault();
       bin.classList.remove('hot');
 
       const dataText = e.dataTransfer.getData('text/plain');
-      if(!dataText) return;
+      if (!dataText) return;
       const data = JSON.parse(dataText);
 
       const correct = data.type === bin.dataset.type;
 
-      if(correct){
+      if (correct){
         score += 20;
-        scoreEl.textContent = score;
+        if (scoreEl) scoreEl.textContent = String(score);
         sfx.correct();
         const facts = {
           waste:   "Organics become compost that helps dune plants.",
@@ -187,43 +169,42 @@ function setupBins(){
         updateBadge();
       }else{
         score = Math.max(0, score - 10);
-        scoreEl.textContent = score;
+        if (scoreEl) scoreEl.textContent = String(score);
         setBubble('❌ Oops! One try only—watch the label!', 'bad');
         sfx.wrong();
         bin.classList.add('shake');
         setTimeout(()=>bin.classList.remove('shake'), 300);
       }
 
-      // 移动到下一个物品
       currentIndex += 1;
       renderNextItem();
     });
   });
 }
 
-// ---------- Badges / medals ----------
+// ---------- Badges ----------
 function updateBadge(){
   let badge = null, name='', emoji='';
-  if(score >= BADGE_THRESHOLDS.gold){ badge='gold'; name='Gold'; emoji='🥇'; }
-  else if(score >= BADGE_THRESHOLDS.silver){ badge='silver'; name='Silver'; emoji='🥈'; }
-  else if(score >= BADGE_THRESHOLDS.bronze){ badge='bronze'; name='Bronze'; emoji='🥉'; }
+  if (score >= BADGE_THRESHOLDS.gold){ badge='gold'; name='Gold'; emoji='🥇'; }
+  else if (score >= BADGE_THRESHOLDS.silver){ badge='silver'; name='Silver'; emoji='🥈'; }
+  else if (score >= BADGE_THRESHOLDS.bronze){ badge='bronze'; name='Bronze'; emoji='🥉'; }
 
-  if(badge && badge !== bestBadge){
+  if (badge && badge !== bestBadge){
     bestBadge = badge;
-    badgeChip.style.display = 'inline-flex';
-    badgeName.textContent = name;
-    badgeEmoji.textContent = emoji;
+    if (badgeChip)  badgeChip.style.display = 'inline-flex';
+    if (badgeName)  badgeName.textContent = name;
+    if (badgeEmoji) badgeEmoji.textContent = emoji;
     setBubble(`${emoji} ${name} badge unlocked!`, 'good');
   }
 }
 
-// ---------- Timer / end screens ----------
+// ---------- Timer / end ----------
 function startTimer(){
   clearInterval(timerId);
   timerId = setInterval(() => {
     remainingTime -= 1;
-    timeEl.textContent = remainingTime;
-    if(remainingTime <= 0){
+    if (timeEl) timeEl.textContent = String(remainingTime);
+    if (remainingTime <= 0){
       clearInterval(timerId);
       running = false;
       sfx.done();
@@ -233,41 +214,40 @@ function startTimer(){
 }
 
 function showEnd(title){
-  finalScore.textContent = score;
+  if (finalScore) finalScore.textContent = String(score);
 
   let emoji='', text='';
-  if(score >= BADGE_THRESHOLDS.gold){ emoji='🥇'; text='Gold Ocean Hero'; }
-  else if(score >= BADGE_THRESHOLDS.silver){ emoji='🥈'; text='Silver Ocean Hero'; }
-  else if(score >= BADGE_THRESHOLDS.bronze){ emoji='🥉'; text='Bronze Ocean Hero'; }
+  if (score >= BADGE_THRESHOLDS.gold){ emoji='🥇'; text='Gold Ocean Hero'; }
+  else if (score >= BADGE_THRESHOLDS.silver){ emoji='🥈'; text='Silver Ocean Hero'; }
+  else if (score >= BADGE_THRESHOLDS.bronze){ emoji='🥉'; text='Bronze Ocean Hero'; }
 
-  medalBlock.style.display = emoji ? 'block':'none';
-  medalEmoji.textContent = emoji;
-  medalText.textContent = text;
-  endTitle.textContent = title || 'Time’s Up!';
-  endOverlay.classList.remove('hide');
+  if (medalBlock) medalBlock.style.display = emoji ? 'block':'none';
+  if (medalEmoji) medalEmoji.textContent = emoji;
+  if (medalText)  medalText.textContent  = text;
+  if (endTitle)   endTitle.textContent   = title || 'Time’s Up!';
+  if (endOverlay) endOverlay.classList.remove('hide');
 
-  // 结束时只暂停音乐
   pauseMusic();
 }
 
 function hideOverlays(){
-  startOverlay.classList.add('hide');
-  endOverlay.classList.add('hide');
+  if (startOverlay) startOverlay.classList.add('hide');
+  if (endOverlay)   endOverlay.classList.add('hide');
+  if (stage) stage.classList.remove('hide');   // 显示游戏舞台
 }
 
 // ---------- Game lifecycle ----------
 function startGame(){
-  score = 0; scoreEl.textContent = '0';
-  remainingTime = 90; timeEl.textContent = remainingTime;
+  score = 0; if (scoreEl) scoreEl.textContent = '0';
+  remainingTime = 90; if (timeEl) timeEl.textContent = String(remainingTime);
 
-  // 打乱后，单物品索引归零
   items = shuffle([...POOL]);
   currentIndex = 0;
 
   bestBadge = null;
-  badgeChip.style.display = 'none';
-  badgeName.textContent = '';
-  badgeEmoji.textContent = '';
+  if (badgeChip)  badgeChip.style.display = 'none';
+  if (badgeName)  badgeName.textContent = '';
+  if (badgeEmoji) badgeEmoji.textContent = '';
 
   renderNextItem();
   setBubble("Let’s go! Sort the trash!");
@@ -278,29 +258,39 @@ function startGame(){
   if (musicOn) playMusic();
 }
 
-// ---------- Wire up UI events ----------
-btnStart.addEventListener('click', () => { hideOverlays(); startGame(); });
+// ---------- Events ----------
+// Start
+if (btnStart){
+  btnStart.addEventListener('click', () => { hideOverlays(); startGame(); });
+}
 
-resetBtn.addEventListener('click', () => {
-  pauseMusic();
-  startGame();
-  if (musicOn) playMusic();
-});
-
-btnAgain.addEventListener('click', () => {
-  endOverlay.classList.add('hide');
-  startGame();
-  if (musicOn) playMusic();
-});
-
-if (btnExit) {
-  btnExit.addEventListener('click', () => {
+// Reset
+if (resetBtn){
+  resetBtn.addEventListener('click', () => {
     pauseMusic();
-    window.location.href = "/";
+    startGame();
+    if (musicOn) playMusic();
   });
 }
 
-// Initialize drag-and-drop targets
-setupBins();
+// Play Again
+if (btnAgain){
+  btnAgain.addEventListener('click', () => {
+    if (endOverlay) endOverlay.classList.add('hide');
+    startGame();
+    if (musicOn) playMusic();
+  });
+}
 
-// Keep start overlay visible until player presses "Let’s Go!"
+// Exit → 回到 Start Overlay
+if (btnExit){
+  btnExit.addEventListener('click', () => {
+    pauseMusic();
+    if (endOverlay) endOverlay.classList.add('hide');
+    if (stage) stage.classList.add('hide');
+    if (startOverlay) startOverlay.classList.remove('hide');
+  });
+}
+
+// 初始化拖拽
+setupBins();

@@ -1,219 +1,150 @@
 :root {
-  --sky:#cfefff; --sea:#78c9ff; --sand:#fffae1; --ink:#2b2b2b;
-  --red:#ff5468; --green:#2ecc71; --black:#333; --blue:#46a2ff;
-  --yellow:#f5c542;
+  --sky:#cfefff; --sea:#78c9ff; --sand:#fffae1;
+  --red:#ff5468; --green:#2ecc71; --blue:#46a2ff; --yellow:#f5c542;
 }
 
-* { box-sizing: border-box }
-
-body {
-  margin: 0;
-  font-family: "Nunito", system-ui, -apple-system, Segoe UI, Roboto, "PingFang SC","Microsoft Yahei", sans-serif;
-  background: linear-gradient(var(--sky) 0 35%, var(--sea) 35% 45%, var(--sand) 45%);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+*{ box-sizing:border-box }
+body{
+  margin:0;
+  font-family:"Nunito", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background:linear-gradient(var(--sky) 0 35%, var(--sea) 35% 45%, var(--sand) 45%);
+  min-height:100vh;
+  display:flex; flex-direction:column; align-items:center;
+  overflow-x:hidden;
 }
+
+/* 通用隐藏类 */
+.hide{ display:none !important; }
 
 /* Header HUD */
-header {
-  width: 100%; max-width: 1100px;
-  margin: 12px 0 8px; padding: 10px 14px;
-  background: #ffffffcc;
-  border: 3px solid #00000010;
-  border-radius: 18px;
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  box-shadow: 0 8px 18px rgba(0,0,0,.08);
+header{
+  width:100%; max-width:1100px; margin:12px 0 8px; padding:10px 14px;
+  background:#ffffffcc; border:3px solid #00000010; border-radius:18px;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  box-shadow:0 8px 18px rgba(0,0,0,.08);
 }
+h1{ margin:0; font-size:20px }
+#hud{ display:flex; gap:14px; align-items:center; font-weight:900 }
+.chip{ background:#0001; border:2px solid #0002; padding:4px 10px; border-radius:999px }
+#reset{ background:var(--blue); color:#fff; border:3px solid #0003; border-radius:12px; padding:8px 12px; font-weight:800; cursor:pointer }
 
-h1 { margin: 0; font-size: 20px }
-
-#hud { display:flex; gap:14px; align-items:center; font-weight:900 }
-.chip {
-  background:#00000010; border:2px solid #00000020;
-  padding:4px 10px; border-radius:999px
-}
-
-#reset {
-  background:var(--blue); color:#fff; border:3px solid #00000025;
-  border-radius:12px; padding:8px 12px; font-weight:800; cursor:pointer;
-  box-shadow:0 4px 0 #1b6ac0; transition:transform .08s;
-}
-#reset:active { transform: translateY(1px) }
-
-/* Layout: left panel character / right panel bins */
-.stage {
-  width:100%; max-width:1100px; display:grid; gap:14px; grid-template-columns: 1fr 1.2fr;
+/* Stage layout */
+.stage{
+  width:100%; max-width:1100px;
+  display:grid; gap:14px; grid-template-columns:1fr 1.2fr;
   padding:8px 0 22px;
+  position:relative; z-index:1;
 }
-.left, .right {
-  border-radius:18px; padding:20px; position:relative;
-  min-height:700px;
-}
-
-/* Character block */
-.left {
-  background:#ffffff;
-  border: 2px solid #e0e0e0;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.10);
-}
-.character {
-  position:relative; display:flex; align-items:flex-end; justify-content:center;
-  height:100%;
-  border-radius:14px;
-}
-.character svg { width:60%; max-width:370px; filter: drop-shadow(0 6px 8px rgba(0,0,0,.12)); }
-.hint {
-  position:absolute; top:10px; right:10px;
-  background:#fff; border:3px solid #00000025;
-  border-radius:12px; padding:6px 10px; font-size:13px; font-weight:700;
+.left,.right{
+  background:transparent; border:none; box-shadow:none; border-radius:0;
+  padding:20px; min-height:680px;
 }
 
-/* 场景容器与图片 */
-.scene-host {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-}
-.scene-host img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  border-radius: 12px;
+/* Character（左） */
+.character{ position:relative; display:flex; align-items:flex-end; justify-content:center; height:100% }
+.scene-host{ width:100%; height:100%; display:flex; align-items:center; justify-content:center }
+.scene-host img{ max-width:100%; max-height:64vh; height:auto; border-radius:12px }
+.hint{
+  position:absolute; bottom:10px; right:10px;
+  background:#fff; border:3px solid #0003; border-radius:12px; padding:6px 10px;
+  font-size:13px; font-weight:700;
 }
 
-/* Comic bubble */
-.bubble {
-  position:absolute; left:52%; top:8%;
-  background:#fff; border:4px solid var(--ink); border-radius:16px; padding:10px 14px;
-  font-weight:900; font-size:16px;
-  transform-origin:left top; transform:scale(0);
+/* 气泡 */
+.bubble{
+  position:absolute; left:10px; top:10px;
+  background:#fff; border:4px solid #000; border-radius:16px; padding:10px 14px;
+  font-weight:900; font-size:16px; transform:scale(0);
   filter: drop-shadow(0 6px 0 rgba(0,0,0,.15));
 }
-.bubble::after {
-  content:""; position:absolute; left:-18px; top:24px; width:0; height:0;
-  border:12px solid transparent; border-right-color:var(--ink);
-}
-.bubble::before {
-  content:""; position:absolute; left:-14px; top:26px; width:0; height:0;
-  border:10px solid transparent; border-right-color:#fff; z-index:1;
-}
-.bubble.good { background:#eafff0; border-color:#0b7a33 }
-.bubble.good::after { border-right-color:#0b7a33 }
-.bubble.bad { background:#ffe8ec; border-color:#c2183b }
-.bubble.bad::after { border-right-color:#c2183b }
-.bubble.show { animation:pop .28s ease-out forwards }
-@keyframes pop { from{transform:scale(0)} to{transform:scale(1)} }
+.bubble.show{ animation:pop .28s ease-out forwards }
+@keyframes pop{ from{transform:scale(0)} to{transform:scale(1)} }
 
-/* ✅ 单个大物品容器 */
+/* 当前物品（右上） */
 .current-item{
   display:flex; align-items:center; justify-content:center;
-  height:320px; margin-bottom:18px;
-  background:transparent;
-  border:none;
+  height:280px; margin:6px 0 22px;
+  background:transparent; border:none;
 }
-/* ✅ 物品卡片只显示 emoji 和文字，无背景/外框 */
 .card.big{
-  border:none;
-  box-shadow:none;
-  background:transparent;
-  border-radius:0;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
-  cursor:grab; user-select:none;
+  border:none; box-shadow:none; background:transparent; width:auto; height:auto;
+  display:flex; flex-direction:column; align-items:center; gap:8px; cursor:grab; user-select:none;
 }
 .card.big .emoji{ font-size:72px }
-.card.big .label{ font-size:18px; font-weight:900; text-align:center; margin-top:6px }
+.card.big .label{ font-size:18px; font-weight:900; text-align:center }
 
-/* ✅ 三个垃圾桶布局 */
-.bins.three{
-  position:relative; display:grid; grid-template-columns:repeat(3,1fr);
-  gap:18px; margin-top:22px;
-}
-.bin {
-  background:transparent;
-  border:none;
-  box-shadow:none;
-  padding:18px 12px 18px; min-height:220px;
-  display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
-  position:relative; transition:transform .12s;
-}
-.bin:hover { transform:translateY(-2px) }
-.bin.hot { transform:translateY(-4px) }
-.bin.shake { animation:shake .25s }
-@keyframes shake { 25%{transform:translateX(-2px)} 50%{transform:translateX(2px)} 75%{transform:translateX(-2px)} }
+/* Bins（右下） */
+.bins.three{ display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:12px }
+.bin{ background:transparent; border:none; box-shadow:none; padding:12px 8px; min-height:200px;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-end }
+.bin .can{ font-size:64px; margin-bottom:10px }
+.bin .label{ font-weight:1000; text-align:center; color:#fff; padding:8px 12px; border-radius:12px; width:auto }
+.bin[data-type="waste"] .label{ background:var(--green) }
+.bin[data-type="recycle"] .label{ background:var(--yellow); color:#222 }
+.bin[data-type="rubbish"] .label{ background:var(--red) }
 
-.bin .can { font-size:64px; margin-bottom:10px; pointer-events:none; }
-.bin .label {
-  font-weight:1000; text-align:center; color:#fff;
-  text-shadow:1px 2px 0 rgba(0,0,0,.35);
-  padding:8px 10px; border-radius:12px; width:92%;
+/* Overlay（提示/结算） */
+.overlay{
+  position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg, rgba(255,255,255,.96), rgba(200,230,255,.96));
+  backdrop-filter:saturate(120%) blur(2px);
+  z-index:1000;
+  transition:opacity .2s;
 }
-
-/* ✅ 三类颜色映射 */
-.bin[data-type="waste"]   .label { background:var(--green); }
-.bin[data-type="recycle"] .label { background:var(--yellow); color:#222; }
-.bin[data-type="rubbish"] .label { background:var(--red); }
-
-/* ✅ 右侧整体容器美化（渐变 + 内阴影） */
-.right {
-  background: linear-gradient(180deg, #fffdf7, #fdfdfd);
-  border-radius: 22px;
-  border:none;
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
-  padding:20px;
-}
-
-/* Overlay panels */
-.overlay {
-  position:fixed; inset:0;
-  display:flex; align-items:center; justify-content:center;
-  background:linear-gradient(135deg, rgba(255,255,255,.98), rgba(200,230,255,.98));
-  z-index:10; transition:opacity .2s;
-}
-.overlay.hide { opacity:0; pointer-events:none }
-.panel {
+.overlay.hide{ opacity:0; pointer-events:none }
+.panel{
   width:min(560px,90vw); background:#fff; border:4px solid #000; border-radius:18px; padding:18px;
-  text-align:center; box-shadow:12px 12px 0 #00000020;
+  text-align:center; box-shadow:12px 12px 0 #0003;
 }
-.panel h2 { margin:8px 0 12px }
-.btn {
+.panel h2{ margin:8px 0 12px }
+.btn{
   background:#12b886; color:#fff; border:4px solid #0a7a5e; border-radius:14px;
   padding:10px 16px; font-weight:900; cursor:pointer;
   display:inline-flex; gap:8px; align-items:center;
   box-shadow:0 6px 0 #0a7a5e; transition:transform .08s;
 }
-.btn:active { transform:translateY(1px) }
-.medal { font-size:48px; filter: drop-shadow(0 4px 0 rgba(0,0,0,.15)); }
-.summary { font-weight:900; margin:8px 0 14px }
+.btn:active{ transform:translateY(1px) }
+.medal{ font-size:48px; filter: drop-shadow(0 4px 0 rgba(0,0,0,.15)); }
+.summary{ font-weight:900; margin:8px 0 14px }
 
-/* 悬浮音乐按钮 */
-.music-fab{
-  position: fixed;
-  top: 14px;
-  right: 120px;
-  z-index: 1000;
-  background:#475569;
-  border-color:#1f2937;
-  box-shadow:0 6px 0 #1f2937;
-  font-weight:900;
-  padding:8px 14px;
+/* 背景动画层 */
+.beach-anim{ position:fixed; inset:0; pointer-events:none; z-index:0 }
+/* 云朵 */
+.cloud{ position:absolute; top:8vh; width:180px; height:70px; border-radius:999px; background:rgba(255,255,255,.8); animation:cloudMove 60s linear infinite }
+.cloud.c1{ left:-220px; animation-duration:70s }
+.cloud.c2{ left:-260px; animation-duration:82s; top:16vh }
+.cloud.c3{ left:-180px; animation-duration:64s; top:12vh }
+@keyframes cloudMove{ from{transform:translateX(0)} to{transform:translateX(120vw)} }
+/* 海鸥 */
+.gull{ position:absolute; top:14vh; left:-10vw; width:74px; opacity:.85; animation:gullFly 26s linear infinite }
+.gull.g1{ animation-duration:24s }
+.gull.g2{ animation-duration:30s; top:18vh }
+@keyframes gullFly{ from{transform:translateX(0)} to{transform:translateX(120vw)} }
+/* 近海浅浪（下移避免穿过物品区） */
+.wave{
+  position:absolute; left:0; right:0; height:12vh;
+  background:
+    radial-gradient(12px 6px at 20% 20%, rgba(255,255,255,.9) 40%, rgba(255,255,255,0) 60%) repeat-x,
+    radial-gradient(10px 5px at 60% 60%, rgba(255,255,255,.9) 40%, rgba(255,255,255,0) 60%) repeat-x;
+  background-size:80px 40px, 100px 40px;
+  opacity:.3; animation:waveDrift 10s ease-in-out infinite;
 }
-.music-fab.music-on{
-  background:#10b981;
-  border-color:#0b7a5e;
-  box-shadow:0 6px 0 #0b7a5e;
-}
+.w1{ top:50vh }
+.w2{ top:51.5vh; animation-duration:14s; opacity:.22 }
+@keyframes waveDrift{ 0%,100%{ background-position:0 0, 0 0; transform:translateY(0) } 50%{ background-position:40px 0, -50px 0; transform:translateY(-6px) } }
+/* 沙滩动物 */
+.crab,.turtle{ position:absolute; bottom:6vh; width:64px; opacity:.9; animation-timing-function:linear; animation-iteration-count:infinite }
+.crab{ left:-80px; animation:crabWalk 32s infinite }
+.turtle{ left:120vw; animation:turtleWalk 48s infinite }
+@keyframes crabWalk{ 0%{transform:translateX(0)} 50%{transform:translateX(115vw)} 100%{transform:translateX(0)} }
+@keyframes turtleWalk{ 0%{transform:translateX(0)} 50%{transform:translateX(-120vw)} 100%{transform:translateX(0)} }
 
 /* 响应式 */
 @media (max-width: 980px){
-  .stage{ grid-template-columns: 1fr }
-  .left{ min-height: 360px }
-  .right{ min-height: 540px }
-  .current-item{ height: 260px }
+  .stage{ grid-template-columns:1fr }
+  .left{ min-height:360px }
+  .right{ min-height:520px }
+  .current-item{ height:240px }
   .card.big .emoji{ font-size:58px }
   .card.big .label{ font-size:16px }
   .bin .can{ font-size:54px }
