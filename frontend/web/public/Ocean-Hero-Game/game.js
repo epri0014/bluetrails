@@ -24,10 +24,10 @@ const medalText  = document.getElementById('medalText');
 const badgeChip  = document.getElementById('badgeChip');
 const badgeName  = document.getElementById('badgeName');
 const badgeEmoji = document.getElementById('badgeEmoji');
+const itemProgress = document.getElementById('itemProgress');
 
-// 单个物品容器
+// 单个物品容器 & 舞台
 const currentHost = document.getElementById('currentItem');
-// 游戏舞台
 const stage = document.querySelector('.stage');
 
 // ---------- Background music ----------
@@ -43,22 +43,24 @@ function playMusic(){
     if (bgMusic.paused) bgMusic.currentTime = 0;
     const p = bgMusic.play();
     if (p && typeof p.then === 'function') p.catch(() => {});
-  }catch{ /* ignore */ }
+  }catch{(2)}
 }
 function pauseMusic(){ if (bgMusic) bgMusic.pause(); }
 
 function refreshMusicButtonsUI(){
+  // ✅ 修正显示：开=绿色 + 🔊，关=灰色 + 🔇
   musicButtons.forEach(btn => {
-    btn.textContent = musicOn ? '🔇 Music' : '🔊 Music';
     if (musicOn){
-      btn.style.background  = '#475569';
-      btn.style.borderColor = '#1f2937';
-      btn.style.boxShadow   = '0 6px 0 #1f2937';
-      btn.style.color       = '#fff';
-    }else{
+      btn.textContent = '🔊 Music';
       btn.style.background  = '#10b981';
       btn.style.borderColor = '#0b7a5e';
       btn.style.boxShadow   = '0 6px 0 #0b7a5e';
+      btn.style.color       = '#fff';
+    }else{
+      btn.textContent = '🔇 Music';
+      btn.style.background  = '#475569';
+      btn.style.borderColor = '#1f2937';
+      btn.style.boxShadow   = '0 6px 0 #1f2937';
       btn.style.color       = '#fff';
     }
   });
@@ -120,6 +122,8 @@ function renderNextItem(){
   el.innerHTML = `<div class="emoji">${it.emoji}</div><div class="label">${it.label}</div>`;
   attachDrag(el);
   currentHost.appendChild(el);
+
+  if (itemProgress) itemProgress.textContent = `${currentIndex+1}/${items.length}`;
 }
 
 function attachDrag(el){
@@ -174,6 +178,12 @@ function setupBins(){
         sfx.wrong();
         bin.classList.add('shake');
         setTimeout(()=>bin.classList.remove('shake'), 300);
+        // ❌ 让物品自身回弹
+        const card = currentHost?.querySelector('.card.big');
+        if (card){
+          card.classList.add('shake');
+          setTimeout(()=>card.classList.remove('shake'), 240);
+        }
       }
 
       currentIndex += 1;
@@ -248,6 +258,7 @@ function startGame(){
   if (badgeChip)  badgeChip.style.display = 'none';
   if (badgeName)  badgeName.textContent = '';
   if (badgeEmoji) badgeEmoji.textContent = '';
+  if (itemProgress) itemProgress.textContent = `0/${items.length}`;
 
   renderNextItem();
   setBubble("Let’s go! Sort the trash!");
@@ -259,12 +270,10 @@ function startGame(){
 }
 
 // ---------- Events ----------
-// Start
 if (btnStart){
   btnStart.addEventListener('click', () => { hideOverlays(); startGame(); });
 }
 
-// Reset
 if (resetBtn){
   resetBtn.addEventListener('click', () => {
     pauseMusic();
@@ -273,7 +282,6 @@ if (resetBtn){
   });
 }
 
-// Play Again
 if (btnAgain){
   btnAgain.addEventListener('click', () => {
     if (endOverlay) endOverlay.classList.add('hide');
@@ -282,13 +290,17 @@ if (btnAgain){
   });
 }
 
-// Exit → 回到 Start Overlay
+// Exit → 回到 Start Overlay + 重置 HUD
 if (btnExit){
   btnExit.addEventListener('click', () => {
     pauseMusic();
     if (endOverlay) endOverlay.classList.add('hide');
     if (stage) stage.classList.add('hide');
     if (startOverlay) startOverlay.classList.remove('hide');
+    // 重置 HUD
+    score = 0; if (scoreEl) scoreEl.textContent = '0';
+    remainingTime = 90; if (timeEl) timeEl.textContent = '90';
+    if (itemProgress) itemProgress.textContent = '0/0';
   });
 }
 

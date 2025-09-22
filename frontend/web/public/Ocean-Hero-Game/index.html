@@ -3,27 +3,30 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Junk Jumble </title>
+  <title>Junk Jumble</title>
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
   <!-- 说明页（先显示） -->
-  <div class="overlay" id="startOverlay" aria-modal="true" role="dialog">
-    <div class="panel">
-      <h2>Ready to Clean the Beach?</h2>
-      <p class="summary">Drag the big item into the correct bin. <b>One try per item!</b></p>
-      <p style="margin:8px 0 16px">
-        Scoring: +20 correct · −10 wrong (not below 0) · <b>90s</b> timer
-      </p>
-      <div style="margin-bottom:14px">Badges: 🥉 60+ · 🥈 90+ · 🥇 120+</div>
-      <div style="margin-top:12px; display:flex; justify-content:center; gap:12px">
-        <button id="musicToggle" class="btn js-music-toggle" aria-label="Toggle background music">🔊 Music</button>
-        <button id="btnStart" class="btn">🎮 Let’s Go!</button>
-      </div>
+<div class="overlay" id="startOverlay" aria-modal="true" role="dialog">
+  <div class="panel">
+    <h2>Ready to Clean the Beach?</h2>
+
+    <div class="rules">
+      <p><b>How to play:</b> Drag the item into the correct bin. One try per item.</p>
+      <p><b>Scoring:</b> +20 points for correct answers, -10 for wrong answers (not below 0).<br>
+         <b>Timer:</b> 90 seconds</p>
+      <p><b>Badges:</b> Bronze 60+ · Silver 90+ · Gold 120+</p>
+    </div>
+
+    <div style="margin-top:12px; display:flex; justify-content:center; gap:12px">
+      <button id="musicToggle" class="btn js-music-toggle" aria-label="Toggle background music">🔊 Music</button>
+      <button id="btnStart" class="btn">🎮 Let’s Go!</button>
     </div>
   </div>
+</div>
 
-  <!-- 顶部 HUD（被 overlay 覆盖，开始后显示） -->
+  <!-- 顶部 HUD -->
   <header>
     <h1>Junk Jumble</h1>
     <div id="hud">
@@ -39,13 +42,12 @@
     </div>
   </header>
 
-  <!-- 背景动画层（不拦截交互） -->
+  <!-- 背景动画层 -->
   <div class="beach-anim" aria-hidden="true">
     <!-- 云朵 -->
     <div class="cloud c1"></div>
     <div class="cloud c2"></div>
     <div class="cloud c3"></div>
-
     <!-- 海鸥 -->
     <svg class="gull g1" viewBox="0 0 64 32">
       <path d="M2 16 C18 6, 22 6, 32 16 C42 26, 46 26, 62 16"
@@ -54,27 +56,6 @@
     <svg class="gull g2" viewBox="0 0 64 32">
       <path d="M2 16 C18 6, 22 6, 32 16 C42 26, 46 26, 62 16"
             fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-
-    <!-- 近海浅浪 -->
-    <div class="wave w1"></div>
-    <div class="wave w2"></div>
-
-    <!-- 沙滩动物 -->
-    <svg class="crab" viewBox="0 0 64 32">
-      <circle cx="32" cy="20" r="8" fill="#ff6b6b"/>
-      <circle cx="24" cy="20" r="2" fill="#2b2b2b"/>
-      <circle cx="40" cy="20" r="2" fill="#2b2b2b"/>
-      <path d="M18 18 l-6 -4 M18 22 l-6 4 M46 18 l6 -4 M46 22 l6 4"
-            stroke="#ff6b6b" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-
-    <svg class="turtle" viewBox="0 0 64 32">
-      <ellipse cx="28" cy="18" rx="10" ry="7" fill="#2ecc71"/>
-      <circle cx="40" cy="18" r="5" fill="#8bd19b"/>
-      <circle cx="41.5" cy="17" r="1.5" fill="#2b2b2b"/>
-      <path d="M20 18 l-5 -3 M20 18 l-5 3" stroke="#8bd19b"
-            stroke-width="3" stroke-linecap="round"/>
     </svg>
   </div>
 
@@ -94,19 +75,15 @@
     </div>
   </div>
 
-  <!-- 主舞台（初始隐藏：.hide） -->
+  <!-- 主舞台 -->
   <main class="stage hide" aria-live="polite">
     <section class="left character">
       <div id="sceneHost" class="scene-host" aria-label="ocean hero scene"></div>
       <div class="bubble" id="bubble">Let’s go! Sort the trash!</div>
       <div class="hint">Drop the item into the correct bin ⤵</div>
     </section>
-
     <section class="right">
-      <!-- 单个大物品容器 -->
       <div id="currentItem" class="current-item"></div>
-
-      <!-- 三类垃圾桶 -->
       <div class="bins three" id="bins">
         <div class="bin" data-type="waste" aria-label="Waste (Green)">
           <div class="can">🗑️</div>
