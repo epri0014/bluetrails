@@ -32,12 +32,12 @@
   <div class="overlay" id="startOverlay" aria-modal="true" role="dialog">
     <div class="panel">
       <h2>Ready to Clean the Beach?</h2>
-      <p class="summary">Drag each item into the correct bin. <b>One try per item!</b></p>
+      <p class="summary">Drag the big item into the correct bin. <b>One try per item!</b></p>
       <p style="margin:8px 0 16px">Scoring: +20 correct · −10 wrong (not below 0) · <b>90s</b> timer</p>
       <div style="margin-bottom:14px">Badges: 🥉 60+ · 🥈 90+ · 🥇 120+</div>
 
       <div style="display:flex; justify-content:center; gap:12px; margin-top:12px">
-        <!-- Overlay 里的音乐按钮 -->
+        <!-- Overlay 里的音乐按钮（与 Header 同步） -->
         <button id="musicToggle" class="btn js-music-toggle" aria-label="Toggle background music">
           🔊 Music
         </button>
@@ -69,82 +69,28 @@
     <section class="left character">
       <div id="sceneHost" class="scene-host" aria-label="ocean hero scene"></div>
       <div class="bubble" id="bubble">Let’s go! Sort the trash!</div>
-      <div class="hint">Drop items into the correct bin ⤵</div>
+      <div class="hint">Drop the item into the correct bin ⤵</div>
     </section>
 
     <section class="right">
-      <div class="titlebar">
-        <div>Beach Finds</div><div class="pill">Drag & Drop</div>
-      </div>
-      <div class="tray" id="tray"></div>
+      <!-- ✅ 去掉原先的 tray 盒子，改为“单个大物品”容器 -->
+      <div id="currentItem" class="current-item"></div>
 
-      <div class="bins" id="bins">
-        <!-- Paper -->
-        <div class="bin" data-type="paper">
-          <div class="can svg" aria-hidden="true">
-            <svg viewBox="0 0 128 128" class="trash">
-              <path d="M24 28h80a6 6 0 0 1 0 12H24a6 6 0 0 1 0-12z" fill="currentColor"/>
-              <path d="M48 18h32l8 10H40l8-10z" fill="currentColor"/>
-              <rect x="22" y="40" width="84" height="78" rx="8" ry="8" fill="currentColor"/>
-              <g fill="#fff">
-                <rect x="44" y="52" width="8"  height="56" rx="4"/>
-                <rect x="60" y="52" width="8"  height="56" rx="4"/>
-                <rect x="76" y="52" width="8"  height="56" rx="4"/>
-              </g>
-            </svg>
-          </div>
-          <div class="label">CARD / PAPER</div>
+      <!-- ✅ 三类垃圾桶：waste / recycle / rubbish -->
+      <div class="bins three" id="bins">
+        <div class="bin" data-type="waste" aria-label="Waste (Green)">
+          <div class="can">🗑️</div>
+          <div class="label">WASTE</div>
         </div>
 
-        <!-- Metal / Plastic / Glass -->
-        <div class="bin" data-type="mpg">
-          <div class="can svg" aria-hidden="true">
-            <svg viewBox="0 0 128 128" class="trash">
-              <path d="M24 28h80a6 6 0 0 1 0 12H24a6 6 0 0 1 0-12z" fill="currentColor"/>
-              <path d="M48 18h32l8 10H40l8-10z" fill="currentColor"/>
-              <rect x="22" y="40" width="84" height="78" rx="8" ry="8" fill="currentColor"/>
-              <g fill="#fff">
-                <rect x="44" y="52" width="8"  height="56" rx="4"/>
-                <rect x="60" y="52" width="8"  height="56" rx="4"/>
-                <rect x="76" y="52" width="8"  height="56" rx="4"/>
-              </g>
-            </svg>
-          </div>
-          <div class="label">METAL PLASTIC GLASS</div>
+        <div class="bin" data-type="recycle" aria-label="Recycle (Yellow)">
+          <div class="can">♻️</div>
+          <div class="label">RECYCLE</div>
         </div>
 
-        <!-- Compost -->
-        <div class="bin" data-type="compost">
-          <div class="can svg" aria-hidden="true">
-            <svg viewBox="0 0 128 128" class="trash">
-              <path d="M24 28h80a6 6 0 0 1 0 12H24a6 6 0 0 1 0-12z" fill="currentColor"/>
-              <path d="M48 18h32l8 10H40l8-10z" fill="currentColor"/>
-              <rect x="22" y="40" width="84" height="78" rx="8" ry="8" fill="currentColor"/>
-              <g fill="#fff">
-                <rect x="44" y="52" width="8"  height="56" rx="4"/>
-                <rect x="60" y="52" width="8"  height="56" rx="4"/>
-                <rect x="76" y="52" width="8"  height="56" rx="4"/>
-              </g>
-            </svg>
-          </div>
-          <div class="label">COMPOST</div>
-        </div>
-
-        <!-- Other -->
-        <div class="bin" data-type="other">
-          <div class="can svg" aria-hidden="true">
-            <svg viewBox="0 0 128 128" class="trash">
-              <path d="M24 28h80a6 6 0 0 1 0 12H24a6 6 0 0 1 0-12z" fill="currentColor"/>
-              <path d="M48 18h32l8 10H40l8-10z" fill="currentColor"/>
-              <rect x="22" y="40" width="84" height="78" rx="8" ry="8" fill="currentColor"/>
-              <g fill="#fff">
-                <rect x="44" y="52" width="8"  height="56" rx="4"/>
-                <rect x="60" y="52" width="8"  height="56" rx="4"/>
-                <rect x="76" y="52" width="8"  height="56" rx="4"/>
-              </g>
-            </svg>
-          </div>
-          <div class="label">OTHER</div>
+        <div class="bin" data-type="rubbish" aria-label="Rubbish (Red)">
+          <div class="can">🚯</div>
+          <div class="label">RUBBISH</div>
         </div>
       </div>
     </section>

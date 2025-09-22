@@ -1,7 +1,5 @@
-// game.js
-// Main controller for Junk Jumble — Ocean Hero Beach Cleanup
-// Requires: data.js (POOL, BADGE_THRESHOLDS), scenes.js (SCENES), sfx.js (sfx)
-
+// game.js — 单物品流 & 三分类
+// 保留原有：音乐联动、徽章系统、计时器、气泡提示、SFX
 import { POOL, BADGE_THRESHOLDS } from './data.js';
 import { SCENES } from './scenes.js';
 import { sfx } from './sfx.js';
@@ -9,7 +7,6 @@ import { sfx } from './sfx.js';
 // ---------- DOM references ----------
 const scoreEl   = document.getElementById('score');
 const timeEl    = document.getElementById('time');
-const trayEl    = document.getElementById('tray');
 const bubble    = document.getElementById('bubble');
 const resetBtn  = document.getElementById('reset');
 
@@ -28,6 +25,9 @@ const badgeChip  = document.getElementById('badgeChip');
 const badgeName  = document.getElementById('badgeName');
 const badgeEmoji = document.getElementById('badgeEmoji');
 
+// 新增：单个物品容器
+const currentHost = document.getElementById('currentItem');
+
 // ---------- Background music (two linked buttons) ----------
 const bgMusic = document.getElementById('bgMusic');
 const musicButtons = Array.from(document.querySelectorAll('.js-music-toggle'));
@@ -45,9 +45,7 @@ function playMusic() {
     if (bgMusic.paused) bgMusic.currentTime = 0;
     const p = bgMusic.play();
     if (p && typeof p.then === 'function') p.catch(() => {});
-  } catch {
-    /* ignore */
-  }
+  } catch { /* ignore */ }
 }
 
 function pauseMusic() {
@@ -55,7 +53,7 @@ function pauseMusic() {
   bgMusic.pause();
 }
 
-// 反转样式：
+// 反转样式（保持你原来的逻辑）：
 //   - 静音 (musicOn=false)  => 绿色 + 🔊 Music
 //   - 播放 (musicOn=true)   => 灰色 + 🔇 Music
 function refreshMusicButtonsUI() {
@@ -78,11 +76,10 @@ refreshMusicButtonsUI();
 
 musicButtons.forEach(btn => {
   btn.addEventListener('click', () => {
-    musicOn = !musicOn;            // toggle
+    musicOn = !musicOn;
     persistMusicPref();
     refreshMusicButtonsUI();
-    if (musicOn) playMusic();
-    else pauseMusic();
+    if (musicOn) playMusic(); else pauseMusic();
   });
 });
 
@@ -108,6 +105,9 @@ let timerId = null;
 let running = false;
 let bestBadge = null;
 
+// 单物品索引
+let currentIndex = 0;
+
 const shuffle = arr => arr.sort(() => Math.random() - 0.5);
 
 // ---------- UI helpers ----------
@@ -120,18 +120,24 @@ function setBubble(msg, kind){
   setTimeout(() => bubble.classList.remove('show'), 2200);
 }
 
-function renderItems(){
-  trayEl.innerHTML = '';
-  items.forEach(it => {
-    const el = document.createElement('div');
-    el.className = 'card';
-    el.draggable = true;
-    el.dataset.id = it.id;
-    el.dataset.type = it.type;
-    el.innerHTML = `<div class="emoji">${it.emoji}</div><div class="label">${it.label}</div>`;
-    attachDrag(el);
-    trayEl.appendChild(el);
-  });
+// ✅ 渲染“下一个单个物品”
+function renderNextItem(){
+  currentHost.innerHTML = '';
+  if (currentIndex >= items.length){
+    running = false;
+    clearInterval(timerId);
+    showEnd('All items sorted!');
+    return;
+  }
+  const it = items[currentIndex];
+  const el = document.createElement('div');
+  el.className = 'card big';
+  el.draggable = true;
+  el.dataset.id = it.id;
+  el.dataset.type = it.type;
+  el.innerHTML = `<div class="emoji">${it.emoji}</div><div class="label">${it.label}</div>`;
+  attachDrag(el);
+  currentHost.appendChild(el);
 }
 
 function attachDrag(el){
@@ -165,8 +171,6 @@ function setupBins(){
       const dataText = e.dataTransfer.getData('text/plain');
       if(!dataText) return;
       const data = JSON.parse(dataText);
-      const card = trayEl.querySelector(`[data-id="${data.id}"]`);
-      if(!card) return;
 
       const correct = data.type === bin.dataset.type;
 
@@ -175,10 +179,9 @@ function setupBins(){
         scoreEl.textContent = score;
         sfx.correct();
         const facts = {
-          paper:  "Paper and card can be recycled into new paper.",
-          mpg:    "Metal/Plastic/Glass can be recycled again and again.",
-          compost:"Organics become compost that helps dune plants.",
-          other:  "Some items do not belong in recycling bins."
+          waste:   "Organics become compost that helps dune plants.",
+          recycle: "Recyclables can be made into new products.",
+          rubbish: "Some items do not belong in recycling bins."
         };
         setBubble('✅ ' + (facts[bin.dataset.type] || 'Correct!'), 'good');
         updateBadge();
@@ -191,16 +194,9 @@ function setupBins(){
         setTimeout(()=>bin.classList.remove('shake'), 300);
       }
 
-      card.style.transform = 'scale(.9)';
-      card.style.opacity = '.3';
-      setTimeout(() => card.remove(), 90);
-      items = items.filter(x => x.id !== data.id);
-
-      if(items.length === 0){
-        running = false;
-        clearInterval(timerId);
-        showEnd('All items sorted!');
-      }
+      // 移动到下一个物品
+      currentIndex += 1;
+      renderNextItem();
     });
   });
 }
@@ -250,7 +246,7 @@ function showEnd(title){
   endTitle.textContent = title || 'Time’s Up!';
   endOverlay.classList.remove('hide');
 
-  // 结束时不强制改状态，只暂停播放
+  // 结束时只暂停音乐
   pauseMusic();
 }
 
@@ -264,20 +260,21 @@ function startGame(){
   score = 0; scoreEl.textContent = '0';
   remainingTime = 90; timeEl.textContent = remainingTime;
 
+  // 打乱后，单物品索引归零
   items = shuffle([...POOL]);
+  currentIndex = 0;
 
   bestBadge = null;
   badgeChip.style.display = 'none';
   badgeName.textContent = '';
   badgeEmoji.textContent = '';
 
-  renderItems();
+  renderNextItem();
   setBubble("Let’s go! Sort the trash!");
   running = true;
   startTimer();
   sfx.start();
 
-  // 开始时若开关为开，则播放
   if (musicOn) playMusic();
 }
 
@@ -285,7 +282,6 @@ function startGame(){
 btnStart.addEventListener('click', () => { hideOverlays(); startGame(); });
 
 resetBtn.addEventListener('click', () => {
-  // 重置：照开关状态决定是否播放（先停，再按状态播放）
   pauseMusic();
   startGame();
   if (musicOn) playMusic();

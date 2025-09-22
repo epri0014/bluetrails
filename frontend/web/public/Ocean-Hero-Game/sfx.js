@@ -10,7 +10,7 @@ export function tone(freq=440, duration=0.12, type='sine', gain=0.06){
     o.start();
     g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + duration);
     o.stop(actx.currentTime + duration);
-  }catch(e){}
+  }catch (e) { void e; }
 }
 
 export const sfx = {
