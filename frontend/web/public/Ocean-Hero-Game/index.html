@@ -10,7 +10,6 @@
   <!-- 开始说明页（已移除封面图） -->
   <div class="overlay" id="startOverlay" aria-modal="true" role="dialog">
     <div class="panel">
-      <!-- <img class="cover" src="./oceanhero.png" alt="Ocean Hero cover" />  已删除 -->
       <h2>Ready to Clean the Beach?</h2>
 
       <div class="rules">
@@ -59,10 +58,26 @@
     </svg>
   </div>
 
+  <!-- 沙滩装饰（椰子树 + 小屋） -->
+  <div class="beach-decor" aria-hidden="true">
+    <!-- 左侧一组 -->
+    <img src="./palm-hut.png" alt="" class="decor hut-tree d1">
+    <!-- 右侧镜像一组 -->
+    <img src="./palm-hut.png" alt="" class="decor hut-tree d2">
+    <!-- 如需第三个小的：取消下一行注释 -->
+    <!-- <img src="./palm-hut.png" alt="" class="decor hut-tree d3"> -->
+  </div>
+
+  <!-- 鲸鱼跃起动画（仅显示海面以上） -->
+  <div class="whale-layer" aria-hidden="true">
+    <img src="./whale-right.png" alt="" class="whale jump">
+    <!-- 如需第二只错峰起跳，可取消下一行注释 -->
+    <!-- <img src="./whale-right.png" alt="" class="whale jump delay"> -->
+  </div>
+
   <!-- 结束页（已移除封面图） -->
   <div class="overlay hide" id="endOverlay" aria-modal="true" role="dialog">
     <div class="panel">
-      <!-- <img class="cover small" src="./oceanhero.png" alt="Ocean Hero cover small" /> 已删除 -->
       <h2 id="endTitle">Time’s Up!</h2>
       <div class="summary">Score: <span id="finalScore">0</span></div>
       <div id="medalBlock" style="display:none">
