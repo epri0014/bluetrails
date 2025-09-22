@@ -10,7 +10,7 @@ import CausePage from '@/views/CausePage.vue'
 const routes = [
   { path: '/', name: 'home', component: Home },
   { path: '/animals', name: 'animals', component: AnimalsGrid },
-  { path: '/animals/:id', name: 'animal-detail', component: AnimalDetail }, 
+  { path: '/animals/:id', name: 'animal-detail', component: AnimalDetail },
   { path: '/water-quality', name: 'water', component: WaterView },
   { path: '/choose', name: 'choose', component: AvatarSelect },
   { path: '/health', component: OceanHealth },
