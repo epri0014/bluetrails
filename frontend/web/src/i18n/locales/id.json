@@ -8,15 +8,6 @@
     "practiceQuiz": "Latihan Kuis Laut",
     "aboutUs": "Tentang Kami"
   },
-  "hero": {
-    "title": "Lindungi Laut Kita",
-    "description": "Laut kita adalah rumah bagi kehidupan yang menakjubkan. Polusi dan perubahan iklim membahayakannya. Pelajari apa yang merusak laut dan bagaimana tindakan kecil setiap hari dapat melindunginya.",
-    "animalsAtRisk": "Hewan Terancam",
-    "beOceanHero": "Jadilah Pahlawan Laut",
-    "knowYourWater": "Kenali Air Kamu",
-    "moreComing": "Lebih banyak akan datang",
-    "caption": "Jadilah Pahlawan Laut: kurangi plastik sekali pakai, daur ulang, hemat air, pilih produk ramah terumbu karang, dan bagikan apa yang Kamu pelajari."
-  },
   "animals": {
     "pageTitle": "Temui Sahabat Laut Kita",
     "showRealImage": "Tampilkan Gambar Asli",
@@ -41,22 +32,7 @@
     "next": "Selanjutnya",
     "chooseAnimal": "Pilih hewan",
     "oceanStage": "Panggung laut",
-    "learnPlayAct": "Belajar • Bermain • Bertindak"
-  },
-  "animalDetail": {
-    "back": "Kembali",
-    "meetThe": "Temui",
-    "whyTheyMatter": "Mengapa mereka penting",
-    "howPollutionHurts": "Bagaimana polusi menyakiti mereka",
-    "howYouCanHelp": "Bagaimana Kamu dapat membantu",
-    "notFound": "Maaf, kami tidak dapat menemukan hewan tersebut.",
-    "commonName": "NAMA UMUM:",
-    "scientificName": "NAMA ILMIAH:",
-    "group": "KELOMPOK:",
-    "type": "JENIS:",
-    "size": "UKURAN:",
-    "diet": "MAKANAN:",
-    "status": "STATUS:"
+    "learnPlayAct": "Belajar - Bermain - Bertindak"
   },
   "footer": {
     "mainText": "BlueTrails - Pahlawan Laut Victoria",
@@ -123,7 +99,7 @@
         "question": "Kenapa sebaiknya tidak berenang di pantai tepat setelah hujan deras?",
         "correctAnswer": "Hujan membawa sampah dan kuman ke laut",
         "options": ["Hujan membawa sampah dan kuman ke laut", "Airnya mungkin terlalu dingin", "Ikan tidak suka ditemani"],
-        "funFact": "Setelah hujan deras, lebih aman menunggu 24–48 jam sebelum berenang.",
+        "funFact": "Setelah hujan deras, lebih aman menunggu 24-48 jam sebelum berenang.",
         "category": "ocean"
       },
       {
@@ -238,7 +214,7 @@
       "type": "Mamalia laut",
       "habitat": "Teluk dan perairan pesisir Victoria",
       "lines": [
-        "Tolong buang sampah dan potong lingkaran – tali hantu bisa melilit siripku.",
+        "Tolong buang sampah dan potong lingkaran - tali hantu bisa melilit siripku.",
         "Aku takut dengan kantong plastik dan tali pancing.",
         "Pilih botol yang bisa digunakan ulang. Sedikit plastik, laut lebih aman!"
       ],
@@ -263,7 +239,7 @@
       "type": "Mamalia laut",
       "habitat": "Samudra Selatan dan garis pantai Victoria selama musim dingin",
       "lines": [
-        "Jauhkan balon dari pantai – kami bisa menelannya secara tidak sengaja.",
+        "Jauhkan balon dari pantai - kami bisa menelannya secara tidak sengaja.",
         "Kapal lambat dan \"laut tenang\" membantu kami berbicara dengan anak kami.",
         "Dukung tim penyelamat yang membebaskan paus yang terjerat."
       ],
@@ -289,7 +265,7 @@
       "habitat": "Pulau berbatu dan pantai di sekitar Selat Bass",
       "lines": [
         "Cincin/tali plastik mengencang saat kami tumbuh. Potong sebelum dibuang!",
-        "Jaring hantu menakutkan – mereka menjerat leher kami.",
+        "Jaring hantu menakutkan - mereka menjerat leher kami.",
         "Amati satwa liar dari jarak jauh. Kami butuh ruang untuk istirahat."
       ],
       "sadText": "Aku bermasalah ketika cincin plastik tersangkut di leherku - mereka mengencang saat aku tumbuh lebih besar! Jaring hantu menakutkan dan bisa menjebakku di bawah air.",
@@ -305,7 +281,7 @@
         "Bawa pulang perlengkapan pancingmu."
       ],
       "fun": [
-        "Kami bisa ‘berjalan’ di darat dengan keempat sirip kami!"
+        "Kami bisa 'berjalan' di darat dengan keempat sirip kami!"
       ]
     },
     "little-penguin": {
@@ -313,9 +289,9 @@
       "type": "Burung laut",
       "habitat": "Pantai berbatu dan pulau termasuk Pulau Phillip",
       "lines": [
-        "Jaga pantai tetap bersih dan gelap – cahaya membingungkan anak kami.",
+        "Jaga pantai tetap bersih dan gelap - cahaya membingungkan anak kami.",
         "Tolong bawa pulang kail pancingmu.",
-        "Bergabunglah dalam pembersihan mini dengan orang dewasa – setiap potongan kecil membantu!"
+        "Bergabunglah dalam pembersihan mini dengan orang dewasa - setiap potongan kecil membantu!"
       ],
       "sadText": "Aku bermasalah ketika lampu terang menyinari malam - anak penguinku jadi bingung dan tidak bisa menemukan jalan pulang ke liang kami! Kail pancing yang tajam juga melukai kakiku.",
       "happyText": "Aku bahagia ketika pantai gelap di malam hari sehingga anak-anakku bisa menemukanku! Aku suka berjalan di pasir bersih dan menyelam mencari ikan kecil di air jernih.",
@@ -340,9 +316,9 @@
       "lines": [
         "Kami suka lamun yang sehat. Jangan injak-injak hamparan rumput laut ya.",
         "Pilih tabir surya yang aman untuk terumbu karang.",
-        "Bagikan apa yang kamu pelajari – pahlawan laut kecil bisa menginspirasi lebih banyak pahlawan! 🌊"
+        "Bagikan apa yang kamu pelajari - pahlawan laut kecil bisa menginspirasi lebih banyak pahlawan! 🌊"
       ],
-      "sadText": "Aku sedih kalau orang menginjak rumah rumput lautku – di situlah aku bersembunyi dan mencari udang kecil untuk dimakan! Bahan kimia dari tabir surya bikin air jadi tidak enak untukku.",
+      "sadText": "Aku sedih kalau orang menginjak rumah rumput lautku - di situlah aku bersembunyi dan mencari udang kecil untuk dimakan! Bahan kimia dari tabir surya bikin air jadi tidak enak untukku.",
       "happyText": "Aku senang kalau hutan rumput lautku sehat dan hijau! Aku bisa bersembunyi di antara tanaman dan menari bersama arus sambil mencari camilan lezat.",
       "threats": [
         "Hilangnya rumah rumput laut dan kelp.",
@@ -365,9 +341,9 @@
       "lines": [
         "Tolong jangan masuk ke area sarang kami di pasir.",
         "Ikat anjing dengan tali kalau dekat burung pantai.",
-        "Plastik kecil mirip makanan – ayo pungut!"
+        "Plastik kecil mirip makanan - ayo pungut!"
       ],
-      "sadText": "Aku sedih kalau orang berjalan terlalu dekat sarangku di pasir – aku bisa takut dan meninggalkan telurnya! Potongan plastik kecil terlihat seperti ikan tapi bikin aku sakit.",
+      "sadText": "Aku sedih kalau orang berjalan terlalu dekat sarangku di pasir - aku bisa takut dan meninggalkan telurnya! Potongan plastik kecil terlihat seperti ikan tapi bikin aku sakit.",
       "happyText": "Aku senang kalau bisa membangun sarang di pasir bersih dengan aman! Aku suka menyelam ke laut jernih untuk menangkap ikan kecil buat anak-anakku.",
       "threats": [
         "Sarang di pasir terbuka gampang terinjak.",
@@ -388,11 +364,11 @@
       "type": "Burung pantai",
       "habitat": "Pantai terbuka dan tepi bukit pasir",
       "lines": [
-        "Kami bersarang langsung di pasir – beri ruang dan ikuti rambu.",
-        "Jangan tinggalkan lubang atau benteng di pantai – anak bisa jatuh.",
-        "Bawa pulang sampahmu – angin bisa menerbangkannya ke laut."
+        "Kami bersarang langsung di pasir - beri ruang dan ikuti rambu.",
+        "Jangan tinggalkan lubang atau benteng di pantai - anak bisa jatuh.",
+        "Bawa pulang sampahmu - angin bisa menerbangkannya ke laut."
       ],
-      "sadText": "Aku sedih kalau orang menggali lubang di pasir – anak kecilku bisa jatuh dan tidak bisa keluar! Sampah juga bisa terbawa angin dan merusak rumahku.",
+      "sadText": "Aku sedih kalau orang menggali lubang di pasir - anak kecilku bisa jatuh dan tidak bisa keluar! Sampah juga bisa terbawa angin dan merusak rumahku.",
       "happyText": "Aku senang kalau pantai datar dan bersih! Aku bisa berlari di pasir mencari kepiting kecil bersama anak-anakku dengan aman.",
       "threats": [
         "Sarang di pasir mudah terinjak.",
@@ -413,11 +389,11 @@
       "type": "Burung laut",
       "habitat": "Membuat liang di pulau; migrasi jauh melintasi laut",
       "lines": [
-        "Lampu di malam hari bisa bikin kami bingung – lindungi lampu dekat pantai.",
+        "Lampu di malam hari bisa bikin kami bingung - lindungi lampu dekat pantai.",
         "Minyak dan plastik merusak bulu dan perut kami.",
         "Gunakan barang yang bisa dipakai ulang. Tindakan kecil bikin ombak besar!"
       ],
-      "sadText": "Aku sedih kalau lampu terang di malam hari bikin aku bingung – aku bisa menabrak gedung! Minyak dan plastik bikin buluku kotor dan perutku sakit.",
+      "sadText": "Aku sedih kalau lampu terang di malam hari bikin aku bingung - aku bisa menabrak gedung! Minyak dan plastik bikin buluku kotor dan perutku sakit.",
       "happyText": "Aku senang kalau bisa terbang di atas laut gelap yang bersih di malam hari! Aku suka bepergian jauh dengan teman-temanku dan menyelam mencari ikan.",
       "threats": [
         "Lampu terang di malam hari bikin bingung.",

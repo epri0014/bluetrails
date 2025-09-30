@@ -8,15 +8,6 @@
     "practiceQuiz": "Practice Ocean Quiz",
     "aboutUs": "About Us"
   },
-  "hero": {
-    "title": "Protect Our Ocean",
-    "description": "Our ocean is home to amazing life. Pollution and climate change put it at risk. Learn what harms the sea and how small actions every day can protect it.",
-    "animalsAtRisk": "Animals at Risk",
-    "beOceanHero": "Be an Ocean Hero",
-    "knowYourWater": "Know your Water",
-    "moreComing": "More coming soon",
-    "caption": "Be an Ocean Hero: reduce single-use plastic, recycle, save water, choose reef-safe products, and share what you learn."
-  },
   "animals": {
     "pageTitle": "Meet Our Ocean Friends",
     "showRealImage": "Show Real Image",
@@ -41,22 +32,7 @@
     "next": "Next",
     "chooseAnimal": "Choose an animal",
     "oceanStage": "Ocean stage",
-    "learnPlayAct": "Learn • Play • Act"
-  },
-  "animalDetail": {
-    "back": "Back",
-    "meetThe": "Meet the",
-    "whyTheyMatter": "Why they matter",
-    "howPollutionHurts": "How pollution hurts them",
-    "howYouCanHelp": "How you can help",
-    "notFound": "Sorry, we couldn't find that animal.",
-    "commonName": "COMMON NAME:",
-    "scientificName": "SCIENTIFIC NAME:",
-    "group": "GROUP:",
-    "type": "TYPE:",
-    "size": "SIZE:",
-    "diet": "DIET:",
-    "status": "STATUS:"
+    "learnPlayAct": "Learn - Play - Act"
   },
   "footer": {
     "mainText": "BlueTrails - Victoria's Ocean Heroes",
@@ -123,7 +99,7 @@
         "question": "Why should you avoid swimming at the beach right after heavy rain?",
         "correctAnswer": "Rain washes rubbish and germs into the sea",
         "options": ["Rain washes rubbish and germs into the sea", "The water might be too cold", "Fish don't like company"],
-        "funFact": "After heavy rain, it's safer to wait 24–48 hours before swimming.",
+        "funFact": "After heavy rain, it's safer to wait 24-48 hours before swimming.",
         "category": "ocean"
       },
       {
@@ -238,7 +214,7 @@
       "type": "Marine mammal",
       "habitat": "Bays and coastal waters of Victoria",
       "lines": [
-        "Please bin your rubbish and cut loops – ghost lines can tangle my fins.",
+        "Please bin your rubbish and cut loops - ghost lines can tangle my fins.",
         "I'm scared of plastic bags and fishing lines.",
         "Choose reusable bottles. Less plastic, safer oceans!"
       ],
@@ -263,7 +239,7 @@
       "type": "Marine mammal",
       "habitat": "Southern Ocean and Victorian coastline during winter",
       "lines": [
-        "Keep balloons away from beaches – we can swallow them by mistake.",
+        "Keep balloons away from beaches - we can swallow them by mistake.",
         "Slow boats and \"quiet seas\" help us talk to our calves.",
         "Support rescue teams that free entangled whales."
       ],
@@ -289,7 +265,7 @@
       "habitat": "Rocky islands and beaches around Bass Strait",
       "lines": [
         "Plastic rings/straps tighten as we grow. Snip them before you bin!",
-        "Ghost nets are scary – they trap our necks.",
+        "Ghost nets are scary - they trap our necks.",
         "Watch wildlife from a distance. We need space to rest."
       ],
       "sadText": "I get trouble when plastic rings get stuck around my neck - they get tighter as I grow bigger! Ghost nets are scary and can trap me underwater.",
@@ -313,9 +289,9 @@
       "type": "Seabird",
       "habitat": "Rocky shores and islands including Phillip Island",
       "lines": [
-        "Keep beaches clean and dark – lights confuse our chicks.",
+        "Keep beaches clean and dark - lights confuse our chicks.",
         "Please take your fishing hooks home.",
-        "Join a mini clean-up with an adult – every small piece helps!"
+        "Join a mini clean-up with an adult - every small piece helps!"
       ],
       "sadText": "I get trouble when bright lights shine at night - my baby penguins get confused and can't find their way home to our burrow! Sharp fishing hooks hurt my feet too.",
       "happyText": "I'm happy when beaches are dark at night so my chicks can find me! I love waddling on clean sand and diving for little fish in the clear water.",
@@ -340,7 +316,7 @@
       "lines": [
         "We love healthy seagrass. Don't trample seagrass beds.",
         "Choose reef-safe sunscreen.",
-        "Share what you learn – ocean heroes inspire more heroes!"
+        "Share what you learn - ocean heroes inspire more heroes!"
       ],
       "sadText": "I get trouble when people step on my seagrass home - it's where I hide and find tiny shrimp to eat! Chemicals from sunscreen make the water yucky for me.",
       "happyText": "I'm happy when my seagrass forest is healthy and green! I can hide among the leafy plants and dance with the gentle currents while looking for tasty treats.",
@@ -365,12 +341,12 @@
       "lines": [
         "Please stay outside our nesting areas on sandy beaches.",
         "Keep dogs on leash near shorebirds.",
-        "Tiny plastic looks like food – pick it up!"
+        "Tiny plastic looks like food - pick it up!"
       ],
       "sadText": "I get trouble when people walk too close to my nest in the sand - it scares me and I might leave my eggs! Tiny plastic pieces look like fish but make me sick.",
       "happyText": "I'm happy when I can build my nest safely on clean sand! I love diving into clear water to catch small fish for my baby chicks.",
       "threats": [
-        "Nests on open sand—easy to trample.",
+        "Nests on open sand-easy to trample.",
         "Dogs and people scare parents from eggs.",
         "Tiny plastics look like food."
       ],
@@ -388,14 +364,14 @@
       "type": "Shorebird",
       "habitat": "Open ocean beaches and dune edges",
       "lines": [
-        "We nest right on the sand – give us space and follow signs.",
-        "Leave no holes/forts on beaches – chicks can fall in.",
-        "Take your litter – wind can carry it into the sea."
+        "We nest right on the sand - give us space and follow signs.",
+        "Leave no holes/forts on beaches - chicks can fall in.",
+        "Take your litter - wind can carry it into the sea."
       ],
       "sadText": "I get trouble when people dig holes in the sand - my tiny chicks might fall in and can't get out! Litter blows around and hurts my beach home.",
       "happyText": "I'm happy when the beach is flat and clean! I can run along the sand looking for tiny crabs and worms while my chicks follow me safely.",
       "threats": [
-        "Nests right on sand—easily trampled.",
+        "Nests right on sand-easily trampled.",
         "Holes/forts trap chicks.",
         "Loose dogs disturb parents."
       ],
@@ -413,7 +389,7 @@
       "type": "Seabird",
       "habitat": "Burrows on islands; long ocean migrations",
       "lines": [
-        "Lights at night can confuse us – shield lights near the coast.",
+        "Lights at night can confuse us - shield lights near the coast.",
         "Oil and plastics hurt our feathers and stomachs.",
         "Choose reusables. Small actions make big waves!"
       ],

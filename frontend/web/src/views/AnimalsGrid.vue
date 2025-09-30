@@ -1,10 +1,10 @@
 <template>
   <main class="page" aria-labelledby="title">
-    <h1 id="title" class="visually-hidden">{{ $t('animals.pageTitle') }} — {{ $t('animals.learnPlayAct') }}</h1>
+    <h1 id="title" class="visually-hidden">{{ $t('animals.pageTitle') }} - {{ $t('animals.learnPlayAct') }}</h1>
 
     <section class="wrap">
       <div class="carousel glass" ref="railBox" role="tablist" aria-label="Choose an animal">
-        <button class="nav left" @click="scrollBy(-1)" :aria-label="$t('animals.previous')">‹</button>
+        <button class="nav left" @click="scrollBy(-1)" :aria-label="$t('animals.previous')"><</button>
 
         <ul class="rail" ref="rail">
           <li
@@ -23,7 +23,7 @@
           </li>
         </ul>
 
-        <button class="nav right" @click="scrollBy(1)" :aria-label="$t('animals.next')">›</button>
+        <button class="nav right" @click="scrollBy(1)" :aria-label="$t('animals.next')">></button>
 
         <div class="mode">
           <button class="btn" :class="{ on: mode === 'cartoon' }" @click="mode = 'cartoon'">{{ $t('animals.cartoon') }}</button>
@@ -57,7 +57,7 @@
               :alt="prevAnimal.name"
               @error="onPreviewError($event, prevAnimal)"
             />
-            <span class="chev">‹</span>
+            <span class="chev"><</span>
           </button>
 
           <button class="stage-btn right" @click="next" :aria-label="'Next: ' + nextAnimal.name">
@@ -66,7 +66,7 @@
               :alt="nextAnimal.name"
               @error="onPreviewError($event, nextAnimal)"
             />
-            <span class="chev">›</span>
+            <span class="chev">></span>
           </button>
         </div>
 
@@ -129,7 +129,7 @@
             :aria-label="current.name + ' facts'"
           >
             <article class="fact-sheet" @click.stop>
-              <button class="sheet-close" @click="closeInfo" :aria-label="$t('animals.close')">×</button>
+              <button class="sheet-close" @click="closeInfo" :aria-label="$t('animals.close')">x</button>
 
               <header class="sheet-header">
                 <img :src="imgSrc(mode==='cartoon' ? current.cartoon : current.file)" :alt="current.name" class="sheet-avatar" @error="onImgError" />

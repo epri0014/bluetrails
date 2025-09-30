@@ -8,15 +8,6 @@
     "practiceQuiz": "练习海洋知识问答",
     "aboutUs": "关于我们"
   },
-  "hero": {
-    "title": "保护我们的海洋",
-    "description": "我们的海洋是奇妙生命的家园。污染和气候变化使其面临危险。了解什么会伤害海洋，以及日常的小行动如何保护它。",
-    "animalsAtRisk": "濒危动物",
-    "beOceanHero": "成为海洋英雄",
-    "knowYourWater": "了解你的水",
-    "moreComing": "更多即将推出",
-    "caption": "成为海洋英雄：减少一次性塑料制品，回收利用，节约用水，选择对珊瑚礁安全的产品，并分享你所学到的知识。"
-  },
   "animals": {
     "pageTitle": "认识我们的海洋朋友",
     "showRealImage": "显示真实图片",
@@ -42,21 +33,6 @@
     "chooseAnimal": "选择动物",
     "oceanStage": "海洋舞台",
     "learnPlayAct": "学习 • 游戏 • 行动"
-  },
-  "animalDetail": {
-    "back": "返回",
-    "meetThe": "认识",
-    "whyTheyMatter": "为什么它们很重要",
-    "howPollutionHurts": "污染如何伤害它们",
-    "howYouCanHelp": "你如何帮助",
-    "notFound": "抱歉，我们找不到那个动物。",
-    "commonName": "通用名称：",
-    "scientificName": "学名：",
-    "group": "群组：",
-    "type": "类型：",
-    "size": "大小：",
-    "diet": "饮食：",
-    "status": "状态："
   },
   "footer": {
     "mainText": "BlueTrails - 维多利亚的海洋英雄",

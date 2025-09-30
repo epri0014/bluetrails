@@ -6,7 +6,7 @@
         ref="frame"
         src="https://019911fb-5550-ad05-7994-5cd5737f0ef1.share.connect.posit.cloud/"
         class="water-iframe"
-        title="Water Quality Shiny App"
+        title="Visit Ocean Friends Home"
         frameborder="0"
         allowfullscreen
         @load="onLoad"
