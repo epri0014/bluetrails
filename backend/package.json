@@ -1,0 +1,24 @@
+{
+  "name": "bluetrails-backend",
+  "version": "1.0.0",
+  "description": "BlueTrails Backend API - Cloud-agnostic with Cloudflare Workers support",
+  "main": "src/adapters/cloudflare.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0",
+    "itty-router": "^4.0.23"
+  },
+  "devDependencies": {
+    "wrangler": "^3.15.0",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.6"
+  },
+  "keywords": ["api", "cloudflare", "workers", "supabase", "bluetrails"],
+  "author": "MindMerge Team",
+  "license": "MIT"
+}
