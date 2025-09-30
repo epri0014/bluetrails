@@ -3,7 +3,21 @@
     <h1 id="title" class="visually-hidden">{{ $t('animals.pageTitle') }} - {{ $t('animals.learnPlayAct') }}</h1>
 
     <section class="wrap">
-      <div class="carousel glass" ref="railBox" role="tablist" aria-label="Choose an animal">
+      <!-- Loading state -->
+      <div v-if="loading" class="loading-container glass">
+        <LoadingOverlay message="Loading ocean animals..." />
+      </div>
+
+      <!-- Error state -->
+      <div v-else-if="error" class="error-container glass">
+        <div class="error-content">
+          <p class="error-message">{{ error }}</p>
+          <button @click="loadAnimals" class="retry-btn">Retry Loading</button>
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <div v-else class="carousel glass" ref="railBox" role="tablist" aria-label="Choose an animal">
         <button class="nav left" @click="scrollBy(-1)" :aria-label="$t('animals.previous')"><</button>
 
         <ul class="rail" ref="rail">
@@ -182,39 +196,52 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { getAnimals } from '@/services/api.js'
+import LoadingOverlay from '@/components/LoadingOverlay.vue'
 
-const { t, tm } = useI18n()
+const { t, tm, locale } = useI18n()
 
 const CDN = 'https://gvwrmcyksmswvduehrtd.supabase.co/storage/v1/object/public'
 const BUCKET = 'bluetrails'
 const PRIMARY_DIR = 'animal-page'
 const FALLBACK_DIR = 'animal%20page'
 
-// Base animal data (static info only)
-const baseAnimals = [
-  { slug:'burrunan-dolphin', sci:'Tursiops australis', file:'burranan.png', cartoon:'dolphin-cartoon.png' },
-  { slug:'southern-right-whale', sci:'Eubalaena australis', file:'Southern-Right-Whale.jpg', cartoon:'whale-cartoon.png' },
-  { slug:'australian-fur-seal', sci:'Arctocephalus pusillus doriferus', file:'Australian-Fur-Seal.jpg', cartoon:'seal-cartoon.png' },
-  { slug:'little-penguin', sci:'Eudyptula minor', file:'little-penguin.jpg', cartoon:'penguin-cartoon.png' },
-  { slug:'weedy-seadragon', sci:'Phyllopteryx taeniolatus', file:'Weedy-seadragon.jpg', cartoon:'seadragon-cartoon.png' },
-  { slug:'australian-fairy-tern', sci:'Sternula nereis', file:'Australian-Fairy-Tern.jpg', cartoon:'tern-cartoon.png' },
-  { slug:'hooded-plover', sci:'Thinornis cucullatus', file:'Larissa-Hill-Hooded-Plover.jpg', cartoon:'pover-cartoon.png' },
-  { slug:'short-tailed-shearwater', sci:'Ardenna tenuirostris', file:'Short-tailed-Shearwater.jpg', cartoon:'shearwater.png' }
-]
+// Dynamic animals data from API
+const animalsData = ref([])
+const loading = ref(true)
+const error = ref(null)
 
-// Computed animals with translations
-const animals = computed(() => {
-  return baseAnimals.map(animal => ({
-    ...animal,
-    name: t(`animalData.${animal.slug}.name`),
-    type: t(`animalData.${animal.slug}.type`),
-    habitat: t(`animalData.${animal.slug}.habitat`),
-    lines: tm(`animalData.${animal.slug}.lines`),
-    threats: tm(`animalData.${animal.slug}.threats`) || [],
-    help: tm(`animalData.${animal.slug}.help`) || [],
-    fun: tm(`animalData.${animal.slug}.fun`) || []
-  }))
-})
+// Load animals from API
+const loadAnimals = async () => {
+  try {
+    loading.value = true
+    error.value = null
+    const data = await getAnimals(locale.value)
+
+    // Transform API data to match expected format
+    animalsData.value = data.map(animal => ({
+      slug: animal.slug,
+      sci: animal.scientific_name,
+      file: animal.photo_image_url.split('/').pop(), // Extract filename from URL
+      cartoon: animal.cartoon_image_url.split('/').pop(), // Extract filename from URL
+      name: animal.name,
+      type: animal.type,
+      habitat: animal.habitat,
+      lines: animal.lines?.map(line => line.content) || [],
+      threats: animal.threats?.map(threat => threat.content) || [],
+      help: animal.help_actions?.map(action => action.content) || [],
+      fun: animal.fun_facts?.map(fact => fact.content) || []
+    }))
+  } catch (err) {
+    console.error('Failed to load animals:', err)
+    error.value = 'Failed to load animals'
+  } finally {
+    loading.value = false
+  }
+}
+
+// Computed animals (fallback to empty array if loading)
+const animals = computed(() => animalsData.value)
 
 const idx = ref(0)
 const current = computed(() => animals.value[idx.value])
@@ -279,7 +306,8 @@ const infoOpen = ref(false)
 function openInfo(){ infoOpen.value = true }
 function closeInfo(){ infoOpen.value = false }
 
-onMounted(() => {
+onMounted(async () => {
+  await loadAnimals()
   updateArrow()
   window.addEventListener('resize', updateArrow)
 })
@@ -402,6 +430,42 @@ onMounted(() => {
 .sheet-enter-to{ opacity:1; transform: scale(1); }
 
 .visually-hidden{ position:absolute !important; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
+
+.loading-container, .error-container {
+  position: relative;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.error-content {
+  text-align: center;
+  color: #fff;
+}
+
+.error-message {
+  font-size: 18px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.retry-btn {
+  background: #22d3ee;
+  color: #083344;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retry-btn:hover {
+  background: #0891b2;
+  transform: translateY(-1px);
+}
 
 @media (max-width: 720px){
   .stage-btn{ display:none; }

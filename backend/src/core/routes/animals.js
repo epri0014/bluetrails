@@ -17,7 +17,8 @@ export const handleGetAnimals = async (request) => {
     const url = new URL(request.url);
     const locale = url.searchParams.get('locale') || 'en';
 
-    const { data, error } = await getAnimals(locale);
+    const result = await getAnimals(locale);
+    const { data, error } = result;
 
     if (error) {
       return createErrorResponse(
@@ -27,7 +28,11 @@ export const handleGetAnimals = async (request) => {
       );
     }
 
-    return createSuccessResponse(data, `Animals retrieved successfully for locale: ${locale}`);
+    const message = result.fellBackToEn
+      ? `Animals retrieved successfully (fallback to English, '${locale}' not available)`
+      : `Animals retrieved successfully for locale: ${locale}`;
+
+    return createSuccessResponse(data, message);
   } catch (err) {
     console.error('Animals endpoint error:', err);
     return createErrorResponse(
@@ -47,7 +52,8 @@ export const handleGetAnimalBySlug = async (request, slug) => {
     const url = new URL(request.url);
     const locale = url.searchParams.get('locale') || 'en';
 
-    const { data, error } = await getAnimalBySlug(slug, locale);
+    const result = await getAnimalBySlug(slug, locale);
+    const { data, error } = result;
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -64,7 +70,11 @@ export const handleGetAnimalBySlug = async (request, slug) => {
       );
     }
 
-    return createSuccessResponse(data, `Animal '${slug}' retrieved successfully`);
+    const message = result.fellBackToEn
+      ? `Animal '${slug}' retrieved successfully (fallback to English, '${locale}' not available)`
+      : `Animal '${slug}' retrieved successfully`;
+
+    return createSuccessResponse(data, message);
   } catch (err) {
     return createErrorResponse(
       'Internal server error',

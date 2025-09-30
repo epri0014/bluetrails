@@ -11,7 +11,8 @@ export const handleGetSpeeches = async (request) => {
     const url = new URL(request.url);
     const locale = url.searchParams.get('locale') || 'en';
 
-    const { data, error } = await getHomeSpeeches(locale);
+    const result = await getHomeSpeeches(locale);
+    const { data, error } = result;
 
     if (error) {
       return createErrorResponse(
@@ -21,7 +22,11 @@ export const handleGetSpeeches = async (request) => {
       );
     }
 
-    return createSuccessResponse(data, `Speeches retrieved successfully for locale: ${locale}`);
+    const message = result.fellBackToEn
+      ? `Speeches retrieved successfully (fallback to English, '${locale}' not available)`
+      : `Speeches retrieved successfully for locale: ${locale}`;
+
+    return createSuccessResponse(data, message);
   } catch (err) {
     return createErrorResponse(
       'Internal server error',

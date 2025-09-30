@@ -9,11 +9,6 @@ export const getSupabase = () => {
     const supabaseUrl = globalThis.SUPABASE_URL;
     const supabaseKey = globalThis.SUPABASE_KEY;
 
-    console.log('Creating Supabase client with:', {
-      url: supabaseUrl,
-      key: supabaseKey ? '[HIDDEN]' : 'undefined'
-    });
-
     if (!supabaseUrl || !supabaseKey) {
       throw new Error(`Missing Supabase credentials: url=${!!supabaseUrl}, key=${!!supabaseKey}`);
     }

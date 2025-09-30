@@ -68,7 +68,21 @@
           <h1 class="main-title bounce-animation">{{ $t('newHome.welcomeTitle') }}</h1>
           <p class="subtitle wave-animation">{{ $t('newHome.welcomeSubtitle') }}</p>
         </div>
-        <button class="start-btn aggressive-blink" @click="goToContent2">
+        <!-- Loading state -->
+        <div v-if="isLoadingContent" class="simple-loading">
+          <div class="loading-spinner"></div>
+        </div>
+
+        <!-- Error state -->
+        <div v-else-if="contentError" class="error-section">
+          <p class="error-text">{{ contentError }}</p>
+          <button class="retry-btn" @click="goToContent2">
+            Try Again
+          </button>
+        </div>
+
+        <!-- Start button -->
+        <button v-else class="start-btn aggressive-blink" @click="goToContent2" :disabled="isLoadingContent">
           <span>{{ $t('newHome.start') }}</span>
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M8 5v14l11-7z"/>
@@ -112,6 +126,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { getHomeSpeeches, getAnimals } from '@/services/api.js'
 
 const { t, tm, locale } = useI18n()
 
@@ -145,41 +160,67 @@ const updateVolume = () => {
 // Content control
 const currentContent = ref(1)
 
-const goToContent2 = () => {
-  currentContent.value = 2
-  // Start speech sequence after transition
-  setTimeout(() => {
-    startSpeechSequence()
-  }, 500)
+const goToContent2 = async () => {
+  try {
+    isLoadingContent.value = true
+    contentError.value = null
+
+    // Load dynamic content from API
+    await Promise.all([
+      loadSpeeches(),
+      loadAnimals()
+    ])
+
+    // Only proceed to content 2 if loading succeeds
+    currentContent.value = 2
+
+    // Start speech sequence after transition
+    setTimeout(() => {
+      startSpeechSequence()
+    }, 500)
+
+  } catch (err) {
+    console.error('Failed to load content:', err)
+    contentError.value = 'Failed to load ocean adventure. Please check your connection and try again.'
+  } finally {
+    isLoadingContent.value = false
+  }
 }
 
-// Animals data from AnimalsGrid.vue
-const CDN = 'https://gvwrmcyksmswvduehrtd.supabase.co/storage/v1/object/public'
-const BUCKET = 'bluetrails'
-const PRIMARY_DIR = 'animal-page'
+// Dynamic animals data from API
+const animalsData = ref([])
 
-// Base animal data (static info only)
-const baseAnimals = [
-  { slug: 'burrunan-dolphin', cartoon: 'dolphin-cartoon.png' },
-  { slug: 'southern-right-whale', cartoon: 'whale-cartoon.png' },
-  { slug: 'australian-fur-seal', cartoon: 'seal-cartoon.png' },
-  { slug: 'little-penguin', cartoon: 'penguin-cartoon.png' },
-  { slug: 'weedy-seadragon', cartoon: 'seadragon-cartoon.png' },
-  { slug: 'australian-fairy-tern', cartoon: 'tern-cartoon.png' }
-]
-
-// Computed animals with translations
-const animals = computed(() => {
-  return baseAnimals.map(animal => ({
-    ...animal,
-    name: t(`animalData.${animal.slug}.name`)
+// Load animals for home page avatars
+const loadAnimals = async () => {
+  const data = await getAnimals(locale.value)
+  // Transform API data for home page avatars (limit to 6 for display)
+  animalsData.value = data.slice(0, 6).map(animal => ({
+    slug: animal.slug,
+    name: animal.name,
+    cartoon: animal.cartoon_image_url // Use full URL from API
   }))
-})
+}
 
-const getAvatarImage = (file) => `${CDN}/${BUCKET}/${PRIMARY_DIR}/${file}`
+// Use dynamic animals data
+const animals = computed(() => animalsData.value)
 
-// Speech system - using translations
-const speechTexts = computed(() => tm('newHome.speeches'))
+const getAvatarImage = (url) => url // Return full URL directly from API
+
+// Dynamic speeches from API
+const speechesData = ref([])
+
+// Overall loading and error state
+const isLoadingContent = ref(false)
+const contentError = ref(null)
+
+// Load speeches from API
+const loadSpeeches = async () => {
+  const data = await getHomeSpeeches(locale.value)
+  speechesData.value = data.map(speech => speech.content)
+}
+
+// Speech system - using API data with fallback
+const speechTexts = computed(() => speechesData.value)
 
 const currentSpeechIndex = ref(0)
 const currentSpeechText = ref('')
@@ -218,11 +259,21 @@ const typeText = async (text) => {
   }
 }
 
-// Watch for language changes and update current speech text
-watch(locale, () => {
-  if (currentContent.value === 2 && !isTyping.value) {
-    // Update current speech text immediately when language changes
-    currentSpeechText.value = speechTexts.value[currentSpeechIndex.value]
+// Watch for language changes and reload dynamic content
+watch(locale, async () => {
+  if (currentContent.value === 2) {
+    try {
+      await Promise.all([
+        loadSpeeches(),
+        loadAnimals()
+      ])
+      if (!isTyping.value) {
+        // Update current speech text immediately when language changes
+        currentSpeechText.value = speechTexts.value[currentSpeechIndex.value]
+      }
+    } catch (err) {
+      console.error('Failed to reload content for language change:', err)
+    }
   }
 })
 
@@ -368,7 +419,6 @@ onMounted(() => {
       }
     }, 1000)
   }
-
 })
 
 onBeforeUnmount(() => {
@@ -714,6 +764,72 @@ onBeforeUnmount(() => {
   padding: 40px;
 }
 
+.simple-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 30px auto;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-top: 5px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.welcome-content .error-section {
+  text-align: center;
+  margin-top: 20px;
+  padding: 30px;
+  background: rgba(255, 107, 107, 0.15);
+  border-radius: 16px;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.welcome-content .error-text {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.welcome-content .retry-btn {
+  background: #22d3ee;
+  color: #083344;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 16px;
+}
+
+.welcome-content .retry-btn:hover {
+  background: #0891b2;
+  transform: translateY(-2px);
+}
+
 /* Welcome Content */
 .welcome-text {
   margin-bottom: 40px;
@@ -848,6 +964,30 @@ onBeforeUnmount(() => {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
   gap: 30px;
+}
+
+.avatar-content .error-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: white;
+  padding: 40px;
+}
+
+.avatar-content .retry-btn {
+  background: #22d3ee;
+  color: #083344;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.2s ease;
+}
+
+.avatar-content .retry-btn:hover {
+  background: #0891b2;
+  transform: translateY(-2px);
   align-items: center;
   justify-content: center;
   min-height: 70vh;
