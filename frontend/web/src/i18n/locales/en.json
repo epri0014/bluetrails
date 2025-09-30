@@ -40,6 +40,7 @@
   },
   "loading": {
     "default": "Loading...",
+    "animals": "Loading Ocean Friends...",
     "game": "Loading Ocean Hero Game...",
     "water": "Loading Ocean Friends Home..."
   },

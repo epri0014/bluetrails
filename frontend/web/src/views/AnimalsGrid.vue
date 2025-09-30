@@ -4,9 +4,7 @@
 
     <section class="wrap">
       <!-- Loading state -->
-      <div v-if="loading" class="loading-container glass">
-        <LoadingOverlay message="Loading ocean animals..." />
-      </div>
+      <LoadingOverlay v-if="loading" :message="`🐠 ${$t('loading.animals')}`" />
 
       <!-- Error state -->
       <div v-else-if="error" class="error-container glass">
@@ -64,20 +62,20 @@
         </div>
         <div class="beach"></div>
 
-        <div class="stage-nav" aria-hidden="false">
-          <button class="stage-btn left" @click="prev" :aria-label="'Previous: ' + prevAnimal.name">
+        <div v-if="animals.length > 0" class="stage-nav" aria-hidden="false">
+          <button class="stage-btn left" @click="prev" :aria-label="'Previous: ' + prevAnimal?.name">
             <img
               :src="previewSrc(prevAnimal)"
-              :alt="prevAnimal.name"
+              :alt="prevAnimal?.name"
               @error="onPreviewError($event, prevAnimal)"
             />
             <span class="chev"><</span>
           </button>
 
-          <button class="stage-btn right" @click="next" :aria-label="'Next: ' + nextAnimal.name">
+          <button class="stage-btn right" @click="next" :aria-label="'Next: ' + nextAnimal?.name">
             <img
               :src="previewSrc(nextAnimal)"
-              :alt="nextAnimal.name"
+              :alt="nextAnimal?.name"
               @error="onPreviewError($event, nextAnimal)"
             />
             <span class="chev">></span>
@@ -194,21 +192,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { getAnimals } from '@/services/api.js'
+import { getAnimals, getAnimalBySlug } from '@/services/api.js'
 import LoadingOverlay from '@/components/LoadingOverlay.vue'
 
-const { t, tm, locale } = useI18n()
-
-const CDN = 'https://gvwrmcyksmswvduehrtd.supabase.co/storage/v1/object/public'
-const BUCKET = 'bluetrails'
-const PRIMARY_DIR = 'animal-page'
-const FALLBACK_DIR = 'animal%20page'
+const { locale } = useI18n()
 
 // Dynamic animals data from API
 const animalsData = ref([])
+const animalDetails = ref({})
 const loading = ref(true)
+const loadingDetail = ref(false)
 const error = ref(null)
 
 // Load animals from API
@@ -218,19 +213,15 @@ const loadAnimals = async () => {
     error.value = null
     const data = await getAnimals(locale.value)
 
-    // Transform API data to match expected format
+    // Transform API data to match expected format (only basic info)
     animalsData.value = data.map(animal => ({
       slug: animal.slug,
       sci: animal.scientific_name,
-      file: animal.photo_image_url.split('/').pop(), // Extract filename from URL
-      cartoon: animal.cartoon_image_url.split('/').pop(), // Extract filename from URL
+      file: animal.photo_image_url, // Use full URL from database
+      cartoon: animal.cartoon_image_url, // Use full URL from database
       name: animal.name,
       type: animal.type,
-      habitat: animal.habitat,
-      lines: animal.lines?.map(line => line.content) || [],
-      threats: animal.threats?.map(threat => threat.content) || [],
-      help: animal.help_actions?.map(action => action.content) || [],
-      fun: animal.fun_facts?.map(fact => fact.content) || []
+      habitat: animal.habitat
     }))
   } catch (err) {
     console.error('Failed to load animals:', err)
@@ -240,11 +231,55 @@ const loadAnimals = async () => {
   }
 }
 
-// Computed animals (fallback to empty array if loading)
-const animals = computed(() => animalsData.value)
+// Load detailed animal data by slug
+const loadAnimalDetail = async (slug) => {
+  if (animalDetails.value[slug]) return // Already loaded
+
+  try {
+    loadingDetail.value = true
+    const data = await getAnimalBySlug(slug, locale.value)
+
+    animalDetails.value[slug] = {
+      lines: data.lines?.map(line => line.content) || [],
+      threats: data.threats?.map(threat => threat.content) || [],
+      help: data.help_actions?.map(action => action.content) || [],
+      fun: data.fun_facts?.map(fact => fact.content) || []
+    }
+  } catch (err) {
+    console.error('Failed to load animal detail:', err)
+    animalDetails.value[slug] = {
+      lines: [],
+      threats: [],
+      help: [],
+      fun: []
+    }
+  } finally {
+    loadingDetail.value = false
+  }
+}
+
+// Computed animals with merged detail data
+const animals = computed(() => {
+  return animalsData.value.map(animal => ({
+    ...animal,
+    ...(animalDetails.value[animal.slug] || {
+      lines: [],
+      threats: [],
+      help: [],
+      fun: []
+    })
+  }))
+})
 
 const idx = ref(0)
 const current = computed(() => animals.value[idx.value])
+
+// Watch for current animal changes and load details
+watch(current, (newAnimal) => {
+  if (newAnimal && !animalDetails.value[newAnimal.slug]) {
+    loadAnimalDetail(newAnimal.slug)
+  }
+}, { immediate: true })
 
 const rail = ref(null)
 const railBox = ref(null)
@@ -260,22 +295,25 @@ function scrollBy(step){ select((idx.value + step + animals.value.length) % anim
 
 const mode = ref('cartoon')
 
-const imgSrc = (file) => `${CDN}/${BUCKET}/${PRIMARY_DIR}/${file}`
+const imgSrc = (url) => url || '' // Return the full URL directly from database
 function onImgError(e){
   const img = e.target
-  const src = img.getAttribute('src') || ''
-  if (src.includes(`/${PRIMARY_DIR}/`)) img.src = src.replace(`/${PRIMARY_DIR}/`, `/${FALLBACK_DIR}/`)
-  else img.src = ''
+  img.style.display = 'none' // Hide broken images
 }
 
 function previewSrc(animal){
-  const f = mode.value === 'photo' ? animal.file : (animal.cartoon || animal.file)
-  return imgSrc(f)
+  if (!animal) return ''
+  const url = mode.value === 'photo' ? animal.file : (animal.cartoon || animal.file)
+  return imgSrc(url)
 }
 function onPreviewError(ev, animal){
   const el = ev.target
-  if (el.src.includes(`/${PRIMARY_DIR}/`)) { el.src = el.src.replace(`/${PRIMARY_DIR}/`, `/${FALLBACK_DIR}/`); return }
-  if (mode.value !== 'photo') { el.src = imgSrc(animal.file); return }
+  if (!animal) { el.style.display = 'none'; return }
+  // Try fallback to photo if cartoon fails
+  if (mode.value !== 'photo' && animal.file) {
+    el.src = animal.file
+    return
+  }
   el.style.display = 'none'
 }
 
@@ -295,10 +333,10 @@ function updateArrow(){
   hintTop.value = railRect ? Math.min(Math.max(12, Math.round(railRect.bottom - stage.top + safe)), 64) + 'px' : '16px'
 }
 
-const prevIndex = computed(() => (idx.value - 1 + animals.value.length) % animals.value.length)
-const nextIndex = computed(() => (idx.value + 1) % animals.value.length)
-const prevAnimal = computed(() => animals.value[prevIndex.value])
-const nextAnimal = computed(() => animals.value[nextIndex.value])
+const prevIndex = computed(() => animals.value.length > 0 ? (idx.value - 1 + animals.value.length) % animals.value.length : 0)
+const nextIndex = computed(() => animals.value.length > 0 ? (idx.value + 1) % animals.value.length : 0)
+const prevAnimal = computed(() => animals.value.length > 0 ? animals.value[prevIndex.value] : null)
+const nextAnimal = computed(() => animals.value.length > 0 ? animals.value[nextIndex.value] : null)
 function prev(){ select(prevIndex.value) }
 function next(){ select(nextIndex.value) }
 
@@ -431,7 +469,7 @@ onMounted(async () => {
 
 .visually-hidden{ position:absolute !important; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
 
-.loading-container, .error-container {
+.error-container {
   position: relative;
   min-height: 200px;
   display: flex;
