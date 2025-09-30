@@ -218,8 +218,6 @@
         "Aku takut dengan kantong plastik dan tali pancing.",
         "Pilih botol yang bisa digunakan ulang. Sedikit plastik, laut lebih aman!"
       ],
-      "sadText": "Aku bermasalah ketika kantong plastik mengapung - aku mungkin mengira itu ubur-ubur untuk dimakan! Tali pancing hantu bisa melilit siripku dan menyakitiku sangat parah.",
-      "happyText": "Aku bahagia ketika air bersih dan jernih! Aku bisa bermain dengan teman lumba-lumbaku dan berbicara dengan mereka menggunakan suara klik. Laut bersih berarti ikan sehat untukku makan!",
       "threats": [
         "Kantong plastik dan tali pancing bisa melilit sirip dan tertelan.",
         "Kebisingan kapal menyulitkan komunikasi.",
@@ -243,8 +241,6 @@
         "Kapal lambat dan \"laut tenang\" membantu kami berbicara dengan anak kami.",
         "Dukung tim penyelamat yang membebaskan paus yang terjerat."
       ],
-      "sadText": "Aku bermasalah ketika balon jatuh ke air - mereka terlihat seperti ubur-ubur lezat tapi membuat perutku sakit! Suara kapal yang keras membuat sulit berbicara dengan anak pausku.",
-      "happyText": "Aku bahagia ketika laut tenang dan bersih! Aku bisa menyanyikan lagu paus yang indah untuk keluargaku dan mengajari anakku cara berenang dan mencari makanan.",
       "threats": [
         "Terjerat jaring dan tali.",
         "Tabrakan kapal dan kebisingan bawah air.",
@@ -268,8 +264,6 @@
         "Jaring hantu menakutkan - mereka menjerat leher kami.",
         "Amati satwa liar dari jarak jauh. Kami butuh ruang untuk istirahat."
       ],
-      "sadText": "Aku bermasalah ketika cincin plastik tersangkut di leherku - mereka mengencang saat aku tumbuh lebih besar! Jaring hantu menakutkan dan bisa menjebakku di bawah air.",
-      "happyText": "Aku bahagia ketika bisa beristirahat di bebatuan bersih dengan teman anjing lautku! Aku suka menyelam mencari ikan di air jernih dan bermain di ombak dengan anak-anakku.",
       "threats": [
         "Cincin dan tali plastik mengencang saat kami tumbuh.",
         "Jaring hantu bisa menjerat leher kami.",
@@ -293,8 +287,6 @@
         "Tolong bawa pulang kail pancingmu.",
         "Bergabunglah dalam pembersihan mini dengan orang dewasa - setiap potongan kecil membantu!"
       ],
-      "sadText": "Aku bermasalah ketika lampu terang menyinari malam - anak penguinku jadi bingung dan tidak bisa menemukan jalan pulang ke liang kami! Kail pancing yang tajam juga melukai kakiku.",
-      "happyText": "Aku bahagia ketika pantai gelap di malam hari sehingga anak-anakku bisa menemukanku! Aku suka berjalan di pasir bersih dan menyelam mencari ikan kecil di air jernih.",
       "threats": [
         "Cahaya terang di malam hari membingungkan anak penguin.",
         "Kail dan tali pancing melukai kami.",
@@ -318,8 +310,6 @@
         "Pilih tabir surya yang aman untuk terumbu karang.",
         "Bagikan apa yang kamu pelajari - pahlawan laut kecil bisa menginspirasi lebih banyak pahlawan! 🌊"
       ],
-      "sadText": "Aku sedih kalau orang menginjak rumah rumput lautku - di situlah aku bersembunyi dan mencari udang kecil untuk dimakan! Bahan kimia dari tabir surya bikin air jadi tidak enak untukku.",
-      "happyText": "Aku senang kalau hutan rumput lautku sehat dan hijau! Aku bisa bersembunyi di antara tanaman dan menari bersama arus sambil mencari camilan lezat.",
       "threats": [
         "Hilangnya rumah rumput laut dan kelp.",
         "Air kotor bikin sulit hidup.",
@@ -343,8 +333,6 @@
         "Ikat anjing dengan tali kalau dekat burung pantai.",
         "Plastik kecil mirip makanan - ayo pungut!"
       ],
-      "sadText": "Aku sedih kalau orang berjalan terlalu dekat sarangku di pasir - aku bisa takut dan meninggalkan telurnya! Potongan plastik kecil terlihat seperti ikan tapi bikin aku sakit.",
-      "happyText": "Aku senang kalau bisa membangun sarang di pasir bersih dengan aman! Aku suka menyelam ke laut jernih untuk menangkap ikan kecil buat anak-anakku.",
       "threats": [
         "Sarang di pasir terbuka gampang terinjak.",
         "Orang dan anjing bikin induk takut dan meninggalkan telur.",
@@ -368,8 +356,6 @@
         "Jangan tinggalkan lubang atau benteng di pantai - anak bisa jatuh.",
         "Bawa pulang sampahmu - angin bisa menerbangkannya ke laut."
       ],
-      "sadText": "Aku sedih kalau orang menggali lubang di pasir - anak kecilku bisa jatuh dan tidak bisa keluar! Sampah juga bisa terbawa angin dan merusak rumahku.",
-      "happyText": "Aku senang kalau pantai datar dan bersih! Aku bisa berlari di pasir mencari kepiting kecil bersama anak-anakku dengan aman.",
       "threats": [
         "Sarang di pasir mudah terinjak.",
         "Lubang atau benteng bisa menjebak anak.",
@@ -393,8 +379,6 @@
         "Minyak dan plastik merusak bulu dan perut kami.",
         "Gunakan barang yang bisa dipakai ulang. Tindakan kecil bikin ombak besar!"
       ],
-      "sadText": "Aku sedih kalau lampu terang di malam hari bikin aku bingung - aku bisa menabrak gedung! Minyak dan plastik bikin buluku kotor dan perutku sakit.",
-      "happyText": "Aku senang kalau bisa terbang di atas laut gelap yang bersih di malam hari! Aku suka bepergian jauh dengan teman-temanku dan menyelam mencari ikan.",
       "threats": [
         "Lampu terang di malam hari bikin bingung.",
         "Minyak & plastik merusak bulu dan perut.",

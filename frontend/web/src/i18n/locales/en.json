@@ -218,8 +218,6 @@
         "I'm scared of plastic bags and fishing lines.",
         "Choose reusable bottles. Less plastic, safer oceans!"
       ],
-      "sadText": "I get trouble when plastic bags float around - I might think they're jellyfish to eat! Ghost fishing lines can tangle around my fins and hurt me really bad.",
-      "happyText": "I'm happy when the water is clean and clear! I can play with my dolphin friends and talk to them with clicking sounds. Clean oceans mean healthy fish for me to eat!",
       "threats": [
         "Plastic bags and fishing lines can entangle fins and be swallowed.",
         "Boat noise makes it hard to communicate.",
@@ -243,8 +241,6 @@
         "Slow boats and \"quiet seas\" help us talk to our calves.",
         "Support rescue teams that free entangled whales."
       ],
-      "sadText": "I get trouble when balloons fall in the water - they look like yummy jellyfish but make my tummy hurt! Loud boat noises make it hard to talk to my baby whale.",
-      "happyText": "I'm happy when the ocean is quiet and clean! I can sing beautiful whale songs to my family and teach my baby how to swim and find food.",
       "threats": [
         "Entanglement in nets and ropes.",
         "Ship strikes and underwater noise.",
@@ -268,8 +264,6 @@
         "Ghost nets are scary - they trap our necks.",
         "Watch wildlife from a distance. We need space to rest."
       ],
-      "sadText": "I get trouble when plastic rings get stuck around my neck - they get tighter as I grow bigger! Ghost nets are scary and can trap me underwater.",
-      "happyText": "I'm happy when I can rest on clean rocks with my seal friends! I love diving for fish in clear water and playing in the waves with my pups.",
       "threats": [
         "Plastic rings and straps tighten as we grow.",
         "Ghost nets can trap our necks.",
@@ -293,8 +287,6 @@
         "Please take your fishing hooks home.",
         "Join a mini clean-up with an adult - every small piece helps!"
       ],
-      "sadText": "I get trouble when bright lights shine at night - my baby penguins get confused and can't find their way home to our burrow! Sharp fishing hooks hurt my feet too.",
-      "happyText": "I'm happy when beaches are dark at night so my chicks can find me! I love waddling on clean sand and diving for little fish in the clear water.",
       "threats": [
         "Bright lights confuse chicks at night.",
         "Hooks and lines injure penguins.",
@@ -318,8 +310,6 @@
         "Choose reef-safe sunscreen.",
         "Share what you learn - ocean heroes inspire more heroes!"
       ],
-      "sadText": "I get trouble when people step on my seagrass home - it's where I hide and find tiny shrimp to eat! Chemicals from sunscreen make the water yucky for me.",
-      "happyText": "I'm happy when my seagrass forest is healthy and green! I can hide among the leafy plants and dance with the gentle currents while looking for tasty treats.",
       "threats": [
         "Loss of seagrass and kelp habitat.",
         "Poor water quality.",
@@ -343,8 +333,6 @@
         "Keep dogs on leash near shorebirds.",
         "Tiny plastic looks like food - pick it up!"
       ],
-      "sadText": "I get trouble when people walk too close to my nest in the sand - it scares me and I might leave my eggs! Tiny plastic pieces look like fish but make me sick.",
-      "happyText": "I'm happy when I can build my nest safely on clean sand! I love diving into clear water to catch small fish for my baby chicks.",
       "threats": [
         "Nests on open sand-easy to trample.",
         "Dogs and people scare parents from eggs.",
@@ -368,8 +356,6 @@
         "Leave no holes/forts on beaches - chicks can fall in.",
         "Take your litter - wind can carry it into the sea."
       ],
-      "sadText": "I get trouble when people dig holes in the sand - my tiny chicks might fall in and can't get out! Litter blows around and hurts my beach home.",
-      "happyText": "I'm happy when the beach is flat and clean! I can run along the sand looking for tiny crabs and worms while my chicks follow me safely.",
       "threats": [
         "Nests right on sand-easily trampled.",
         "Holes/forts trap chicks.",
@@ -393,8 +379,6 @@
         "Oil and plastics hurt our feathers and stomachs.",
         "Choose reusables. Small actions make big waves!"
       ],
-      "sadText": "I get trouble when bright lights at night confuse me - I might crash into buildings! Oil and plastic make my feathers dirty and my tummy hurt.",
-      "happyText": "I'm happy when I can fly over dark, clean waters at night! I love traveling long distances with my bird friends and diving for fish in the sparkling ocean.",
       "threats": [
         "Bright lights at night can disorient us.",
         "Oil & plastics harm feathers and stomachs.",
