@@ -125,9 +125,14 @@
             :style="{ '--arrow-left': arrowLeft }"
           >
             <div class="bubble-title">{{ $t('animals.hiIm') }} {{ current.name }} 🫧</div>
-            <ul>
+            <ul v-if="!loadingDetail && current.lines && current.lines.length > 0">
               <li v-for="line in current.lines" :key="line">{{ line }}</li>
             </ul>
+            <div v-else class="skeleton-lines">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line short"></div>
+            </div>
           </div>
         </transition>
 
@@ -155,32 +160,49 @@
               <section class="sheet-grid">
                 <div class="row">
                   <div class="term">{{ $t('animals.type') }}</div>
-                  <div class="val">{{ current.type }}</div>
+                  <div v-if="!loadingDetail && current.type" class="val">{{ current.type }}</div>
+                  <div v-else class="val skeleton-list">
+                    <div class="skeleton-line short"></div>
+                  </div>
                 </div>
                 <div class="row">
                   <div class="term">{{ $t('animals.habitat') }}</div>
-                  <div class="val">{{ current.habitat }}</div>
+                  <div v-if="!loadingDetail && current.habitat" class="val">{{ current.habitat }}</div>
+                  <div v-else class="val skeleton-list">
+                    <div class="skeleton-line short"></div>
+                  </div>
                 </div>
 
                 <div class="row">
                   <div class="term">{{ $t('animals.whatHurtsMe') }}</div>
-                  <ul class="val">
+                  <ul v-if="!loadingDetail && current.threats && current.threats.length > 0" class="val">
                     <li v-for="x in current.threats" :key="x">{{ x }}</li>
                   </ul>
+                  <div v-else class="val skeleton-list">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line short"></div>
+                  </div>
                 </div>
 
                 <div class="row">
                   <div class="term">{{ $t('animals.howYouCanHelp') }}</div>
-                  <ul class="val">
+                  <ul v-if="!loadingDetail && current.help && current.help.length > 0" class="val">
                     <li v-for="x in current.help" :key="x">{{ x }}</li>
                   </ul>
+                  <div v-else class="val skeleton-list">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                  </div>
                 </div>
 
-                <div v-if="current.fun && current.fun.length" class="row">
+                <div class="row">
                   <div class="term">{{ $t('animals.funFact') }}</div>
-                  <ul class="val">
+                  <ul v-if="!loadingDetail && current.fun && current.fun.length > 0" class="val">
                     <li v-for="x in current.fun" :key="x">{{ x }}</li>
                   </ul>
+                  <div v-else class="val skeleton-list">
+                    <div class="skeleton-line"></div>
+                  </div>
                 </div>
               </section>
             </article>
@@ -219,9 +241,7 @@ const loadAnimals = async () => {
       sci: animal.scientific_name,
       file: animal.photo_image_url, // Use full URL from database
       cartoon: animal.cartoon_image_url, // Use full URL from database
-      name: animal.name,
-      type: animal.type,
-      habitat: animal.habitat
+      name: animal.name
     }))
   } catch (err) {
     console.error('Failed to load animals:', err)
@@ -240,6 +260,8 @@ const loadAnimalDetail = async (slug) => {
     const data = await getAnimalBySlug(slug, locale.value)
 
     animalDetails.value[slug] = {
+      type: data.type,
+      habitat: data.habitat,
       lines: data.lines?.map(line => line.content) || [],
       threats: data.threats?.map(threat => threat.content) || [],
       help: data.help_actions?.map(action => action.content) || [],
@@ -248,6 +270,8 @@ const loadAnimalDetail = async (slug) => {
   } catch (err) {
     console.error('Failed to load animal detail:', err)
     animalDetails.value[slug] = {
+      type: '',
+      habitat: '',
       lines: [],
       threats: [],
       help: [],
@@ -343,6 +367,27 @@ function next(){ select(nextIndex.value) }
 const infoOpen = ref(false)
 function openInfo(){ infoOpen.value = true }
 function closeInfo(){ infoOpen.value = false }
+
+// Watch for locale changes and reload animals
+watch(locale, async () => {
+  animalDetails.value = {} // Clear cached details
+  const currentIdx = idx.value // Preserve current index
+
+  // Reload without showing loading overlay
+  try {
+    const data = await getAnimals(locale.value)
+    animalsData.value = data.map(animal => ({
+      slug: animal.slug,
+      sci: animal.scientific_name,
+      file: animal.photo_image_url,
+      cartoon: animal.cartoon_image_url,
+      name: animal.name
+    }))
+    idx.value = currentIdx // Restore position
+  } catch (err) {
+    console.error('Failed to reload animals:', err)
+  }
+})
 
 onMounted(async () => {
   await loadAnimals()
@@ -503,6 +548,40 @@ onMounted(async () => {
 .retry-btn:hover {
   background: #0891b2;
   transform: translateY(-1px);
+}
+
+/* Skeleton loading styles */
+.skeleton-lines {
+  padding: 0;
+  margin: 0;
+}
+
+.skeleton-line {
+  height: 16px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.08) 25%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.08) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.skeleton-line.short {
+  width: 70%;
+}
+
+.skeleton-list .skeleton-line {
+  background: linear-gradient(90deg, rgba(0,0,0,0.05) 25%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.05) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 @media (max-width: 720px){
