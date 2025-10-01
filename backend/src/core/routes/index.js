@@ -1,6 +1,7 @@
 import { Router } from 'itty-router';
 import { handleGetAnimals, handleGetAnimalBySlug } from './animals.js';
 import { handleGetSpeeches } from './speeches.js';
+import { handleGetQuestions, handleGetCategories } from './quiz.js';
 import { handleCors } from '../middleware/cors.js';
 import { createErrorResponse } from '../utils/response.js';
 
@@ -30,6 +31,14 @@ export const createRouter = () => {
 
   router.get('/api/speeches', async (request) => {
     return await handleGetSpeeches(request);
+  });
+
+  router.get('/api/quiz/questions', async (request) => {
+    return await handleGetQuestions(request);
+  });
+
+  router.get('/api/quiz/categories', async (request) => {
+    return await handleGetCategories(request);
   });
 
   // 404 handler

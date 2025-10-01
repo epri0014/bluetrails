@@ -46,3 +46,29 @@ export const getHomeSpeeches = async (locale = 'en') => {
   }
 }
 
+// Get quiz questions with options in specified locale
+export const getQuizQuestions = async (locale = 'en') => {
+  try {
+    const response = await api.get(`/api/quiz/questions`, {
+      params: { locale }
+    })
+    return response.data.data || []
+  } catch (error) {
+    console.error('Error fetching quiz questions:', error)
+    throw error
+  }
+}
+
+// Get question categories in specified locale
+export const getQuestionCategories = async (locale = 'en') => {
+  try {
+    const response = await api.get(`/api/quiz/categories`, {
+      params: { locale }
+    })
+    return response.data.data || []
+  } catch (error) {
+    console.error('Error fetching question categories:', error)
+    throw error
+  }
+}
+

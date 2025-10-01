@@ -18,10 +18,28 @@
         <h1 class="quiz-title">{{ $t('quiz.title') }}</h1>
       </div>
 
-      <!-- Loading State -->
-      <div v-if="isLoading" class="loading-section">
-        <div class="loading-spinner">🌊</div>
-        <p class="loading-text">{{ $t('quiz.loading') }}</p>
+      <!-- Loading State with Skeleton -->
+      <div v-if="isLoading" class="quiz-card">
+        <!-- Question Skeleton -->
+        <div class="question-section" :style="{ background: getQuestionBackground() }">
+          <div class="question-content">
+            <div class="question-front">
+              <div class="skeleton-badge"></div>
+              <div class="skeleton-question">
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line short"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Options Skeleton -->
+        <div class="options-section">
+          <div class="skeleton-option"></div>
+          <div class="skeleton-option"></div>
+          <div class="skeleton-option"></div>
+        </div>
       </div>
 
       <!-- Quiz Card -->
@@ -158,13 +176,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { getCategoryBackground, getCategoryIcon } from '../data/quizQuestions.js'
+import { getQuizQuestions, getQuestionCategories } from '@/services/api.js'
 
 const router = useRouter()
-const { t, tm } = useI18n()
+const { t, locale } = useI18n()
 
 // Quiz state
 const currentQuestionIndex = ref(0)
@@ -179,13 +197,61 @@ const totalQuestions = 5
 const answerHistory = ref([])
 const isLoading = ref(true)
 
+// Dynamic data from API
+const questionsData = ref([])
+const categoriesData = ref({})
+
 // Timer
 let timer = null
 let urgentTimerSound = null
 
+// Load questions from API
+const loadQuestions = async () => {
+  try {
+    const data = await getQuizQuestions(locale.value)
+    questionsData.value = data.map(q => {
+      const options = typeof q.options_json === 'string' ? JSON.parse(q.options_json) : q.options_json
+      const optionsArray = options.map(opt => opt.text)
+      const correctAnswer = optionsArray[q.correct_option_index]
+
+      // Shuffle options array
+      const shuffledOptions = [...optionsArray].sort(() => Math.random() - 0.5)
+
+      return {
+        id: q.id,
+        question: q.question_text,
+        correctAnswer: correctAnswer,
+        options: shuffledOptions,
+        funFact: q.fun_fact,
+        category: q.category_code
+      }
+    })
+  } catch (error) {
+    console.error('Failed to load questions:', error)
+  }
+}
+
+// Load categories from API
+const loadCategories = async () => {
+  try {
+    const data = await getQuestionCategories(locale.value)
+    const categoriesMap = {}
+    data.forEach(cat => {
+      categoriesMap[cat.code] = {
+        name: cat.name,
+        background: cat.background_gradient,
+        icon: cat.icon
+      }
+    })
+    categoriesData.value = categoriesMap
+  } catch (error) {
+    console.error('Failed to load categories:', error)
+  }
+}
+
 // Computed properties - reactive to language changes
 const allQuestions = computed(() => {
-  return tm('quiz.questions') || []
+  return questionsData.value || []
 })
 
 const selectedQuestions = computed(() => {
@@ -209,16 +275,17 @@ const isAnswerCorrect = computed(() => {
 const isCorrect = computed(() => isAnswerCorrect.value)
 
 // Initialize quiz
-const initializeQuiz = () => {
+const initializeQuiz = async () => {
   try {
     console.log('Initializing quiz')
+    isLoading.value = true
 
-    // Get questions from i18n
-    const quizQuestions = tm('quiz.questions') || []
+    // Load questions and categories from API
+    await Promise.all([loadQuestions(), loadCategories()])
 
     // Randomly select 5 question IDs (preserve selection across language changes)
     if (selectedQuestionIds.value.length === 0) {
-      const shuffled = [...quizQuestions].sort(() => 0.5 - Math.random())
+      const shuffled = [...questionsData.value].sort(() => 0.5 - Math.random())
       selectedQuestionIds.value = shuffled.slice(0, totalQuestions).map(q => q.id)
     }
 
@@ -338,12 +405,19 @@ const formatTime = (seconds) => {
 }
 
 const getQuestionBackground = () => {
-  if (!currentQuestion.value) return getCategoryBackground('ocean')
-  return getCategoryBackground(currentQuestion.value.category)
+  if (!currentQuestion.value) return 'linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%)'
+  const category = categoriesData.value[currentQuestion.value.category]
+  return category?.background || 'linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%)'
 }
 
-const getCategoryName = (category) => {
-  return t(`quiz.categories.${category}`) || t('quiz.categories.ocean')
+const getCategoryName = (categoryCode) => {
+  const category = categoriesData.value[categoryCode]
+  return category?.name || categoryCode
+}
+
+const getCategoryIcon = (categoryCode) => {
+  const category = categoriesData.value[categoryCode]
+  return category?.icon || '🌊'
 }
 
 const getOptionClass = (option) => {
@@ -448,6 +522,18 @@ const getConfettiStyle = (index) => {
     animationDuration: (1 + Math.random() * 1) + 's'
   }
 }
+
+// Watch for locale changes and reload questions
+watch(locale, async () => {
+  try {
+    isLoading.value = true
+    await Promise.all([loadQuestions(), loadCategories()])
+    isLoading.value = false
+  } catch (error) {
+    console.error('Failed to reload quiz data for language change:', error)
+    isLoading.value = false
+  }
+})
 
 // Lifecycle
 onMounted(() => {
@@ -1396,6 +1482,52 @@ onBeforeUnmount(() => {
   .home-btn {
     width: 100%;
     max-width: 250px;
+  }
+}
+
+/* Skeleton Loading Styles */
+.skeleton-badge {
+  width: 150px;
+  height: 36px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.skeleton-question {
+  width: 100%;
+}
+
+.skeleton-line {
+  height: 20px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.skeleton-line.short {
+  width: 70%;
+}
+
+.skeleton-option {
+  height: 64px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.05) 25%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.05) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 15px;
+  margin-bottom: 15px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }
 </style>

@@ -87,3 +87,55 @@ export const getAvailableLocales = async () => {
     .select('locale')
     .limit(1000);
 };
+
+// Get all quiz questions with options in specified locale
+export const getQuizQuestions = async (locale = 'en') => {
+  // Try to get data in requested locale
+  let result = await supabase
+    .from('v_quiz_questions')
+    .select('*')
+    .eq('locale', locale)
+    .order('question_order');
+
+  // If no data found and locale is not 'en', fallback to English
+  if ((!result.data || result.data.length === 0) && locale !== 'en') {
+    result = await supabase
+      .from('v_quiz_questions')
+      .select('*')
+      .eq('locale', 'en')
+      .order('question_order');
+
+    // Add fallback indicator to result
+    if (result.data && result.data.length > 0) {
+      result.fellBackToEn = true;
+    }
+  }
+
+  return result;
+};
+
+// Get question categories with translations
+export const getQuestionCategories = async (locale = 'en') => {
+  // Try to get data in requested locale
+  let result = await supabase
+    .from('v_question_categories')
+    .select('*')
+    .eq('locale', locale)
+    .order('code');
+
+  // If no data found and locale is not 'en', fallback to English
+  if ((!result.data || result.data.length === 0) && locale !== 'en') {
+    result = await supabase
+      .from('v_question_categories')
+      .select('*')
+      .eq('locale', 'en')
+      .order('code');
+
+    // Add fallback indicator to result
+    if (result.data && result.data.length > 0) {
+      result.fellBackToEn = true;
+    }
+  }
+
+  return result;
+};
