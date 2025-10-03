@@ -7622,7 +7622,7 @@ Device: CPU
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [2]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [29]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ============================================================================</span>
@@ -7640,6 +7640,7 @@ Device: CPU
 <span class="n">MODEL_VERSION</span> <span class="o">=</span> <span class="s1">'hybrid_v2_v4_2025'</span>
 
 <span class="c1"># Best models configuration (based on weighted scoring analysis)</span>
+<span class="c1"># Best models configuration (based on weighted scoring analysis)</span>
 <span class="n">BEST_MODELS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">'chl_a'</span><span class="p">:</span> <span class="p">{</span>
         <span class="s1">'version'</span><span class="p">:</span> <span class="s1">'v2'</span><span class="p">,</span>
@@ -7647,6 +7648,7 @@ Device: CPU
         <span class="s1">'model_name'</span><span class="p">:</span> <span class="s1">'V2_MLP'</span><span class="p">,</span>
         <span class="s1">'param_db_name'</span><span class="p">:</span> <span class="s1">'CHL_A'</span><span class="p">,</span>
         <span class="s1">'r2'</span><span class="p">:</span> <span class="mf">0.2103</span><span class="p">,</span>
+        <span class="s1">'mae'</span><span class="p">:</span> <span class="mf">3.0408</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="s1">'turbidity'</span><span class="p">:</span> <span class="p">{</span>
         <span class="s1">'version'</span><span class="p">:</span> <span class="s1">'v4'</span><span class="p">,</span>
@@ -7654,6 +7656,7 @@ Device: CPU
         <span class="s1">'model_name'</span><span class="p">:</span> <span class="s1">'V4_RandomForest'</span><span class="p">,</span>
         <span class="s1">'param_db_name'</span><span class="p">:</span> <span class="s1">'Turb'</span><span class="p">,</span>
         <span class="s1">'r2'</span><span class="p">:</span> <span class="mf">0.4395</span><span class="p">,</span>
+        <span class="s1">'mae'</span><span class="p">:</span> <span class="mf">2.6156</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="s1">'do_mg_l'</span><span class="p">:</span> <span class="p">{</span>
         <span class="s1">'version'</span><span class="p">:</span> <span class="s1">'v4'</span><span class="p">,</span>
@@ -7661,6 +7664,7 @@ Device: CPU
         <span class="s1">'model_name'</span><span class="p">:</span> <span class="s1">'V4_Ridge'</span><span class="p">,</span>
         <span class="s1">'param_db_name'</span><span class="p">:</span> <span class="s1">'DO_mg'</span><span class="p">,</span>
         <span class="s1">'r2'</span><span class="p">:</span> <span class="mf">0.3838</span><span class="p">,</span>
+        <span class="s1">'mae'</span><span class="p">:</span> <span class="mf">1.3203</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="s1">'n_total'</span><span class="p">:</span> <span class="p">{</span>
         <span class="s1">'version'</span><span class="p">:</span> <span class="s1">'v2'</span><span class="p">,</span>
@@ -7668,6 +7672,7 @@ Device: CPU
         <span class="s1">'model_name'</span><span class="p">:</span> <span class="s1">'V2_MLP'</span><span class="p">,</span>
         <span class="s1">'param_db_name'</span><span class="p">:</span> <span class="s1">'N_TOTAL'</span><span class="p">,</span>
         <span class="s1">'r2'</span><span class="p">:</span> <span class="mf">0.2992</span><span class="p">,</span>
+        <span class="s1">'mae'</span><span class="p">:</span> <span class="mf">194.2183</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="s1">'temperature'</span><span class="p">:</span> <span class="p">{</span>
         <span class="s1">'version'</span><span class="p">:</span> <span class="s1">'v4'</span><span class="p">,</span>
@@ -7675,6 +7680,7 @@ Device: CPU
         <span class="s1">'model_name'</span><span class="p">:</span> <span class="s1">'V4_RandomForest'</span><span class="p">,</span>
         <span class="s1">'param_db_name'</span><span class="p">:</span> <span class="s1">'Temperature'</span><span class="p">,</span>
         <span class="s1">'r2'</span><span class="p">:</span> <span class="mf">0.8982</span><span class="p">,</span>
+        <span class="s1">'mae'</span><span class="p">:</span> <span class="mf">0.9666</span><span class="p">,</span>
     <span class="p">},</span>
 <span class="p">}</span>
 
@@ -7736,7 +7742,7 @@ Best Models:
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [30]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">load_dotenv</span><span class="p">(</span><span class="s1">'../.env'</span><span class="p">)</span>
@@ -7783,7 +7789,7 @@ Best Models:
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [31]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Fetch historical data</span>
@@ -7845,7 +7851,7 @@ Best Models:
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [32]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Filter to surface measurements</span>
@@ -7903,7 +7909,7 @@ Best Models:
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [33]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Encode categorical features (fit on historical data)</span>
@@ -7961,7 +7967,7 @@ Best Models:
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [34]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Generate prediction dates</span>
@@ -8016,7 +8022,7 @@ Dates: ['2025-10-03', '2025-10-04', '2025-10-05', '2025-10-06', '2025-10-07', '2
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [35]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Create cartesian product of sites × dates</span>
@@ -8106,7 +8112,7 @@ Dates: ['2025-10-03', '2025-10-04', '2025-10-05', '2025-10-06', '2025-10-07', '2
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [36]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Core features</span>
@@ -8180,7 +8186,7 @@ Dates: ['2025-10-03', '2025-10-04', '2025-10-05', '2025-10-06', '2025-10-07', '2
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [37]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MLPRegressor</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
@@ -8242,7 +8248,7 @@ Dates: ['2025-10-03', '2025-10-04', '2025-10-05', '2025-10-06', '2025-10-07', '2
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [38]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Storage for predictions</span>
@@ -8403,7 +8409,7 @@ TEMPERATURE:
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [39]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Generate prediction run ID</span>
@@ -8438,7 +8444,7 @@ TEMPERATURE:
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Prediction Run ID: 619d8e03-212c-4145-a6bd-71439df9f28f
+<pre>Prediction Run ID: 920959f4-9fa2-4b28-87eb-57f91693041b
 Total predictions: 3045
 </pre>
 </div>
@@ -8450,10 +8456,50 @@ Total predictions: 3045
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [19]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [40]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Prepare prediction records for bulk insert</span>
+
+<span class="c1"># Define acceptable MAE thresholds for each parameter</span>
+<span class="n">MAE_THRESHOLDS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'chl_a'</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>          <span class="c1"># ±5 µg/L acceptable</span>
+    <span class="s1">'turbidity'</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>      <span class="c1"># ±5 NTU acceptable</span>
+    <span class="s1">'do_mg_l'</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>        <span class="c1"># ±2 mg/L acceptable</span>
+    <span class="s1">'n_total'</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span>      <span class="c1"># ±300 µg/L acceptable</span>
+    <span class="s1">'temperature'</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>    <span class="c1"># ±2°C acceptable</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_confidence_composite</span><span class="p">(</span><span class="n">r2</span><span class="p">,</span> <span class="n">mae</span><span class="p">,</span> <span class="n">param_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Calculate confidence score using composite approach.</span>
+<span class="sd">    </span>
+<span class="sd">    Formula:</span>
+<span class="sd">    - R² component (40%): Model's variance explained</span>
+<span class="sd">    - MAE component (60%): Prediction accuracy vs acceptable threshold</span>
+<span class="sd">    </span>
+<span class="sd">    Returns: Confidence score between 0 and 1</span>
+<span class="sd">    """</span>
+    <span class="c1"># R² component (40%) - clamp to [0, 1]</span>
+    <span class="n">r2_score</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">r2</span><span class="p">))</span>
+    
+    <span class="c1"># MAE component (60%) - inverse relationship with threshold</span>
+    <span class="n">mae_threshold</span> <span class="o">=</span> <span class="n">MAE_THRESHOLDS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param_name</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">'inf'</span><span class="p">))</span>
+    
+    <span class="k">if</span> <span class="n">mae_threshold</span> <span class="o">==</span> <span class="nb">float</span><span class="p">(</span><span class="s1">'inf'</span><span class="p">):</span>
+        <span class="n">mae_score</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Score decreases as MAE approaches threshold</span>
+        <span class="c1"># mae=0 → score=1.0, mae=threshold → score=0.0</span>
+        <span class="n">mae_score</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">mae</span> <span class="o">/</span> <span class="n">mae_threshold</span><span class="p">))</span>
+    
+    <span class="c1"># Weighted composite (R²=40%, MAE=60%)</span>
+    <span class="n">confidence</span> <span class="o">=</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">r2_score</span> <span class="o">+</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">mae_score</span>
+    
+    <span class="c1"># Clamp to [0, 1]</span>
+    <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">confidence</span><span class="p">))</span>
+
+<span class="c1"># Prepare records</span>
 <span class="n">prediction_records</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_predict</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
@@ -8465,11 +8511,10 @@ Total predictions: 3045
         <span class="n">param_db_name</span> <span class="o">=</span> <span class="n">param_config</span><span class="p">[</span><span class="s1">'param_db_name'</span><span class="p">]</span>
         <span class="n">param_id</span> <span class="o">=</span> <span class="n">param_id_map</span><span class="p">[</span><span class="n">param_db_name</span><span class="p">]</span>
         
-        <span class="c1"># Calculate confidence score from R²</span>
-        <span class="c1"># Use R² as proxy for confidence (0 to 1 scale)</span>
-        <span class="c1"># Negative R² becomes 0 confidence</span>
+        <span class="c1"># Calculate composite confidence score</span>
         <span class="n">r2</span> <span class="o">=</span> <span class="n">param_config</span><span class="p">[</span><span class="s1">'r2'</span><span class="p">]</span>
-        <span class="n">confidence_score</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">r2</span><span class="p">))</span>  <span class="c1"># Clamp to [0, 1]</span>
+        <span class="n">mae</span> <span class="o">=</span> <span class="n">param_config</span><span class="p">[</span><span class="s1">'mae'</span><span class="p">]</span>
+        <span class="n">confidence_score</span> <span class="o">=</span> <span class="n">calculate_confidence_composite</span><span class="p">(</span><span class="n">r2</span><span class="p">,</span> <span class="n">mae</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
         
         <span class="n">prediction_records</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
             <span class="s1">'prediction_run_id'</span><span class="p">:</span> <span class="n">prediction_run_id</span><span class="p">,</span>
@@ -8482,12 +8527,25 @@ Total predictions: 3045
             <span class="s1">'model_name'</span><span class="p">:</span> <span class="n">param_config</span><span class="p">[</span><span class="s1">'model_name'</span><span class="p">],</span>
         <span class="p">})</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">✓ Prepared </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">prediction_records</span><span class="p">)</span><span class="si">}</span><span class="s2"> prediction records for insertion"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Sample records:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"✓ Prepared </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">prediction_records</span><span class="p">)</span><span class="si">}</span><span class="s2"> prediction records for insertion"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Confidence Scores by Parameter:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"-"</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+
+<span class="c1"># Show confidence scores for each parameter</span>
+<span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">BEST_MODELS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">'r2'</span><span class="p">]</span>
+    <span class="n">mae</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">'mae'</span><span class="p">]</span>
+    <span class="n">confidence</span> <span class="o">=</span> <span class="n">calculate_confidence_composite</span><span class="p">(</span><span class="n">r2</span><span class="p">,</span> <span class="n">mae</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">:</span><span class="s2">&lt;15</span><span class="si">}</span><span class="s2"> R²=</span><span class="si">{</span><span class="n">r2</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, MAE=</span><span class="si">{</span><span class="n">mae</span><span class="si">:</span><span class="s2">&gt;8.2f</span><span class="si">}</span><span class="s2"> → Confidence=</span><span class="si">{</span><span class="n">confidence</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"-"</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sample records:"</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">prediction_records</span><span class="p">))):</span>
     <span class="n">rec</span> <span class="o">=</span> <span class="n">prediction_records</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">rec</span><span class="p">[</span><span class="s1">'site_id'</span><span class="p">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">rec</span><span class="p">[</span><span class="s1">'date'</span><span class="p">]</span><span class="si">}</span><span class="s2"> | Param ID </span><span class="si">{</span><span class="n">rec</span><span class="p">[</span><span class="s1">'param_id'</span><span class="p">]</span><span class="si">}</span><span class="s2"> | "</span>
-          <span class="sa">f</span><span class="s2">"Value: </span><span class="si">{</span><span class="n">rec</span><span class="p">[</span><span class="s1">'param_value'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> | Confidence: </span><span class="si">{</span><span class="n">rec</span><span class="p">[</span><span class="s1">'confidence_score'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> | "</span>
+          <span class="sa">f</span><span class="s2">"Value: </span><span class="si">{</span><span class="n">rec</span><span class="p">[</span><span class="s1">'param_value'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> | Confidence: </span><span class="si">{</span><span class="n">rec</span><span class="p">[</span><span class="s1">'confidence_score'</span><span class="p">]</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2"> | "</span>
           <span class="sa">f</span><span class="s2">"Model: </span><span class="si">{</span><span class="n">rec</span><span class="p">[</span><span class="s1">'model_name'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -8501,15 +8559,21 @@ Total predictions: 3045
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>
-✓ Prepared 3045 prediction records for insertion
-
+<pre>✓ Prepared 3045 prediction records for insertion
+Confidence Scores by Parameter:
+------------------------------------------------------------
+CHL_A           R²=0.2103, MAE=    3.04 → Confidence=31.9%
+TURBIDITY       R²=0.4395, MAE=    2.62 → Confidence=46.2%
+DO_MG_L         R²=0.3838, MAE=    1.32 → Confidence=35.7%
+N_TOTAL         R²=0.2992, MAE=  194.22 → Confidence=33.1%
+TEMPERATURE     R²=0.8982, MAE=    0.97 → Confidence=66.9%
+------------------------------------------------------------
 Sample records:
-  2316 | 2025-10-03 | Param ID 1 | Value: 4.2296 | Confidence: 0.2103 | Model: V2_MLP
-  2316 | 2025-10-03 | Param ID 8 | Value: 2.5955 | Confidence: 0.4395 | Model: V4_RandomForest
-  2316 | 2025-10-03 | Param ID 3 | Value: 9.8049 | Confidence: 0.3838 | Model: V4_Ridge
-  2316 | 2025-10-03 | Param ID 17 | Value: 370.6689 | Confidence: 0.2992 | Model: V2_MLP
-  2316 | 2025-10-03 | Param ID 10 | Value: 16.1066 | Confidence: 0.8982 | Model: V4_RandomForest
+  2316 | 2025-10-03 | Param ID 1 | Value: 4.2296 | Confidence: 31.9% | Model: V2_MLP
+  2316 | 2025-10-03 | Param ID 8 | Value: 2.5955 | Confidence: 46.2% | Model: V4_RandomForest
+  2316 | 2025-10-03 | Param ID 3 | Value: 9.8049 | Confidence: 35.7% | Model: V4_Ridge
+  2316 | 2025-10-03 | Param ID 17 | Value: 370.6689 | Confidence: 33.1% | Model: V2_MLP
+  2316 | 2025-10-03 | Param ID 10 | Value: 16.1066 | Confidence: 66.9% | Model: V4_RandomForest
 </pre>
 </div>
 </div>
@@ -8531,7 +8595,7 @@ Sample records:
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [20]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [41]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="si">{</span><span class="s1">'='</span><span class="o">*</span><span class="mi">70</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
@@ -8603,7 +8667,7 @@ INSERTING PREDICTIONS INTO DATABASE
 ✓ ALL PREDICTIONS INSERTED SUCCESSFULLY!
 ======================================================================
 
-Prediction Run ID: 619d8e03-212c-4145-a6bd-71439df9f28f
+Prediction Run ID: 920959f4-9fa2-4b28-87eb-57f91693041b
 Total records inserted: 3045
 Date range: 2025-10-03 to 2025-10-31
 Sites: 21
@@ -8629,7 +8693,7 @@ Parameters: 5
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [21]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [42]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Query back the inserted predictions</span>
@@ -8665,16 +8729,16 @@ Verifying insertion...
 
 Sample predictions from database:
   site_id        date   param_name  param_value  confidence_score  \
-0     716  2025-10-31        CHL_A     0.885489            0.2103   
-1     716  2025-10-31        DO_mg     7.592948            0.3838   
-2     716  2025-10-31      N_TOTAL   151.277298            0.2992   
-3     716  2025-10-31  Temperature    16.712745            0.8982   
-4     716  2025-10-31         Turb     1.477570            0.4395   
-5    1229  2025-10-31        CHL_A     0.465133            0.2103   
-6    1229  2025-10-31        DO_mg     7.801047            0.3838   
-7    1229  2025-10-31      N_TOTAL   135.583740            0.2992   
-8    1229  2025-10-31  Temperature    15.946181            0.8982   
-9    1229  2025-10-31         Turb     0.600315            0.4395   
+0     716  2025-10-31        CHL_A     0.885489          0.319224   
+1     716  2025-10-31        DO_mg     7.592948          0.357430   
+2     716  2025-10-31      N_TOTAL   151.277298          0.331243   
+3     716  2025-10-31  Temperature    16.712745          0.669300   
+4     716  2025-10-31         Turb     1.477570          0.461928   
+5    1229  2025-10-31        CHL_A     0.465133          0.319224   
+6    1229  2025-10-31        DO_mg     7.801047          0.357430   
+7    1229  2025-10-31      N_TOTAL   135.583740          0.331243   
+8    1229  2025-10-31  Temperature    15.946181          0.669300   
+9    1229  2025-10-31         Turb     0.600315          0.461928   
 
         model_name  
 0           V2_MLP  
@@ -8712,7 +8776,7 @@ Sample predictions from database:
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [22]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [43]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Create summary DataFrame</span>
@@ -8772,8 +8836,8 @@ TEMPERATURE V4_RandomForest    0.8982          609  14.272797  17.503591  16.141
 ✅ Inference complete!
 
 Next steps:
-  1. Query predictions via: SELECT * FROM v_epa_predictions WHERE prediction_run_id = '619d8e03-212c-4145-a6bd-71439df9f28f'
-  2. Wide format view: SELECT * FROM v_epa_measurements_wide_prediction WHERE prediction_run_id = '619d8e03-212c-4145-a6bd-71439df9f28f'
+  1. Query predictions via: SELECT * FROM v_epa_predictions WHERE prediction_run_id = '920959f4-9fa2-4b28-87eb-57f91693041b'
+  2. Wide format view: SELECT * FROM v_epa_measurements_wide_prediction WHERE prediction_run_id = '920959f4-9fa2-4b28-87eb-57f91693041b'
   3. Integrate with backend API to serve predictions to frontend
 </pre>
 </div>
