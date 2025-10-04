@@ -8,7 +8,7 @@ export const config = {
     key: globalThis.SUPABASE_KEY,
   },
   cors: {
-    allowedOrigins: (globalThis.ALLOWED_ORIGINS || 'http://localhost:5173,https://bluetrails.pages.dev').split(','),
+    allowedOrigins: (globalThis.ALLOWED_ORIGINS).split(','),
   },
-  environment: globalThis.NODE_ENV || 'development',
+  environment: globalThis.NODE_ENV
 };

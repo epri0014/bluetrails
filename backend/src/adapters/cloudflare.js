@@ -16,8 +16,8 @@ export default {
       // Works for both local development (.env) and production (Cloudflare dashboard)
       globalThis.SUPABASE_URL = env.SUPABASE_URL;
       globalThis.SUPABASE_KEY = env.SUPABASE_KEY;
-      globalThis.ALLOWED_ORIGINS = env.ALLOWED_ORIGINS || 'http://localhost:5173,https://bluetrails.pages.dev';
-      globalThis.NODE_ENV = env.NODE_ENV || 'production';
+      globalThis.ALLOWED_ORIGINS = env.ALLOWED_ORIGINS;
+      globalThis.NODE_ENV = env.NODE_ENV;
 
       // Validate required environment variables
       if (!globalThis.SUPABASE_URL || !globalThis.SUPABASE_KEY) {
