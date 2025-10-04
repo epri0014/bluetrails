@@ -1,14 +1,37 @@
 /**
  * Application configuration object
- * Supports Cloudflare Workers environment variables
+ * Supports both Node.js (process.env) and Cloudflare Workers (globalThis) environments
  */
+
+// Helper function to get environment variable from both Node.js and Cloudflare Workers
+const getEnv = (key) => {
+  // For Cloudflare Workers (set via globalThis in adapter)
+  if (typeof globalThis[key] !== 'undefined' && globalThis[key] !== null && globalThis[key] !== '') {
+    return globalThis[key];
+  }
+  // For Node.js (local development)
+  if (typeof process !== 'undefined' && process.env && process.env[key]) {
+    return process.env[key];
+  }
+  return undefined;
+};
+
+// Export config as an object with getters to ensure values are read at runtime
 export const config = {
   supabase: {
-    url: globalThis.SUPABASE_URL,
-    key: globalThis.SUPABASE_KEY,
+    get url() {
+      return getEnv('SUPABASE_URL');
+    },
+    get key() {
+      return getEnv('SUPABASE_KEY');
+    },
   },
   cors: {
-    allowedOrigins: globalThis.ALLOWED_ORIGINS.split(',')
+    get allowedOrigins() {
+      return getEnv('ALLOWED_ORIGINS')?.split(',');
+    },
   },
-  environment: globalThis.NODE_ENV
+  get environment() {
+    return getEnv('NODE_ENV');
+  },
 };
