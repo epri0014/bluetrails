@@ -1,12 +1,17 @@
+# ====================== app.R (Kids Water Guide - 3 Regions) ======================
 suppressWarnings({
   app_dir <- tryCatch({
     if (requireNamespace("rstudioapi", quietly = TRUE) && rstudioapi::isAvailable())
       dirname(rstudioapi::getActiveDocumentContext()$path) else getwd()
   }, error = function(e) getwd())
 })
+
+# ---- data files (adjust paths if needed) ----
 file_ppb <- file.path(app_dir, "1984_07-2024_06_Port_Phillip_Bay_Water_quality_data.xlsx")
 file_wp  <- file.path(app_dir, "1990_02-2024_06_Western_Port_Water_quality_data.xlsx")
-for (p in c(file_ppb, file_wp)) if (!file.exists(p)) stop("File not found: ", p)
+file_gl  <- file.path(app_dir, "1990_01-2024_06_Gippsland_Lakes_Water_quality_data_coord.xlsx")  
+
+for (p in c(file_ppb, file_wp, file_gl)) if (!file.exists(p)) stop("File not found: ", p)
 
 # ---------- packages ----------
 library(shiny)
@@ -23,10 +28,18 @@ parse_date_any <- function(x){
   suppressWarnings(lubridate::as_date(x))
 }
 clip_invalid <- function(x, lo, hi){ ifelse(x < lo | x > hi, NA_real_, x) }
-fmt <- function(x, unit=""){ ifelse(is.na(x), "–", paste0(signif(as.numeric(x), ifelse(abs(as.numeric(x))>=10,3,2)), " ", unit)) }
 
-# ---------- rotating picks ----------
-pick_rotating <- function(items, key = "", period_seconds = 10){
+# Vectorized formatter
+fmt_num <- function(x){
+  y <- suppressWarnings(as.numeric(x))
+  d <- ifelse(abs(y) >= 10, 3, 2)
+  out <- signif(y, d)
+  out[is.na(y)] <- NA
+  as.character(out)
+}
+
+# rotate a choice deterministically by time slot
+pick_rotating <- function(items, key = "", period_seconds = 15){
   if (length(items) == 0) return(NA_character_)
   slot <- floor(as.numeric(Sys.time()) / period_seconds)
   h <- digest::digest(paste0(key, "_", slot), algo = "xxhash64")
@@ -40,13 +53,13 @@ pick_rotating <- function(items, key = "", period_seconds = 10){
 FUN_FACTS <- c(
   "Seahorses are fish that swim upright","Dolphins sleep with one eye open",
   "Sea stars can regrow arms","Octopuses have three hearts",
-  "Some fish glow in the dark under the sea","Penguins can drink salty seawater",
+  "Some fish glow under the sea","Penguins can drink salty seawater",
   "Sea turtles can live for more than 50 years","A group of fish is called a school",
   "Crabs wear hard shells called exoskeletons","Some jellyfish are see-through like glass",
   "Clownfish hide in soft sea anemones","A baby fish is called a fry",
   "Seagrass meadows are nurseries for tiny sea animals","Mangroves help keep the water clean",
-  "Sea sponges are animals, not plants","Starfish sense with their arms instead of a brain like ours",
-  "The fastest fish can beat a city car in traffic","Tiny sea snails can drill neat holes in shells",
+  "Sea sponges are animals, not plants","Starfish sense with their arms",
+  "The fastest fish can beat a city car","Tiny sea snails can drill neat holes in shells",
   "Seaweed is plant-like algae that many animals eat","Shrimp can be smaller than your little fingernail"
 )
 TRY_THIS_BASE <- c(
@@ -61,19 +74,18 @@ TRY_THIS_BASE <- c(
   "Sound safari - close eyes and list three ocean sounds",
   "Beach letters - write your name with shells"
 )
-TRY_THIS_CLEAR <- c("Starfish spy - look for shapes on the seabed","Pebble window - peek through calm water to the sand","Shadow hunt - can you see fish shadows zip past")
+TRY_THIS_CLEAR  <- c("Starfish spy - look for shapes on the seabed","Pebble window - peek through calm water to the sand","Shadow hunt - can you see fish shadows zip past")
 TRY_THIS_CLOUDY <- c("Foam detective - watch bubbles pop and name the shapes","Color quest - find three things that are blue, brown, green","Beach maze - draw a maze in the sand and solve it")
-TRY_THIS_WARM <- c("Toe test - count to ten with toes in the water","Sand bakery - make a warm sand cupcake with a shell on top")
-TRY_THIS_COOL <- c("Skip and splash - ten quick jumps then warm towel time","Stone stacker - build a tiny cool-stone tower")
+TRY_THIS_WARM   <- c("Toe test - count to ten with toes in the water","Sand bakery - make a warm sand cupcake with a shell on top")
+TRY_THIS_COOL   <- c("Skip and splash - ten quick jumps then warm towel time","Stone stacker - build a tiny cool-stone tower")
 
-# Ocean friends - one line at a time
+# Ocean friends for Bits slide (includes Shearwaters)
 OCEAN_FRIENDS <- c(
   "🐬 Dolphins leap outside the heads - racing the waves",
   "🐋 Whales pass by in deep seasons - singing low songs",
   "🦭 Fur seals nap on rocks - warming in the sun",
   "🐧 Little penguins parade home at dusk - tiny lines on tiny feet",
   "🐉 Leafy seadragons hide in seagrass - dressed like seaweed",
-  "🕊️ Bright seabirds wheel above - painting circles in the sky",
   "🕊️ Fairy terns skim the surface - quick and light",
   "🐦 Hooded plovers nest in the sand - please watch your step",
   "🪶 Shearwaters glide in flocks - long wings skimming the wind",
@@ -187,12 +199,13 @@ read_clean <- function(path, region_name){
   df %>% dplyr::mutate(region = region_name)
 }
 
-# read both
+# read three
 ppb <- read_clean(file_ppb, "Port Phillip Bay")
 wp  <- read_clean(file_wp,  "Western Port")
+gl  <- read_clean(file_gl,  "Gippsland Lakes")   # NEW
 
 # union & globals
-all_df <- dplyr::bind_rows(ppb, wp)
+all_df <- dplyr::bind_rows(ppb, wp, gl)  # include NEW region
 if (nrow(all_df) == 0) stop("No rows after cleaning - datasets lacked coordinates.")
 all_regions <- c("All regions", sort(unique(all_df$region)))
 all_sites   <- sort(unique(all_df$site_name_short))
@@ -202,7 +215,11 @@ max_d <- max(all_df$date, na.rm=TRUE)
 # ---------- R-A-G logic ----------
 code_to_color <- c(green="#24c38b", amber="#ffb000", red="#e74a5f")
 code_to_label <- c(green="Safe", amber="Caution", red="Rest")
-region_fills  <- c("Port Phillip Bay"="#d4f6ff", "Western Port"="#e5ffd9")
+region_fills  <- c(
+  "Port Phillip Bay"="#d4f6ff",
+  "Western Port"    ="#e5ffd9",
+  "Gippsland Lakes" ="#ffe6f2"  # NEW soft pink
+)
 region_border <- "#222"
 code_algae   <- function(x) ifelse(is.na(x),"amber", ifelse(x <  2,"green", ifelse(x <=  5,"amber","red")))
 code_clarity <- function(x) ifelse(is.na(x),"amber", ifelse(x <= 2,"green", ifelse(x <=  5,"amber","red")))
@@ -218,15 +235,21 @@ overall_code <- function(a,c,o,n,t){
 # ---------- kid lines ----------
 kidline <- function(metric, code) switch(metric,
                                          "Algal Bloom"=switch(code, green="Tiny plants. A few is fine. Too many can make fish tired.",
-                                                              amber="Some algae around. Keep watch.", red="Lots of algae. Fish and crabs may struggle."),
+                                                              amber="Some algae around. Keep watch.",
+                                                              red  ="Lots of algae. Fish and crabs may struggle."),
                                          "Clarity"    =switch(code, green="Clear like a window. Great for shell spotting.",
-                                                              amber="A little cloudy like frosted glass.", red="Cloudy like stirred sand. Look first."),
+                                                              amber="A little cloudy like frosted glass.",
+                                                              red  ="Cloudy like stirred sand. Look first."),
                                          "Oxygen"     =switch(code, green="Plenty of bubbles. Sea life feels strong.",
-                                                              amber="Fewer bubbles right now.",           red="Low bubbles. Let the water rest."),
+                                                              amber="Fewer bubbles right now.",
+                                                              red  ="Low bubbles. Let the water rest."),
                                          "Nutrients"  =switch(code, green="Just enough food in the water.",
-                                                              amber="Extra food. Algae could grow fast.", red="Too much food. Algae can take over."),
+                                                              amber="Extra food. Algae could grow fast.",
+                                                              red  ="Too much food. Algae can take over."),
                                          "Temperature"=switch(code, green="Cool and comfy.",
-                                                              amber="Getting warm. Take short dips.",     red="Very warm. Animals get sleepy."), "")
+                                                              amber="Getting warm. Take short dips.",
+                                                              red  ="Very warm. Animals get sleepy."),
+                                         "")
 
 # ---------- theme ----------
 theme <- bslib::bs_theme(
@@ -239,13 +262,12 @@ theme <- bslib::bs_theme(
   heading_font = bslib::font_google("Baloo 2")
 )
 
-# ---------- UI ----------
+# ---------- UI (Navbar kept, no tab item) ----------
 ui <- bslib::page_navbar(
-  title = "Kids’ Water Guide - Port Phillip Bay & Western Port",
+  title = "Kids’ Water Guide - Port Phillip Bay, Western Port & Gippsland Lakes",
   theme = theme,
-  
   header = tagList(
-    # ---- CSS & JS ----
+    # CSS + JS
     tags$head(
       tags$style(HTML('
 :root{ --sea1:#8fd3ff; --sea2:#a4ffd8; --sea3:#ffe6a3; --sea4:#b7f2ff; }
@@ -256,7 +278,7 @@ body{
     radial-gradient(900px 700px at 50% 120%, var(--sea3), transparent 60%),
     radial-gradient(800px 500px at 20% 100%, var(--sea4), transparent 60%);
 }
-.container-lg{ max-width:1280px; }
+.container-lg{ max_width:1280px; max-width:1280px; }
 .top-grid{ display:grid; grid-template-columns: 1.3fr 1fr; gap:16px; align-items:start; }
 @media (max-width:1200px){ .top-grid{ grid-template-columns:1fr; } }
 #map{ height: 68vh !important; }
@@ -279,7 +301,7 @@ body{
 .story .metric{ font-weight:800; }
 .muted{ opacity:.7; font-size:.95rem; }
 
-/* ---- Insights Carousel (no overlap, manual only) ---- */
+/* Insights Carousel (manual only - no auto jump) */
 .insights-kids{
   background:
     linear-gradient(135deg, rgba(255,255,255,.95), rgba(255,255,255,.95)),
@@ -305,7 +327,7 @@ body{
   flex:0 0 100%; scroll-snap-align:start;
   border:2px solid #000; border-radius:18px;
   padding:18px 22px;
-  background:#fff; box-shadow:4px 4px 0 #00000014; min-height:170px;
+  background:#fff; box-shadow:4px 4px 0 #00000014; min-height:180px;
   display:flex; flex-direction:column; justify-content:center;
 }
 
@@ -320,7 +342,7 @@ body{
 .snap-dots .dot{ width:10px; height:10px; border-radius:50%; border:2px solid #000; background:#fff; opacity:.6; }
 .snap-dots .dot.active{ opacity:1; background:#0a6b56; }
 
-/* arrows are outside the slide area */
+/* arrows */
 .snap-left,.snap-right{
   position:absolute; top:50%; transform:translateY(-50%);
   background:#fff; border:2px solid #000; width:36px; height:36px; border-radius:50%;
@@ -342,17 +364,7 @@ details.quickhelp > summary::-webkit-details-marker{ display:none; }
 details.quickhelp > summary:before{ content:"▸"; margin-right:8px; font-weight:900; }
 details.quickhelp[open] > summary:before{ content:"▾"; }
 
-.flash{ animation: flash 1.2s ease-in-out 1; }
-@keyframes flash{ 0%{box-shadow:0 0 0 0 rgba(26,123,214,.0)} 50%{box-shadow:0 0 0 10px rgba(26,123,214,.25)} 100%{box-shadow:0 0 0 0 rgba(26,123,214,0)} }
-
-@keyframes confetti-fall{ 0%{ transform:translateY(-40px) rotate(0deg);} 100%{ transform:translateY(120vh) rotate(360deg);} }
-.confetti-toast{
-  position:fixed; left:50%; top:16px; transform:translateX(-50%) scale(.95);
-  background:#ffffff; border:2px solid #000; border-radius:16px; padding:10px 16px;
-  box-shadow:6px 6px 0 #00000018; opacity:0; transition:.2s ease; z-index:10000; text-align:center;
-}
-.confetti-toast.show{ opacity:1; transform:translateX(-50%) scale(1); }
-
+/* Bubbles background */
 .ocean-bubbles{ position:fixed; inset:0; pointer-events:none; z-index:0; }
 .ocean-bubbles span{
   position:absolute; border-radius:50%; opacity:.9;
@@ -362,7 +374,11 @@ details.quickhelp[open] > summary:before{ content:"▾"; }
 }
 @keyframes rise{ from{ transform:translateY(30px) scale(.9) } to{ transform:translateY(-120vh) scale(1.1) } }
 
-/* hide old egg classes if any */
+/* misc */
+.flash{ animation: flash 1.2s ease-in-out 1; }
+@keyframes flash{ 0%{box-shadow:0 0 0 0 rgba(26,123,214,.0)} 50%{box-shadow:0 0 0 10px rgba(26,123,214,.25)} 100%{box-shadow:0 0 0 0 rgba(26,123,214,0)} }
+
+/* hide any legacy egg classes */
 .egg,.eggs,.egg-stack,.traffic-eggs,.traffic-ovals,.status-egg,.status-oval,[class*="egg" i],[class*="oval" i]{display:none !important;}
       ')),
       tags$script(HTML('
@@ -406,7 +422,7 @@ details.quickhelp[open] > summary:before{ content:"▾"; }
     setTimeout(()=>{ t.classList.remove("show"); t.remove(); }, 2200);
   });
 
-  // Carousel - manual only
+  // Carousel - manual only, remembers index
   window.initInsightsCarousel = function(rootId){
     const root = document.getElementById(rootId);
     if(!root) return;
@@ -417,7 +433,6 @@ details.quickhelp[open] > summary:before{ content:"▾"; }
     const right = root.querySelector(".snap-right");
     if(!track || !slides.length || !dotsC) return;
 
-    // build dots once
     if(!dotsC._built){
       dotsC.innerHTML = "";
       slides.forEach((_,i)=>{
@@ -465,17 +480,13 @@ details.quickhelp[open] > summary:before{ content:"▾"; }
     }, {root: track, threshold: 0.6});
     slides.forEach(s=>io.observe(s));
 
-    // initial
     setTimeout(()=>goTo(idx), 0);
-
-    // expose a small API if needed
     root._goCurrent = ()=>goTo(idx);
   };
 })();
       '))
     ),
-    
-    # floating bubbles
+    # bubbles
     tags$div(class="ocean-bubbles",
              lapply(1:48, function(i){
                left <- sample(2:98,1); delay <- runif(1,0,10); size <- sample(12:26,1)
@@ -484,116 +495,117 @@ details.quickhelp[open] > summary:before{ content:"▾"; }
     )
   ),
   
-  # -------- MAIN TAB ----------
-  bslib::nav_panel(
-    "Explore",
-    div(class="container-lg pt-2",
-        # Intro
-        div(class="card-cute mb-2",
-            tags$div(style="font-weight:900; font-size:1.35rem;", "Play by the Bay - Pick a Friendly Splash Spot"),
-            HTML("
-              <p>Welcome, Ocean Heroes. These bays are the homeland of ocean friends. Watch the parade change - one friend at a time.</p>
-              <p>This page turns water checks into a simple story for kids and families - clarity for seeing, bubbles for breathing, algae for tiny plants, nutrients for food, and temperature for comfort. Choose a <b>region</b>, a <b>beach</b>, and a <b>date</b> to read the story for that beach.</p>
-            ")
-        ),
-        
-        # Main two-column layout
-        div(class="top-grid",
-            # LEFT: Map + Carousel
-            div(
-              bslib::card(class="card-cute", card_header = "Tap a region or a beach to learn its story",
-                          leafletOutput("map", height = "68vh")
-              ),
-              bslib::card(class="insights-kids",
-                          div(class="insights-title", "Play by the Bay - Quick Wins"),
-                          tags$div(id="insightsCarousel", class="snap-wrap",
-                                   tags$button(type="button", class="snap-left",  `aria-label`="Previous"),
-                                   tags$div(class="snap-track",
-                                            # Slide 1: Top picks
-                                            tags$div(class="snap-slide",
-                                                     tags$div(class="slide-title","🏆 Top Picks"),
-                                                     tags$div(class="slide-body",
-                                                              span(class="inline-badge","Top"),
-                                                              span(id="top_picks", class="inline-text", uiOutput("top_picks", inline=TRUE))
-                                                     )
-                                            ),
-                                            # Slide 2: Ocean Bits - inline badges next to wording
-                                            tags$div(class="snap-slide",
-                                                     tags$div(class="slide-title d-flex items-center justify-between",
-                                                              HTML("🧠 + 🎒 Ocean Bits"),
-                                                              span(class="inline-badge","↻ refreshes")
-                                                     ),
-                                                     tags$div(class="slide-body",
-                                                              div(class="inline-row",
-                                                                  span(class="inline-badge","Fun fact"),
-                                                                  span(id="bits_fact", class="inline-text", uiOutput("bits_fact", inline=TRUE))
-                                                              ),
-                                                              div(class="inline-row mt-1",
-                                                                  span(class="inline-badge","Try this"),
-                                                                  span(id="bits_try", class="inline-text", uiOutput("bits_try", inline=TRUE))
-                                                              )
-                                                     )
-                                            ),
-                                            # Slide 3: Tip
-                                            tags$div(class="snap-slide",
-                                                     tags$div(class="slide-title","🧭 Tip"),
-                                                     tags$div(class="slide-body",
-                                                              span(class="inline-badge","Map tip"),
-                                                              span(class="inline-text",
-                                                                   HTML("Shade shows the region - pins show beaches - click a shaded area to zoom")
-                                                              )
-                                                     )
-                                            )
-                                   ),
-                                   tags$button(type="button", class="snap-right", `aria-label`="Next"),
-                                   tags$div(class="snap-dots")
-                          ),
-                          tags$script(HTML("setTimeout(function(){ if(window.initInsightsCarousel) window.initInsightsCarousel('insightsCarousel'); }, 0);"))
-              )
+  # ---------- BODY CONTENT (formerly inside nav_panel("Explore")) ----------
+  div(class="container-lg pt-2",
+      # Intro card
+      div(class="card-cute mb-2",
+          tags$div(style="font-weight:900; font-size:1.35rem;", "Play by the Bay - Pick a Friendly Splash Spot"),
+          HTML("
+          <p>Welcome, Ocean Heroes. These bays are the homeland of ocean friends.</p>
+          <p>Pick a region, choose a beach, and set a day. We will tell the water story for that place - how clear it looks, how many bubbles help animals breathe, how many tiny plants are growing, how much food is floating, and how warm it feels.</p>
+        ")
+      ),
+      
+      # Main two-column layout
+      div(class="top-grid",
+          # LEFT: Map + Carousel
+          div(
+            bslib::card(class="card-cute", card_header = "Tap a region or a beach to learn its story",
+                        leafletOutput("map", height = "68vh")
             ),
-            
-            # RIGHT: Pickers + Story
-            div(class="rightcol",
-                bslib::card(class="card-cute", id="pickCard",
-                            div(class="big-step","Pick a region"),
-                            selectInput("region", NULL, choices=all_regions, selected="All regions", width="100%"),
-                            div(class="big-step mt-2","Pick a beach"),
-                            selectInput("site", NULL, choices=c("All sites", all_sites), selected="All sites", width="100%"),
-                            div(class="big-step mt-2","Pick a day"),
-                            dateInput("date", NULL, value=max_d, min=min_d, max=max_d, width="100%"),
-                            div(class="mt-3 d-flex gap-2",
-                                actionButton("apply", "OK", class="btn btn-primary"),
-                                actionButton("reset", "Reset", class="btn btn-outline-secondary")
-                            ),
-                            div(class="mt-2 small text-muted", id="hintLine",
-                                "Step 1 - pick a region. Step 2 - pick a beach. Step 3 - pick a day. Step 4 - tap OK.")
-                ),
-                bslib::card(class="card-cute", card_header=uiOutput("panel_title"), id="storyCard",
-                            div(class="story", uiOutput("story_block"))
-                )
+            bslib::card(class="insights-kids",
+                        div(class="insights-title", "Play by the Bay - Quick Wins"),
+                        tags$div(id="insightsCarousel", class="snap-wrap",
+                                 tags$button(type="button", class="snap-left",  `aria-label`="Previous"),
+                                 tags$div(class="snap-track",
+                                          # Slide 1: Top picks
+                                          tags$div(class="snap-slide",
+                                                   tags$div(class="slide-title","🏆 Top Picks"),
+                                                   tags$div(class="slide-body",
+                                                            span(class="inline-badge","Top"),
+                                                            span(id="top_picks", class="inline-text", uiOutput("top_picks", inline=TRUE))
+                                                   )
+                                          ),
+                                          # Slide 2: Ocean Bits
+                                          tags$div(class="snap-slide",
+                                                   tags$div(class="slide-title d-flex items-center justify-between",
+                                                            HTML("🧠 + 🎒 Ocean Bits"),
+                                                            span(class="inline-badge","↻ refreshes")
+                                                   ),
+                                                   tags$div(class="slide-body",
+                                                            div(class="inline-row",
+                                                                span(class="inline-badge","Fun fact"),
+                                                                span(id="bits_fact", class="inline-text", uiOutput("bits_fact", inline=TRUE))
+                                                            ),
+                                                            div(class="inline-row mt-1",
+                                                                span(class="inline-badge","Try this"),
+                                                                span(id="bits_try", class="inline-text", uiOutput("bits_try", inline=TRUE))
+                                                            ),
+                                                            div(class="inline-row mt-1",
+                                                                span(class="inline-badge","Ocean friend"),
+                                                                span(id="bits_friend", class="inline-text", uiOutput("bits_friend", inline=TRUE))
+                                                            )
+                                                   )
+                                          ),
+                                          # Slide 3: Tip
+                                          tags$div(class="snap-slide",
+                                                   tags$div(class="slide-title","🧭 Tip"),
+                                                   tags$div(class="slide-body",
+                                                            span(class="inline-badge","Map tip"),
+                                                            span(class="inline-text",
+                                                                 HTML("Shade shows the region - pins show beaches - click a shaded area to zoom")
+                                                            )
+                                                   )
+                                          )
+                                 ),
+                                 tags$button(type="button", class="snap-right", `aria-label`="Next"),
+                                 tags$div(class="snap-dots")
+                        ),
+                        tags$script(HTML("setTimeout(function(){ if(window.initInsightsCarousel) window.initInsightsCarousel('insightsCarousel'); }, 0);"))
             )
-        ),
-        
-        # ---- BOTTOM: Quick Help - full width, solid ----
-        div(class="mt-3", id="quickHelpBottom",
-            tags$details(class="quickhelp", open=NA,
-                         tags$summary(HTML("🌎 Quick Help for Kids")),
-                         div(class="qh-line", HTML("🌿 <b>Algae</b> - tiny plants. A little is okay - too much makes fish tired")),
-                         div(class="qh-line", HTML("👀 <b>Clarity</b> - clear like a window is best. Cloudy like lemonade - look first")),
-                         div(class="qh-line", HTML("🫧 <b>Oxygen</b> - more bubbles means happier sea life - around <b>6 mg/L+</b> is strong")),
-                         div(class="qh-line", HTML("🍔 <b>Food for water (nutrients)</b> - after rain there can be extra food that grows algae fast")),
-                         div(class="qh-line", HTML("🌡️ <b>Temperature</b> - cool is comfy. Very warm water makes animals sleepy - take short dips")),
-                         div(class="qh-line", HTML("<b>Tip:</b> click a <b>shaded region</b> to zoom. Pins are beaches. <span style='color:#24c38b;font-weight:900'>Green</span> = splash - <span style='color:#ffb000;font-weight:900'>Amber</span> = step carefully - <span style='color:#e74a5f;font-weight:900'>Red</span> = rest"))
-            )
-        )
-    )
+          ),
+          
+          # RIGHT: Pickers + Story
+          div(class="rightcol",
+              bslib::card(class="card-cute", id="pickCard",
+                          div(class="big-step","Pick a region"),
+                          selectInput("region", NULL, choices=all_regions, selected="All regions", width="100%"),
+                          div(class="big-step mt-2","Pick a beach"),
+                          selectInput("site", NULL, choices=c("All sites", all_sites), selected="All sites", width="100%"),
+                          div(class="big-step mt-2","Pick a day"),
+                          dateInput("date", NULL, value=max_d, min=min_d, max=max_d, width="100%"),
+                          div(class="mt-3 d-flex gap-2",
+                              actionButton("apply", "OK", class="btn btn-primary"),
+                              actionButton("reset", "Reset", class="btn btn-outline-secondary")
+                          ),
+                          div(class="mt-2 small text-muted", id="hintLine",
+                              "Step 1 - pick a region. Step 2 - pick a beach. Step 3 - pick a day. Step 4 - tap OK.")
+              ),
+              bslib::card(class="card-cute", card_header=uiOutput("panel_title"), id="storyCard",
+                          div(class="story", uiOutput("story_block"))
+              )
+          )
+      ),
+      
+      # Bottom Quick Help - full width
+      div(class="mt-3", id="quickHelpBottom",
+          tags$details(class="quickhelp", open=NA,
+                       tags$summary(HTML("🌎 Quick Help for Kids")),
+                       div(class="qh-line", HTML("🌿 <b>Algae</b> - tiny plants. A little is okay - too much makes fish tired")),
+                       div(class="qh-line", HTML("👀 <b>Clarity</b> - clear like a window is best. Cloudy like lemonade - look first")),
+                       div(class="qh-line", HTML("🫧 <b>Oxygen</b> - more bubbles means happier sea life - around <b>6 mg/L+</b> is strong")),
+                       div(class="qh-line", HTML("🍔 <b>Food for water (nutrients)</b> - after rain there can be extra food that grows algae fast")),
+                       div(class="qh-line", HTML("🌡️ <b>Temperature</b> - cool is comfy. Very warm water makes animals sleepy - take short dips")),
+                       div(class="qh-line", HTML("<b>Tip:</b> click a <b>shaded region</b> to zoom. Pins are beaches. <span style='color:#24c38b;font-weight:900'>Green</span> = splash - <span style='color:#ffb000;font-weight:900'>Amber</span> = step carefully - <span style='color:#e74a5f;font-weight:900'>Red</span> = rest"))
+          )
+      )
   )
 )
 
 # ---------- server ----------
 server <- function(input, output, session){
   rv <- reactiveValues(region_sel="All regions", site_sel="All sites", date_sel=max_d)
-  tick15 <- reactiveTimer(15000)  # slow refresh for Bits and animal line
+  tick15 <- reactiveTimer(15000)  # refresh for Bits and friend line
   
   set_hint <- function(txt){ session$sendCustomMessage("setHint", txt) }
   scroll_flash <- function(id){ session$sendCustomMessage("scrollTo", id) }
@@ -607,7 +619,10 @@ server <- function(input, output, session){
     else set_hint("Great - pick a beach in this region, then a day")
   }, ignoreInit = TRUE)
   
-  observeEvent(input$site, { if (input$site=="All sites") set_hint("Pick a day - or tap a pin") else set_hint("Nice - pick a day, then tap OK") }, ignoreInit = TRUE)
+  observeEvent(input$site, {
+    if (input$site=="All sites") set_hint("Pick a day - or tap a pin")
+    else set_hint("Good pick - choose a day, then tap OK")
+  }, ignoreInit = TRUE)
   observeEvent(input$date, { set_hint("Looks good - tap OK to show the story") }, ignoreInit = TRUE)
   
   # prefer row with Temperature, else latest
@@ -650,20 +665,36 @@ server <- function(input, output, session){
     kid_n <- vapply(mdf$n, function(cd) kidline("Nutrients", cd),   character(1))
     kid_t <- vapply(mdf$t, function(cd) kidline("Temperature", cd), character(1))
     
+    # value strings; if NA -> "-" and NO kid text after it
+    v_chl <- ifelse(is.na(mdf$CHL_A), "-", paste0(fmt_num(mdf$CHL_A)," µg/L"))
+    t_chl <- ifelse(is.na(mdf$CHL_A), "", paste0(" • ", kid_a))
+    
+    v_trb <- ifelse(is.na(mdf$Turb), "-", paste0(fmt_num(mdf$Turb)," NTU"))
+    t_trb <- ifelse(is.na(mdf$Turb), "", paste0(" • ", kid_c))
+    
+    v_do  <- ifelse(is.na(mdf$DO_mg), "-", paste0(fmt_num(mdf$DO_mg)," mg/L"))
+    t_do  <- ifelse(is.na(mdf$DO_mg), "", paste0(" • ", kid_o))
+    
+    v_n   <- ifelse(is.na(mdf$N_TOTAL), "-", paste0(fmt_num(mdf$N_TOTAL)," µg/L"))
+    t_n   <- ifelse(is.na(mdf$N_TOTAL), "", paste0(" • ", kid_n))
+    
+    v_t   <- ifelse(is.na(mdf$Temperature), "-", paste0(fmt_num(mdf$Temperature)," °C"))
+    t_t   <- ifelse(is.na(mdf$Temperature), "", paste0(" • ", kid_t))
+    
     mdf$popup_txt <- paste0(
       "<b>", mdf$site_name_short, "</b> · <i>", mdf$region, "</i><br/>",
       status, " • <i>", when_line, "</i><br/>",
-      dot(mdf$a)," Algae: ", fmt(mdf$CHL_A,"µg/L"), " • ", kid_a,
-      "<br/>", dot(mdf$c)," Clarity: ", fmt(mdf$Turb,"NTU"), " • ", kid_c,
-      "<br/>", dot(mdf$o)," Oxygen: ", fmt(mdf$DO_mg,"mg/L"), " • ", kid_o,
-      "<br/>", dot(mdf$n)," Nutrients: ", fmt(mdf$N_TOTAL,"µg/L"), " • ", kid_n,
-      "<br/>", dot(mdf$t)," Temp: ", fmt(mdf$Temperature,"°C"), " • ", kid_t
+      dot(mdf$a)," Algae: ", v_chl, t_chl,
+      "<br/>", dot(mdf$c)," Clarity: ", v_trb, t_trb,
+      "<br/>", dot(mdf$o)," Oxygen: ", v_do,  t_do,
+      "<br/>", dot(mdf$n)," Nutrients: ", v_n, t_n,
+      "<br/>", dot(mdf$t)," Temp: ", v_t, t_t
     )
     mdf$label_txt <- paste0("[", mdf$region, "] ", mdf$site_name_short, " : ", unname(code_to_label[mdf$overall]))
     mdf
   })
   
-  # region polygons
+  # region polys
   region_polys <- reactive({
     dat <- all_df[all_df$date <= as.Date(rv$date_sel),]
     res <- list(); cents <- list()
@@ -718,7 +749,7 @@ server <- function(input, output, session){
       updateSelectInput(session, "region", selected = ifelse(is.null(reg), "All regions", reg))
       sites <- if (is.null(reg) || reg=="All regions") all_sites else sort(unique(all_df$site_name_short[all_df$region==reg]))
       updateSelectInput(session, "site", choices=c("All sites", sites), selected=id)
-      set_hint("Nice choice - pick a day, then tap OK"); scroll_flash("pickCard")
+      set_hint("Good pick - choose a day, then tap OK"); scroll_flash("pickCard")
     }
   })
   
@@ -743,7 +774,7 @@ server <- function(input, output, session){
     }
   }, ignoreInit = TRUE)
   
-  # -------- map --------
+  # map
   output$map <- renderLeaflet({
     leaflet(options = leafletOptions(minZoom=7, maxZoom=16)) %>%
       addMapPane("regions", zIndex = 410) %>%
@@ -864,23 +895,32 @@ server <- function(input, output, session){
     round(p*100)
   }
   
+  # build story, hiding any metric line that has NA
   make_story <- function(row, prev, bay_df){
-    # ranks
-    p_clear <- pct_rank(row$Turb, bay_df$Turb, high_good=FALSE)
-    p_oxy   <- pct_rank(row$DO_mg, bay_df$DO_mg, high_good=TRUE)
-    p_chl   <- pct_rank(row$CHL_A, bay_df$CHL_A, high_good=FALSE)
-    p_temp  <- pct_rank(row$Temperature, bay_df$Temperature, high_good=TRUE)
+    codes <- list(a = code_algae(row$CHL_A), c = code_clarity(row$Turb), o = code_oxygen(row$DO_mg),
+                  n = code_nutr(row$N_TOTAL), t = code_temp(row$Temperature))
+    oc <- overall_code(codes$a,codes$c,codes$o,codes$n,codes$t)
+    
+    opener <- switch(oc,
+                     "green" = "The bay feels friendly and calm - a good place for splashes and shell hunts",
+                     "amber" = "The bay is lively - step carefully and look for the clearest spots to play",
+                     "red"   = "The bay is resting now - best for sandcastles and wave watching"
+    )
+    
+    pct_rank_safe <- function(val, vec, high_good){
+      if (is.na(val)) return(NA_real_)
+      vec <- vec[!is.na(vec)]
+      if (!length(vec)) return(NA_real_)
+      p <- mean(if (high_good) vec <= val else vec >= val)
+      round(p*100)
+    }
+    p_clear <- pct_rank_safe(row$Turb, bay_df$Turb, high_good=FALSE)  # lower is better
+    p_oxy   <- pct_rank_safe(row$DO_mg, bay_df$DO_mg, high_good=TRUE)
+    p_chl   <- pct_rank_safe(row$CHL_A, bay_df$CHL_A, high_good=FALSE)
+    p_temp  <- pct_rank_safe(row$Temperature, bay_df$Temperature, high_good=TRUE)
     clarity_score <- ifelse(is.na(p_clear), NA_real_, 100 - p_clear)
     oxygen_score  <- p_oxy
     algae_score   <- ifelse(is.na(p_chl), NA_real_, 100 - p_chl)
-    
-    temp_line <- if (!is.na(p_temp)) {
-      if (p_temp >= 85) "One of the warmer spots"
-      else if (p_temp >= 70) "Warmer than most"
-      else if (p_temp >= 40 && p_temp <= 60) "About mid temperature"
-      else if (p_temp >= 25) "On the cooler side"
-      else "One of the cooler spots"
-    } else NULL
     
     clarity_line <- if (!is.na(clarity_score)) {
       if (clarity_score >= 85) "One of the clearest"
@@ -896,6 +936,13 @@ server <- function(input, output, session){
       else if (oxygen_score >= 25) "Fewer bubbles than most"
       else "Very low bubbles"
     } else NULL
+    temp_line <- if (!is.na(p_temp)) {
+      if (p_temp >= 85) "One of the warmer spots"
+      else if (p_temp >= 70) "Warmer than most"
+      else if (p_temp >= 40 && p_temp <= 60) "About mid temperature"
+      else if (p_temp >= 25) "On the cooler side"
+      else "One of the cooler spots"
+    } else NULL
     algae_line <- if (!is.na(algae_score)) {
       if (algae_score >= 85) "Less algae than almost anywhere"
       else if (algae_score >= 70) "Less algae than most"
@@ -904,23 +951,7 @@ server <- function(input, output, session){
       else "Algae is high"
     } else NULL
     
-    codes <- list(a = code_algae(row$CHL_A), c = code_clarity(row$Turb), o = code_oxygen(row$DO_mg),
-                  n = code_nutr(row$N_TOTAL), t = code_temp(row$Temperature))
-    oc <- overall_code(codes$a,codes$c,codes$o,codes$n,codes$t)
-    
-    opener <- switch(oc,
-                     "green" = "The bay feels friendly and calm - a good place for splashes and shell hunts",
-                     "amber" = "The bay is lively today - step carefully and look for the clearest spots to play",
-                     "red"   = "The bay is resting now - best for sandcastles and wave watching"
-    )
-    
-    # rotating animal line
-    friend_line <- pick_rotating(
-      OCEAN_FRIENDS,
-      key = paste0("friends_", row$site_name_short, "_", rv$date_sel),
-      period_seconds = 15
-    )
-    
+    # trend arrows
     trend <- c()
     if (!is.null(prev)){
       add <- function(label, now, old, good_low=NA){
@@ -940,7 +971,7 @@ server <- function(input, output, session){
       ))
     }
     
-    # activity pool for "Play by the Bay" line
+    # activity pick based on clarity/temp
     act_pool <- TRY_THIS_BASE
     if (!is.na(row$Turb)){
       if (row$Turb <= 2) act_pool <- c(act_pool, TRY_THIS_CLEAR) else if (row$Turb > 5) act_pool <- c(act_pool, TRY_THIS_CLOUDY)
@@ -950,24 +981,33 @@ server <- function(input, output, session){
     }
     act_pick <- pick_rotating(act_pool, key = paste0(row$site_name_short, "_", row$date, "_try"), period_seconds = 15)
     
-    vs_lines <- Filter(Negate(is.null), c(clarity_line, oxygen_line, algae_line, temp_line))
+    # helper to build metric paragraph only if value exists
+    metric_line <- function(icon, label, value, unit, detail_text){
+      if (is.na(value)) return(NULL)
+      paste0("<p>", icon, " <span class='metric'>", label, "</span> ",
+             fmt_num(value), if (nzchar(unit)) paste0(" ", unit) else "", " - ", detail_text, ".</p>")
+    }
+    
     parts <- c(
       "<p><b>Play by the Bay</b></p>",
-      "<p>", opener, "</p>",
-      "<p>", friend_line, "</p>",
-      "<p class='muted'>This page turns water checks into a simple story - clarity for seeing, bubbles for breathing, algae for tiny plants, nutrients for food, and temperature for comfort</p>",
-      "<p>👀 <span class='metric'>Clarity</span> ", fmt(row$Turb,"NTU"), " - ",
-      switch(codes$c, green="looks like clean glass", amber="a little cloudy like frosted glass", red="very cloudy like stirred sand"), ".</p>",
-      "<p>🫧 <span class='metric'>Oxygen</span> ", fmt(row$DO_mg,"mg/L"), " - ",
-      switch(codes$o, green="bubbles everywhere - fish feel strong", amber="fewer bubbles right now", red="low bubbles - fish get tired"), ".</p>",
-      "<p>🌱 <span class='metric'>Algae</span> ", fmt(row$CHL_A,"µg/L"), " - ", kidline("Algal Bloom", codes$a), ".</p>",
-      "<p>🌡️ <span class='metric'>Temperature</span> ", fmt(row$Temperature,"°C"), " - ", kidline("Temperature", codes$t), ".</p>"
+      "<p>", opener, "</p>"
     )
+    parts <- c(parts,
+               metric_line("👀","Clarity",      row$Turb,        "NTU",
+                           switch(codes$c, green="looks like clean glass", amber="a little cloudy like frosted glass", red="very cloudy like stirred sand")),
+               metric_line("🫧","Oxygen",       row$DO_mg,       "mg/L",
+                           switch(codes$o, green="bubbles everywhere - fish feel strong", amber="fewer bubbles right now", red="low bubbles - fish get tired")),
+               metric_line("🌱","Algae",        row$CHL_A,       "µg/L", kidline("Algal Bloom", codes$a)),
+               metric_line("🌡️","Temperature", row$Temperature, "°C",   kidline("Temperature", codes$t))
+    )
+    
+    vs_lines <- Filter(Negate(is.null), c(clarity_line, oxygen_line, algae_line, temp_line))
     if (length(vs_lines)) parts <- c(parts, "<p><b>Vs nearby</b><br/>", paste(vs_lines, collapse = " • "), "</p>")
     if (length(trend))   parts <- c(parts, "<p><b>Since last test</b><br/>", paste(trend,   collapse = " • "), "</p>")
-    parts <- c(parts, "<p><b>Play by the Bay idea</b><br/>", act_pick, ".</p>")
+    if (!is.null(act_pick)) parts <- c(parts, "<p><b>Play by the Bay idea</b><br/>", act_pick, ".</p>")
     if (oc=="green") parts <- c(parts, "<p><b>Safe spot</b> 🎉 confetti shows when you tap OK</p>")
-    HTML(do.call(paste0, as.list(parts)))
+    
+    HTML(do.call(paste0, as.list(Filter(Negate(is.null), parts))))
   }
   
   output$story_block <- renderUI({
@@ -987,7 +1027,8 @@ server <- function(input, output, session){
     } else {
       sub <- all_df %>% dplyr::filter(site_name_short==rv$site_sel, date <= as.Date(rv$date_sel))
       validate(need(nrow(sub)>0, "No data"))
-      row <- sub[order(sub$date, decreasing=TRUE), ]; idx <- which(!is.na(row$Temperature)); if (length(idx)) row <- row[idx[1], , drop=FALSE] else row <- row[1, , drop=FALSE]
+      row <- sub[order(sub$date, decreasing=TRUE), ]
+      idx <- which(!is.na(row$Temperature)); if (length(idx)) row <- row[idx[1], , drop=FALSE] else row <- row[1, , drop=FALSE]
       make_story(row, prev_row(row$site_name_short[1], row$date[1]), map_data())
     }
   })
@@ -998,8 +1039,8 @@ server <- function(input, output, session){
     regline <- if (!is.null(rv$region_sel) && rv$region_sel != "All regions") paste0("In ", rv$region_sel, ": ") else "All regions: "
     top_txt <- if (nrow(mdf) > 0){
       best <- mdf %>% dplyr::arrange(match(overall, c("green","amber","red")), dplyr::desc(sample_date)) %>% head(3)
-      if (nrow(best)>0) paste(best$site_name_short, collapse=" • ") else "—"
-    } else "—"
+      if (nrow(best)>0) paste(best$site_name_short, collapse=" • ") else "-"
+    } else "-"
     HTML(paste0(regline, top_txt))
   })
   
@@ -1021,6 +1062,12 @@ server <- function(input, output, session){
     }
     try_pick <- pick_rotating(trys, key=paste0(rv$region_sel, "_", rv$date_sel, "_try"), period_seconds = 15)
     HTML(paste0(try_pick, "."))
+  })
+  
+  output$bits_friend <- renderUI({
+    tick15()
+    friend <- pick_rotating(OCEAN_FRIENDS, key=paste0(rv$region_sel, "_", rv$date_sel, "_friend"), period_seconds = 15)
+    HTML(friend)
   })
 }
 
