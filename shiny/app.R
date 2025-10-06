@@ -1,4 +1,4 @@
-# ====================== app.R (Kids Water Guide - 3 Regions) ======================
+# ====================== app.R (Kids Water Guide - Seaweeds + Right Calendar Icon) ======================
 suppressWarnings({
   app_dir <- tryCatch({
     if (requireNamespace("rstudioapi", quietly = TRUE) && rstudioapi::isAvailable())
@@ -9,7 +9,7 @@ suppressWarnings({
 # ---- data files (adjust paths if needed) ----
 file_ppb <- file.path(app_dir, "1984_07-2024_06_Port_Phillip_Bay_Water_quality_data.xlsx")
 file_wp  <- file.path(app_dir, "1990_02-2024_06_Western_Port_Water_quality_data.xlsx")
-file_gl  <- file.path(app_dir, "1990_01-2024_06_Gippsland_Lakes_Water_quality_data_coord.xlsx")  
+file_gl  <- file.path(app_dir, "1990_01-2024_06_Gippsland_Lakes_Water_quality_data_coord.xlsx")
 
 for (p in c(file_ppb, file_wp, file_gl)) if (!file.exists(p)) stop("File not found: ", p)
 
@@ -79,7 +79,7 @@ TRY_THIS_CLOUDY <- c("Foam detective - watch bubbles pop and name the shapes","C
 TRY_THIS_WARM   <- c("Toe test - count to ten with toes in the water","Sand bakery - make a warm sand cupcake with a shell on top")
 TRY_THIS_COOL   <- c("Skip and splash - ten quick jumps then warm towel time","Stone stacker - build a tiny cool-stone tower")
 
-# Ocean friends for Bits slide (includes Shearwaters)
+# Ocean friends for Bits slide
 OCEAN_FRIENDS <- c(
   "🐬 Dolphins leap outside the heads - racing the waves",
   "🐋 Whales pass by in deep seasons - singing low songs",
@@ -202,10 +202,10 @@ read_clean <- function(path, region_name){
 # read three
 ppb <- read_clean(file_ppb, "Port Phillip Bay")
 wp  <- read_clean(file_wp,  "Western Port")
-gl  <- read_clean(file_gl,  "Gippsland Lakes")   # NEW
+gl  <- read_clean(file_gl,  "Gippsland Lakes")
 
 # union & globals
-all_df <- dplyr::bind_rows(ppb, wp, gl)  # include NEW region
+all_df <- dplyr::bind_rows(ppb, wp, gl)
 if (nrow(all_df) == 0) stop("No rows after cleaning - datasets lacked coordinates.")
 all_regions <- c("All regions", sort(unique(all_df$region)))
 all_sites   <- sort(unique(all_df$site_name_short))
@@ -218,7 +218,7 @@ code_to_label <- c(green="Safe", amber="Caution", red="Rest")
 region_fills  <- c(
   "Port Phillip Bay"="#d4f6ff",
   "Western Port"    ="#e5ffd9",
-  "Gippsland Lakes" ="#ffe6f2"  # NEW soft pink
+  "Gippsland Lakes" ="#ffe6f2"
 )
 region_border <- "#222"
 code_algae   <- function(x) ifelse(is.na(x),"amber", ifelse(x <  2,"green", ifelse(x <=  5,"amber","red")))
@@ -262,7 +262,7 @@ theme <- bslib::bs_theme(
   heading_font = bslib::font_google("Baloo 2")
 )
 
-# ---------- UI (Navbar kept, no tab item) ----------
+# ---------- UI ----------
 ui <- bslib::page_navbar(
   title = "Kids’ Water Guide - Port Phillip Bay, Western Port & Gippsland Lakes",
   theme = theme,
@@ -278,7 +278,7 @@ body{
     radial-gradient(900px 700px at 50% 120%, var(--sea3), transparent 60%),
     radial-gradient(800px 500px at 20% 100%, var(--sea4), transparent 60%);
 }
-.container-lg{ max_width:1280px; max-width:1280px; }
+.container-lg{ max-width:1280px; }
 .top-grid{ display:grid; grid-template-columns: 1.3fr 1fr; gap:16px; align-items:start; }
 @media (max-width:1200px){ .top-grid{ grid-template-columns:1fr; } }
 #map{ height: 68vh !important; }
@@ -293,7 +293,7 @@ body{
 }
 .big-step{ font-weight:800; }
 
-.map-legend{ background:#ffffffee; border:2px solid #000; border-radius:12px; padding:8px 10px; font-weight:800; }
+.map-legend{ background:#ffffffee; border:2px solid #000; border-radius:12px; padding:8px 10px; font-weight:800; z-index:6; }
 .mini-dot{ width:12px;height:12px;border-radius:50%;display:inline-block;border:2px solid #000;margin-right:6px }
 
 .story p{ margin:0 0 8px 0; }
@@ -364,7 +364,7 @@ details.quickhelp > summary::-webkit-details-marker{ display:none; }
 details.quickhelp > summary:before{ content:"▸"; margin-right:8px; font-weight:900; }
 details.quickhelp[open] > summary:before{ content:"▾"; }
 
-/* Bubbles background */
+/* Bubbles background (behind everything) */
 .ocean-bubbles{ position:fixed; inset:0; pointer-events:none; z-index:0; }
 .ocean-bubbles span{
   position:absolute; border-radius:50%; opacity:.9;
@@ -373,6 +373,72 @@ details.quickhelp[open] > summary:before{ content:"▾"; }
   filter: drop-shadow(0 0 8px rgba(255,255,255,.7));
 }
 @keyframes rise{ from{ transform:translateY(30px) scale(.9) } to{ transform:translateY(-120vh) scale(1.1) } }
+
+/* Horizontal sea animals (bottom quarter), behind cards/map */
+.ocean-critters{
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+}
+.ocean-critters span{
+  position:absolute; left:-12%;
+  bottom:8vh;
+  font-size:2rem; opacity:.9; filter: drop-shadow(0 2px 2px rgba(0,0,0,.08));
+  animation: swimHoriz linear infinite;
+}
+@keyframes swimHoriz{
+  0%   { transform: translateX(0) scaleX(1); }
+  45%  { transform: translateX(115vw) scaleX(1); }
+  50%  { transform: translateX(115vw) scaleX(-1); }
+  95%  { transform: translateX(0) scaleX(-1); }
+  100% { transform: translateX(0) scaleX(-1); }
+}
+
+/* NEW: Seaweeds band at bottom (gently sway in place, behind UI) */
+.ocean-seaweeds{
+  position:fixed; left:0; right:0; bottom:0;
+  height:16vh; pointer-events:none; z-index:0;
+  display:flex; align-items:flex-end; justify-content:space-between;
+  padding:0 2vw 0.8vh;
+  opacity:.95;
+}
+.weed{
+  --h: 12vh;
+  width:1.1vw; min-width:6px; max-width:14px;
+  height:var(--h);
+  background: linear-gradient(180deg, #1fbf74, #0f8d58);
+  border-radius:12px 12px 0 0;
+  position:relative;
+  transform-origin:bottom center;
+  animation: sway 5.6s ease-in-out infinite alternate;
+  filter: drop-shadow(0 3px 2px rgba(0,0,0,.08));
+}
+.weed:before, .weed:after{
+  content:""; position:absolute; bottom:36%;
+  width:80%; height:36%;
+  background:inherit; border-radius:12px 12px 0 0; opacity:.88;
+}
+.weed:before{ left:-55%; transform:rotate(-22deg); }
+.weed:after{  right:-55%; transform:rotate(22deg); }
+.weed.s2{ --h:10vh; animation-duration:6.4s; }
+.weed.s3{ --h:8.5vh; animation-duration:6.9s; }
+.weed.s4{ --h:11vh; animation-duration:6.1s; }
+@keyframes sway{
+  0% { transform: rotate(-2.4deg); }
+  100%{ transform: rotate(2.4deg); }
+}
+
+/* Keep UI above all background layers */
+.navbar, .container-lg, .card-cute, .insights-kids, .map-legend, .leaflet-container, .leaflet-control {
+  position:relative; z-index:5;
+}
+
+/* Date input with calendar icon on the RIGHT */
+.date-wrap{ position:relative; }
+.date-wrap .calendar-ico{
+  position:absolute; right:10px; top:50%; transform:translateY(-50%);
+  font-size:1.15rem; opacity:.85; cursor:pointer; pointer-events:auto;
+}
+/* space on the right so text doesn’t collide with icon */
+div#pick_date input.form-control{ padding-right:2rem; }
 
 /* misc */
 .flash{ animation: flash 1.2s ease-in-out 1; }
@@ -402,6 +468,28 @@ details.quickhelp[open] > summary:before{ content:"▾"; }
     }
     setTimeout(()=>{ box.remove(); }, durationMs);
   }
+
+  // placeholder for date input (blank until picked)
+  function setDatePlaceholder(){
+    var el = document.querySelector("div#pick_date input.form-control");
+    if(el){ el.setAttribute("placeholder","Pick a day"); el.value = el.value || ""; }
+  }
+  document.addEventListener("DOMContentLoaded", setDatePlaceholder);
+  setTimeout(setDatePlaceholder, 0);
+
+  // clicking calendar icon opens the date picker
+  function hookCalendarIcon(){
+    var ico = document.querySelector(".date-wrap .calendar-ico");
+    var input = document.querySelector("div#pick_date input.form-control");
+    if(ico && input){
+      ico.addEventListener("click", function(){
+        input.focus(); input.click();
+      });
+    }
+  }
+  document.addEventListener("DOMContentLoaded", hookCalendarIcon);
+  setTimeout(hookCalendarIcon, 0);
+
   // Shiny message handlers
   window.Shiny && Shiny.addCustomMessageHandler("scrollTo", function(id){
     var el = document.getElementById(id);
@@ -486,24 +574,44 @@ details.quickhelp[open] > summary:before{ content:"▾"; }
 })();
       '))
     ),
+    # --- Background layers (BEHIND all UI) ---
     # bubbles
     tags$div(class="ocean-bubbles",
              lapply(1:48, function(i){
                left <- sample(2:98,1); delay <- runif(1,0,10); size <- sample(12:26,1)
                tags$span(style=sprintf("left:%d%%; bottom:-20px; width:%dpx; height:%dpx; animation-delay:%.2fs;", left,size,size,delay))
              })
+    ),
+    # horizontal critters (bottom quarter) — behind UI
+    tags$div(class="ocean-critters",
+             lapply(1:12, function(i){
+               emojis <- c("🐬","🐢","🐠","🦀","🐋","🐡","🐙","🦑")
+               emoji <- sample(emojis,1)
+               bottom <- sample(4:24,1)
+               dur <- runif(1, 18, 34)
+               delay <- runif(1, 0, 18)
+               size <- runif(1, 1.6, 2.6)
+               tags$span(style=sprintf("bottom:%dvh; font-size:%.1frem; animation-duration:%.1fs; animation-delay:%.1fs;", bottom,size,dur,delay), emoji)
+             })
+    ),
+    # NEW: seaweeds band (replaces coral reef), swaying in place at bottom (behind UI)
+    tags$div(class="ocean-seaweeds",
+             lapply(1:18, function(i){
+               cls <- sample(c("weed","weed s2","weed s3","weed s4"), 1)
+               tags$div(class=cls)
+             })
     )
   ),
   
-  # ---------- BODY CONTENT (formerly inside nav_panel("Explore")) ----------
+  # -------- MAIN PAGE ----------
   div(class="container-lg pt-2",
-      # Intro card
+      # Intro card (top card)
       div(class="card-cute mb-2",
           tags$div(style="font-weight:900; font-size:1.35rem;", "Play by the Bay - Pick a Friendly Splash Spot"),
           HTML("
-          <p>Welcome, Ocean Heroes. These bays are the homeland of ocean friends.</p>
-          <p>Pick a region, choose a beach, and set a day. We will tell the water story for that place - how clear it looks, how many bubbles help animals breathe, how many tiny plants are growing, how much food is floating, and how warm it feels.</p>
-        ")
+        <p>Welcome, Ocean Heroes. These bays are the homeland of ocean friends.</p>
+        <p>Pick a region, choose a beach, and set a day. We will tell the water story for that place - how clear it looks, how many bubbles help animals breathe, how many tiny plants are growing, how much food is floating, and how warm it feels.</p>
+      ")
       ),
       
       # Main two-column layout
@@ -518,7 +626,6 @@ details.quickhelp[open] > summary:before{ content:"▾"; }
                         tags$div(id="insightsCarousel", class="snap-wrap",
                                  tags$button(type="button", class="snap-left",  `aria-label`="Previous"),
                                  tags$div(class="snap-track",
-                                          # Slide 1: Top picks
                                           tags$div(class="snap-slide",
                                                    tags$div(class="slide-title","🏆 Top Picks"),
                                                    tags$div(class="slide-body",
@@ -526,7 +633,6 @@ details.quickhelp[open] > summary:before{ content:"▾"; }
                                                             span(id="top_picks", class="inline-text", uiOutput("top_picks", inline=TRUE))
                                                    )
                                           ),
-                                          # Slide 2: Ocean Bits
                                           tags$div(class="snap-slide",
                                                    tags$div(class="slide-title d-flex items-center justify-between",
                                                             HTML("🧠 + 🎒 Ocean Bits"),
@@ -547,7 +653,6 @@ details.quickhelp[open] > summary:before{ content:"▾"; }
                                                             )
                                                    )
                                           ),
-                                          # Slide 3: Tip
                                           tags$div(class="snap-slide",
                                                    tags$div(class="slide-title","🧭 Tip"),
                                                    tags$div(class="slide-body",
@@ -572,8 +677,14 @@ details.quickhelp[open] > summary:before{ content:"▾"; }
                           selectInput("region", NULL, choices=all_regions, selected="All regions", width="100%"),
                           div(class="big-step mt-2","Pick a beach"),
                           selectInput("site", NULL, choices=c("All sites", all_sites), selected="All sites", width="100%"),
-                          div(class="big-step mt-2","Pick a day"),
-                          dateInput("date", NULL, value=max_d, min=min_d, max=max_d, width="100%"),
+                          div(class="big-step mt-2 d-flex align-items-center justify-between",
+                              span("Pick a day"), NULL
+                          ),
+                          div(class="date-wrap",
+                              # NOTE: value = NA leaves it blank; placeholder set via JS above
+                              dateInput("pick_date", NULL, value = NA, min=min_d, max=max_d, width="100%"),
+                              span(class="calendar-ico","📅")
+                          ),
                           div(class="mt-3 d-flex gap-2",
                               actionButton("apply", "OK", class="btn btn-primary"),
                               actionButton("reset", "Reset", class="btn btn-outline-secondary")
@@ -623,7 +734,9 @@ server <- function(input, output, session){
     if (input$site=="All sites") set_hint("Pick a day - or tap a pin")
     else set_hint("Good pick - choose a day, then tap OK")
   }, ignoreInit = TRUE)
-  observeEvent(input$date, { set_hint("Looks good - tap OK to show the story") }, ignoreInit = TRUE)
+  
+  # When date changes, update hint
+  observeEvent(input$pick_date, { set_hint("Looks good - tap OK to show the story") }, ignoreInit = TRUE)
   
   # prefer row with Temperature, else latest
   pick_latest_with_temp <- function(tbl){
@@ -653,7 +766,7 @@ server <- function(input, output, session){
         color = unname(code_to_color[overall])
       )
     
-    dot <- function(code){ sprintf("<span class='mini-dot' style='background:%s'></span>", unname(code_to_color[code])) }
+    dot <- function(code){ sprintf("<span class=\"mini-dot\" style=\"background:%s\"></span>", unname(code_to_color[code])) }
     status <- ifelse(mdf$overall=="green","Splash time",
                      ifelse(mdf$overall=="amber","Step carefully","Better for sandcastles"))
     when_line <- ifelse(as.Date(rv$date_sel) > mdf$sample_date,
@@ -665,19 +778,14 @@ server <- function(input, output, session){
     kid_n <- vapply(mdf$n, function(cd) kidline("Nutrients", cd),   character(1))
     kid_t <- vapply(mdf$t, function(cd) kidline("Temperature", cd), character(1))
     
-    # value strings; if NA -> "-" and NO kid text after it
     v_chl <- ifelse(is.na(mdf$CHL_A), "-", paste0(fmt_num(mdf$CHL_A)," µg/L"))
     t_chl <- ifelse(is.na(mdf$CHL_A), "", paste0(" • ", kid_a))
-    
     v_trb <- ifelse(is.na(mdf$Turb), "-", paste0(fmt_num(mdf$Turb)," NTU"))
     t_trb <- ifelse(is.na(mdf$Turb), "", paste0(" • ", kid_c))
-    
     v_do  <- ifelse(is.na(mdf$DO_mg), "-", paste0(fmt_num(mdf$DO_mg)," mg/L"))
     t_do  <- ifelse(is.na(mdf$DO_mg), "", paste0(" • ", kid_o))
-    
     v_n   <- ifelse(is.na(mdf$N_TOTAL), "-", paste0(fmt_num(mdf$N_TOTAL)," µg/L"))
     t_n   <- ifelse(is.na(mdf$N_TOTAL), "", paste0(" • ", kid_n))
-    
     v_t   <- ifelse(is.na(mdf$Temperature), "-", paste0(fmt_num(mdf$Temperature)," °C"))
     t_t   <- ifelse(is.na(mdf$Temperature), "", paste0(" • ", kid_t))
     
@@ -720,7 +828,7 @@ server <- function(input, output, session){
   observeEvent(input$apply, {
     rv$region_sel <- input$region
     rv$site_sel   <- input$site
-    rv$date_sel   <- as.Date(input$date)
+    rv$date_sel   <- if (is.na(input$pick_date) || is.null(input$pick_date)) max_d else as.Date(input$pick_date)
     scroll_flash("storyCard")
     if (!is.null(rv$site_sel) && rv$site_sel != "All sites") {
       sub <- all_df %>% dplyr::filter(site_name_short==rv$site_sel, date <= as.Date(rv$date_sel))
@@ -736,7 +844,7 @@ server <- function(input, output, session){
   observeEvent(input$reset, {
     updateSelectInput(session, "region", selected="All regions")
     updateSelectInput(session, "site",   choices=c("All sites", all_sites), selected="All sites")
-    updateDateInput(session, "date", value=max_d)
+    updateDateInput(session, "pick_date", value = NA, min = min_d, max = max_d)
     rv$region_sel <- "All regions"; rv$site_sel <- "All sites"; rv$date_sel <- max_d
     set_hint("Start again - pick a region, beach, day and then click OK"); scroll_flash("pickCard")
   })
@@ -774,13 +882,16 @@ server <- function(input, output, session){
     }
   }, ignoreInit = TRUE)
   
-  # map
+  # -------- MAP with base + labels overlay --------
   output$map <- renderLeaflet({
     leaflet(options = leafletOptions(minZoom=7, maxZoom=16)) %>%
+      addMapPane("basemap", zIndex = 200) %>%
       addMapPane("regions", zIndex = 410) %>%
       addMapPane("region-labels", zIndex = 420) %>%
+      addMapPane("labels", zIndex = 600) %>%
       addMapPane("site-markers", zIndex = 630) %>%
-      addProviderTiles(providers$Esri.OceanBasemap)
+      addProviderTiles(providers$Esri.OceanBasemap, options = providerTileOptions(pane = "basemap")) %>%
+      addProviderTiles(providers$CartoDB.PositronOnlyLabels, options = providerTileOptions(pane = "labels", opacity = 0.95))
   })
   
   add_dynamic_legends <- function(proxy, regions_present){
