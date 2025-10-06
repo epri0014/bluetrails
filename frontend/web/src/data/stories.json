@@ -1,0 +1,62 @@
+[
+  {
+    "id": "turtle-rescue",
+    "title": "Turtle Rescue",
+    "mascot": "Turtle",
+    "accent": "#23c18a",
+    "duration": "~1 min",
+    "age": "6+",
+    "cover": "/assets/img/placeholder1.png",
+    "pages": [
+      {
+        "img": "/assets/img/turtle1.png",
+        "text": "A plastic bag floats like a jellyfish.",
+        "tip": "Why it’s tricky: turtles think bags look like jellyfish snacks.",
+        "speech": "Oh no! That bag looks just like my jellyfish lunch!"
+      },
+      {
+        "img": "/assets/img/turtle2.png",
+        "text": "Turtle almost eats it—danger!",
+        "tip": "Best choice: reusable bags. Say no to single-use plastic.",
+        "speech": "Yikes! I almost ate it! Plastic hurts my tummy!"
+      },
+      {
+        "img": "/assets/img/turtle3.png",
+        "text": "Friends clean the beach and save Turtle.",
+        "tip": "Beach rule: take 3 pieces of rubbish before you leave.",
+        "speech": "Thank you, friends! Let’s keep the beach clean together!"
+      }
+    ],
+    "takeaway": "Plastic hurts turtles—use reusable bags!"
+  },
+  {
+    "id": "penguin-drain",
+    "title": "Penguin & the Drain",
+    "mascot": "Penguin",
+    "accent": "#25c5d6",
+    "duration": "~1 min",
+    "age": "6+",
+    "cover": "/assets/img/placeholder2.png",
+    "pages": [
+      {
+        "img": "/assets/img/p1.png",
+        "text": "Litter washes into drains… then the sea.",
+        "tip": "Drains lead to the bay. Only rain should go down the drain!",
+        "speech": "Oh no! Trash in the drain goes straight to my home!"
+      },
+      {
+        "img": "/assets/img/p2.png",
+        "text": "Penguin teaches how to keep drains clean.",
+        "tip": "Sweep leaves, bin rubbish, and use strainers where you can.",
+        "speech": "Let’s keep drains clean—only rain belongs here!"
+      },
+      {
+        "img": "/assets/img/p3.png",
+        "text": "Everyone helps. The bay is happier!",
+        "tip": "Tell a friend one tip today. Small teams make big waves.",
+        "speech": "Yay! Teamwork makes our bay bright and happy!"
+      }
+    ],
+    "takeaway": "Only rain in the drain—keep streets clean!"
+  }
+]
