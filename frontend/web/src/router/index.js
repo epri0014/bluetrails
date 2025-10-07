@@ -4,6 +4,9 @@ import AnimalsGrid from '../views/AnimalsGrid.vue'
 import WaterView from '../views/WaterView.vue'
 import Game from '../views/Game.vue'
 import QuizView from '../views/QuizView.vue'
+import StoriesLibrary from '../views/StoriesLibrary.vue';
+import StoryReader from '../views/StoryReader.vue';
+import StoryFinish from '../views/StoryFinish.vue';
 
 const routes = [
   { path: '/', name: 'home', component: Home },
@@ -11,7 +14,10 @@ const routes = [
   { path: '/water', name: 'water', component: WaterView },
   { path: '/game', name: 'game', component: Game },
   { path: '/quiz', name: 'quiz', component: QuizView },
-  { path: '/:pathMatch(.*)*', redirect: '/' }
+  { path: '/stories', component: StoriesLibrary },
+  { path: '/stories/:id', component: StoryReader },
+  { path: '/stories/:id/finish', component: StoryFinish },
+  { path: '/:catchAll(.*)', redirect: '/' },
 ]
 
 export default createRouter({
