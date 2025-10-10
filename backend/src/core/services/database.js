@@ -139,3 +139,30 @@ export const getQuestionCategories = async (locale = 'en') => {
 
   return result;
 };
+
+// 追加在文件末尾 —— services/database.js
+export const getHabitatsByAnimal = async (slug, locale = 'en') => {
+  // 先按请求的 locale 查
+  let result = await supabase
+    .from('v_animal_sites')         // ← 换成你的真实视图/表名
+    .select('*')
+    .eq('slug', slug)
+    .eq('locale', locale)
+    .order('site_order');           // ← 如无该字段可去掉
+
+  // 若没数据且 locale 不是 en，则回退到英文
+  if ((!result.data || result.data.length === 0) && locale !== 'en') {
+    result = await supabase
+      .from('v_animal_sites')       // ← 同上
+      .select('*')
+      .eq('slug', slug)
+      .eq('locale', 'en')
+      .order('site_order');         // ← 同上
+
+    if (result.data && result.data.length > 0) {
+      result.fellBackToEn = true;
+    }
+  }
+
+  return result;
+};

@@ -18,6 +18,9 @@ const routes = [
   { path: '/stories/:id', component: StoryReader },
   { path: '/stories/:id/finish', component: StoryFinish },
   { path: '/:catchAll(.*)', redirect: '/' },
+  { path: '/choose', name: 'ChooseAnimal', component: () => import('../views/ChooseHero.vue'),},
+  { path: '/choose/:slug', name: 'TestHabitatChoose', component: () => import('@/views/TestHabitatChoose.vue')}
+
 ]
 
 export default createRouter({

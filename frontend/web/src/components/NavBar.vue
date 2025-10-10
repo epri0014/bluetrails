@@ -79,6 +79,12 @@
           </svg>
           <span>Ocean Adventures</span>
         </RouterLink>
+                <RouterLink class="link" to="/choose" aria-label="Be an Ocean Hero">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm-1 5h2v5h-2zm1 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+          </svg>
+          <span>Be an Ocean Hero</span>
+        </RouterLink>
       </nav>
 
       <!-- Mobile menu button -->
@@ -131,6 +137,7 @@
           </svg>
           <span>Ocean Adventures</span>
         </RouterLink>
+        <!-- Be an Ocean Hero -->
       </nav>
     </div>
   </header>

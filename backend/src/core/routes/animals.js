@@ -83,3 +83,35 @@ export const handleGetAnimalBySlug = async (request, slug) => {
     );
   }
 };
+
+// backend/src/core/routes/animals.js
+export const handleGetHabitatsByAnimal = async (request, slug) => {
+  try {
+    const url = new URL(request.url)
+    const locale = url.searchParams.get('locale') || 'en'
+
+    console.log('[sites] hit:', { slug, locale })
+    console.log('[env] SUPABASE_URL=', globalThis.SUPABASE_URL, 'key?', !!globalThis.SUPABASE_KEY)
+
+    const result = await getHabitatsByAnimal(slug, locale)
+    console.log('[sites] supabase result:', { error: result?.error, count: result?.data?.length })
+
+    const { data, error } = result
+    if (error) {
+      console.error('[sites] supabase error:', error)
+      // 把上游错误透明返回，便于你在 Network 里看到细节
+      return createErrorResponse(error.message || 'Failed to fetch sites', 502, 'SUPABASE_ERROR')
+    }
+
+    // 可选：如果你不想 404，可以直接返回空数组
+    if (!data || data.length === 0) {
+      return createSuccessResponse([], `No sites found for '${slug}'`)
+    }
+
+    return createSuccessResponse(data, `Sites for '${slug}' ok`)
+  } catch (err) {
+    console.error('[sites] handler crashed:', err)
+    return createErrorResponse('Internal server error', 500, 'INTERNAL_ERROR')
+  }
+}
+

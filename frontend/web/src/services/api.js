@@ -72,3 +72,14 @@ export const getQuestionCategories = async (locale = 'en') => {
   }
 }
 
+export const getHabitatsByAnimal = async (slug, locale = 'en') => {
+  try {
+    const response = await api.get(`/api/animals/${slug}/sites`, {
+      params: { locale }
+    })
+    return response.data.data || []
+  } catch (error) {
+    console.error('Error fetching habitats by animal:', error)
+    throw error
+  }
+}
