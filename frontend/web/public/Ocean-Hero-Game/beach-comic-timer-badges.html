@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Junk Jumble — Ocean Hero Beach Cleanup</title>
+<style>
+  :root{
+    --sky:#cfefff; --sea:#78c9ff; --sand:#fffae1; --ink:#2b2b2b;
+    --red:#ff5468; --green:#2ecc71; --black:#333; --blue:#46a2ff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:"Nunito", system-ui, -apple-system, Segoe UI, Roboto, "PingFang SC","Microsoft Yahei", sans-serif;
+    background:linear-gradient(var(--sky) 0 35%, var(--sea) 35% 45%, var(--sand) 45%);
+    min-height:100vh; display:flex; flex-direction:column; align-items:center;
+  }
+  header{
+    width:100%; max-width:1100px; margin:12px 0 8px; padding:10px 14px;
+    background:#ffffffcc; border:3px solid #00000010; border-radius:18px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    box-shadow:0 8px 18px rgba(0,0,0,.08);
+  }
+  h1{margin:0; font-size:20px}
+  #hud{display:flex; gap:14px; align-items:center; font-weight:900}
+  .chip{background:#00000010; border:2px solid #00000020; padding:4px 10px; border-radius:999px}
+  #reset{
+    background:var(--blue); color:#fff; border:3px solid #00000025;
+    border-radius:12px; padding:8px 12px; font-weight:800; cursor:pointer;
+    box-shadow:0 4px 0 #1b6ac0; transition:transform .08s;
+  }
+  #reset:active{ transform:translateY(1px) }
+
+  /* two-column stage */
+  .stage{
+    width:100%; max-width:1100px; display:grid; gap:14px; grid-template-columns: 1fr 1.2fr;
+    padding:8px 0 22px;
+  }
+  .left, .right{
+    background:#fffdf7; border-radius:18px; padding:20px; position:relative;
+    box-shadow:0 10px 24px rgba(0,0,0,.10);
+    border:3px solid #00000010;
+    min-height:700px;
+  }
+
+  /* Ocean Hero scene host */
+  .scene-host{
+    width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    padding:16px;
+  }
+  .scene-host svg{ width:min(90%, 560px); height:auto; filter: drop-shadow(0 6px 8px rgba(0,0,0,.12)); }
+  .scene-controls{
+    position:absolute; left:12px; top:12px; display:flex; align-items:center; gap:8px;
+    background:#ffffffcc; border:2px solid #00000014; border-radius:12px; padding:4px 8px;
+  }
+  .btn.small{ padding:4px 8px; font-size:14px; box-shadow:0 3px 0 #0a7a5e; }
+
+  /* tips */
+  .hint{
+    position:absolute; top:10px; right:10px; background:#fff; border:3px solid #00000025;
+    border-radius:12px; padding:6px 10px; font-size:13px; font-weight:700;
+  }
+
+  /* speech bubble */
+  .bubble{
+    position:absolute; left:52%; top:8%;
+    background:#fff; border:4px solid var(--ink); border-radius:16px; padding:10px 14px;
+    font-weight:900; font-size:16px; transform-origin:left top; transform:scale(0);
+    filter: drop-shadow(0 6px 0 rgba(0,0,0,.15));
+  }
+  .bubble::after{content:""; position:absolute; left:-18px; top:24px; width:0; height:0; border:12px solid transparent; border-right-color:var(--ink);}
+  .bubble::before{content:""; position:absolute; left:-14px; top:26px; width:0; height:0; border:10px solid transparent; border-right-color:#fff; z-index:1;}
+  .bubble.good{ background:#eafff0; border-color:#0b7a33 } .bubble.good::after{ border-right-color:#0b7a33 }
+  .bubble.bad{  background:#ffe8ec; border-color:#c2183b } .bubble.bad::after{  border-right-color:#c2183b }
+  .bubble.show{ animation:pop .28s ease-out forwards }
+  @keyframes pop{ from{transform:scale(0)} to{transform:scale(1)} }
+
+  .titlebar{ display:flex; align-items:center; gap:8px; margin-bottom:8px; font-weight:900; }
+  .pill{ background:#00000010; border:2px solid #00000020; padding:2px 8px; border-radius:999px; font-size:12px; }
+
+  /* item tray */
+  .tray{
+    background:#ffffffea; border:3px dashed #00000020; border-radius:12px; padding:10px;
+    display:flex; flex-wrap:wrap; gap:10px; min-height:320px; margin-bottom:20px;
+    overflow-y:auto;
+  }
+  .card{
+    width:84px; aspect-ratio:1; background:#fff; border:3px solid #00000025; border-radius:14px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    cursor:grab; user-select:none; box-shadow:4px 4px 0 #00000020; transition:transform .08s;
+  }
+  .card:active{ transform:translateY(1px) scale(.98) }
+  .emoji{ font-size:34px }
+  .label{ font-size:12px; font-weight:800; text-align:center }
+
+  /* bins */
+  .bins{
+    position:relative; display:grid; grid-template-columns:repeat(4,1fr);
+    gap:18px; margin-top:22px;
+  }
+  .bin{
+    --bin-color:#46a2ff;
+    background:#fff; border-radius:18px; border:4px solid rgba(0,0,0,.15);
+    box-shadow:0 8px 0 rgba(0,0,0,.15);
+    padding:12px 10px 16px; min-height:200px;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+    position:relative; transition:transform .12s;
+  }
+  .bin:hover{ transform:translateY(-2px) }
+  .bin.hot{ transform:translateY(-4px) }
+  .bin.shake{ animation:shake .25s }
+  @keyframes shake{25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-2px)}}
+
+  .bin .can{
+    width:90%; height:140px; margin-bottom:10px;
+    display:flex; align-items:center; justify-content:center;
+    pointer-events:none;
+  }
+  .bin .can.svg .trash{
+    width:100%; height:100%;
+    color: var(--bin-color);
+    filter: drop-shadow(0 2px 0 rgba(0,0,0,.25));
+  }
+  .bin .label{
+    font-weight:1000; text-align:center; color:#fff;
+    text-shadow:1px 2px 0 rgba(0,0,0,.35);
+    background:var(--bin-color); padding:6px 8px; border-radius:12px; width:92%;
+  }
+
+  .bin[data-type="paper"]   { --bin-color:var(--red);  }
+  .bin[data-type="mpg"]     { --bin-color:var(--green);}
+  .bin[data-type="compost"] { --bin-color:var(--black);}
+  .bin[data-type="other"]   { --bin-color:var(--blue); }
+
+  /* overlays */
+  .overlay{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg, rgba(255,255,255,.98), rgba(200,230,255,.98));
+    z-index:10; transition:opacity .2s;
+  }
+  .overlay.hide{ opacity:0; pointer-events:none }
+  .panel{
+    width:min(560px,90vw); background:#fff; border:4px solid #000; border-radius:18px; padding:18px;
+    text-align:center; box-shadow:12px 12px 0 #00000020;
+  }
+  .panel h2{ margin:8px 0 12px }
+  .btn{
+    background:#12b886; color:#fff; border:4px solid #0a7a5e; border-radius:14px;
+    padding:10px 16px; font-weight:900; cursor:pointer; display:inline-flex; gap:8px; align-items:center;
+    box-shadow:0 6px 0 #0a7a5e; transition:transform .08s;
+  }
+  .btn:active{ transform:translateY(1px) }
+  .medal{ font-size:48px; filter: drop-shadow(0 4px 0 rgba(0,0,0,.15)); }
+  .summary{ font-weight:900; margin:8px 0 14px }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Junk Jumble — Beach Cleanup</h1>
+    <div id="hud">
+      <div class="chip">Score: <span id="score">0</span></div>
+      <div class="chip">Time: <span id="time">90</span>s</div>
+      <div class="chip" id="badgeChip" style="display:none">Badge: <span id="badgeName"></span> <span id="badgeEmoji"></span></div>
+    </div>
+    <button id="reset">Restart</button>
+  </header>
+
+  <!-- start overlay -->
+  <div class="overlay" id="startOverlay" aria-modal="true" role="dialog">
+    <div class="panel">
+      <h2>Ready to Clean the Beach?</h2>
+      <p class="summary">Drag each item into the correct bin. <b>One try per item!</b></p>
+      <p style="margin:8px 0 16px">Scoring: +20 correct · −10 wrong (not below 0) · <b>90s</b> timer</p>
+      <div style="margin-bottom:14px">Badges: 🥉 60+ · 🥈 90+ · 🥇 120+</div>
+      <button id="btnStart" class="btn">🎮 Let’s Go!</button>
+    </div>
+  </div>
+
+  <!-- end overlay -->
+  <div class="overlay hide" id="endOverlay" aria-modal="true" role="dialog">
+    <div class="panel">
+      <h2 id="endTitle">Time’s Up!</h2>
+      <div class="summary">Score: <span id="finalScore">0</span></div>
+      <div id="medalBlock" style="display:none">
+        <div class="medal" id="medalEmoji"></div>
+        <div style="font-weight:900" id="medalText"></div>
+      </div>
+      <div style="margin-top:16px; display:flex; gap:10px; justify-content:center">
+        <button id="btnAgain" class="btn">🔁 Play Again</button>
+        <button id="btnClose" class="btn" style="background:#228be6; border-color:#1b6ac0; box-shadow:0 6px 0 #1b6ac0">✅ OK</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="stage" aria-live="polite">
+    <!-- LEFT: Ocean Hero scene + bubble -->
+    <section class="left character">
+      <div id="sceneHost" class="scene-host" aria-label="ocean hero scene"></div>
+      <div class="scene-controls">
+        <button id="prevScene" class="btn small">⟵</button>
+        <span class="pill">Ocean Hero Scene</span>
+        <button id="nextScene" class="btn small">⟶</button>
+      </div>
+      <div class="bubble" id="bubble">Let’s go! Sort the trash!</div>
+      <div class="hint">Drop items into the correct bin ⤵</div>
+    </section>
+
+    <!-- RIGHT: items + bins -->
+    <section class="right">
+      <div class="titlebar">
+        <div>Beach Finds</div><div class="pill">Drag & Drop</div>
+      </div>
+      <div class="tray" id="tray"></div>
+
+      <div class="bins" id="bins">
+        <!-- PAPER -->
+        <div class="bin" data-type="paper">
+          <div class="can svg" aria-hidden="true">
+            <svg viewBox="0 0 128 128" class="trash">
+              <path d="M24 28h80a6 6 0 0 1 0 12H24a6 6 0 0 1 0-12z" fill="currentColor"/>
+              <path d="M48 18h32l8 10H40l8-10z" fill="currentColor"/>
+              <rect x="22" y="40" width="84" height="78" rx="8" ry="8" fill="currentColor"/>
+              <g fill="#fff">
+                <rect x="44" y="52" width="8"  height="56" rx="4"/>
+                <rect x="60" y="52" width="8"  height="56" rx="4"/>
+                <rect x="76" y="52" width="8"  height="56" rx="4"/>
+              </g>
+            </svg>
+          </div>
+          <div class="label">CARD / PAPER</div>
+        </div>
+
+        <!-- METAL/PLASTIC/GLASS -->
+        <div class="bin" data-type="mpg">
+          <div class="can svg" aria-hidden="true">
+            <svg viewBox="0 0 128 128" class="trash">
+              <path d="M24 28h80a6 6 0 0 1 0 12H24a6 6 0 0 1 0-12z" fill="currentColor"/>
+              <path d="M48 18h32l8 10H40l8-10z" fill="currentColor"/>
+              <rect x="22" y="40" width="84" height="78" rx="8" ry="8" fill="currentColor"/>
+              <g fill="#fff">
+                <rect x="44" y="52" width="8"  height="56" rx="4"/>
+                <rect x="60" y="52" width="8"  height="56" rx="4"/>
+                <rect x="76" y="52" width="8"  height="56" rx="4"/>
+              </g>
+            </svg>
+          </div>
+          <div class="label">METAL PLASTIC GLASS</div>
+        </div>
+
+        <!-- COMPOST -->
+        <div class="bin" data-type="compost">
+          <div class="can svg" aria-hidden="true">
+            <svg viewBox="0 0 128 128" class="trash">
+              <path d="M24 28h80a6 6 0 0 1 0 12H24a6 6 0 0 1 0-12z" fill="currentColor"/>
+              <path d="M48 18h32l8 10H40l8-10z" fill="currentColor"/>
+              <rect x="22" y="40" width="84" height="78" rx="8" ry="8" fill="currentColor"/>
+              <g fill="#fff">
+                <rect x="44" y="52" width="8"  height="56" rx="4"/>
+                <rect x="60" y="52" width="8"  height="56" rx="4"/>
+                <rect x="76" y="52" width="8"  height="56" rx="4"/>
+              </g>
+            </svg>
+          </div>
+          <div class="label">COMPOST</div>
+        </div>
+
+        <!-- OTHER -->
+        <div class="bin" data-type="other">
+          <div class="can svg" aria-hidden="true">
+            <svg viewBox="0 0 128 128" class="trash">
+              <path d="M24 28h80a6 6 0 0 1 0 12H24a6 6 0 0 1 0-12z" fill="currentColor"/>
+              <path d="M48 18h32l8 10H40l8-10z" fill="currentColor"/>
+              <rect x="22" y="40" width="84" height="78" rx="8" ry="8" fill="currentColor"/>
+              <g fill="#fff">
+                <rect x="44" y="52" width="8"  height="56" rx="4"/>
+                <rect x="60" y="52" width="8"  height="56" rx="4"/>
+                <rect x="76" y="52" width="8"  height="56" rx="4"/>
+              </g>
+            </svg>
+          </div>
+          <div class="label">OTHER</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script>
+(() => {
+  // ===== DOM references =====
+  const scoreEl = document.getElementById('score');
+  const timeEl  = document.getElementById('time');
+  const trayEl  = document.getElementById('tray');
+  const bubble  = document.getElementById('bubble');
+  const resetBtn= document.getElementById('reset');
+
+  const startOverlay = document.getElementById('startOverlay');
+  const endOverlay   = document.getElementById('endOverlay');
+  const btnStart     = document.getElementById('btnStart');
+  const btnAgain     = document.getElementById('btnAgain');
+  const btnClose     = document.getElementById('btnClose');
+  const endTitle     = document.getElementById('endTitle');
+  const finalScore   = document.getElementById('finalScore');
+  const medalBlock   = document.getElementById('medalBlock');
+  const medalEmoji   = document.getElementById('medalEmoji');
+  const medalText    = document.getElementById('medalText');
+  const badgeChip    = document.getElementById('badgeChip');
+  const badgeName    = document.getElementById('badgeName');
+  const badgeEmoji   = document.getElementById('badgeEmoji');
+
+  // ===== Ocean Hero scenes (3 options, random on load, arrows to switch) =====
+  const SCENES = [
+    // 1) Coral reef + caped hero
+    `
+    <svg viewBox="0 0 800 520" role="img" aria-label="Coral reef with ocean hero">
+      <defs>
+        <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#bfe9ff"/><stop offset="1" stop-color="#7dd3fc"/>
+        </linearGradient>
+        <linearGradient id="sandGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fff4d6"/><stop offset="1" stop-color="#f8e1a1"/>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="800" height="360" fill="url(#seaGrad)"/>
+      <rect x="0" y="360" width="800" height="160" fill="url(#sandGrad)"/>
+      <g opacity=".35">
+        <ellipse cx="120" cy="40" rx="90" ry="18" fill="white"/>
+        <ellipse cx="260" cy="70" rx="110" ry="20" fill="white"/>
+        <ellipse cx="480" cy="50" rx="140" ry="22" fill="white"/>
+      </g>
+      <g transform="translate(90,360)">
+        <path d="M0,100 C20,70 40,60 50,40 C70,10 90,10 100,40 C110,70 130,80 150,82 L150,120 L0,120Z"
+              fill="#ff8fab" stroke="#973a4a" stroke-width="3" />
+        <circle cx="55" cy="58" r="10" fill="#ffd6e7" />
+        <circle cx="120" cy="70" r="8"  fill="#ffd6e7" />
+      </g>
+      <g transform="translate(560,370)">
+        <path d="M0,110 C15,80 35,70 50,50 C72,25 95,22 110,45 C120,60 135,75 160,78 L160,120 L0,120Z"
+              fill="#8de0f1" stroke="#3b7c86" stroke-width="3" />
+        <circle cx="70" cy="64" r="9" fill="#dff9ff" />
+        <circle cx="130" cy="70" r="7" fill="#dff9ff" />
+      </g>
+      <g transform="translate(360,230)">
+        <path d="M-10,20 C-40,40 -40,70 10,90 L10,20Z" fill="#ff6b6b" opacity=".9"/>
+        <circle cx="0" cy="0" r="28" fill="#f2c7a7" stroke="#2b2b2b" stroke-width="4"/>
+        <rect x="-22" y="28" width="44" height="64" rx="10" fill="#9be7ff" stroke="#2b2b2b" stroke-width="4"/>
+        <rect x="-22" y="44" width="44" height="12" fill="#7dd3fc"/>
+        <rect x="-22" y="64" width="44" height="12" fill="#7dd3fc"/>
+        <line x1="-36" y1="48" x2="-64" y2="72" stroke="#2b2b2b" stroke-width="6" stroke-linecap="round"/>
+        <line x1="36"  y1="48" x2="64"  y2="72" stroke="#2b2b2b" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="-66" cy="74" r="10" fill="#ff6a7b" stroke="#2b2b2b" stroke-width="3"/>
+        <circle cx=" 66" cy="74" r="10" fill="#ff6a7b" stroke="#2b2b2b" stroke-width="3"/>
+        <rect x="-18" y="94" width="14" height="40" rx="6" fill="#4b6ea8" stroke="#2b2b2b" stroke-width="3"/>
+        <rect x="4"   y="94" width="14" height="40" rx="6" fill="#4b6ea8" stroke="#2b2b2b" stroke-width="3"/>
+        <path d="M-8,-6 q8,10 16,0" fill="none" stroke="#2b2b2b" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="-6" cy="-14" r="3"/><circle cx="6" cy="-14" r="3"/>
+      </g>
+      <g fill="#2dd4bf" opacity=".8">
+        <circle cx="180" cy="160" r="6"/><circle cx="194" cy="168" r="4"/><circle cx="168" cy="170" r="5"/>
+      </g>
+    </svg>
+    `,
+    // 2) Dolphin jumping scene
+    `
+    <svg viewBox="0 0 800 520" role="img" aria-label="Dolphin jumping over waves">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#cfefff"/><stop offset="1" stop-color="#9dd7ff"/>
+        </linearGradient>
+      </defs>
+      <rect width="800" height="520" fill="url(#sky)"/>
+      <circle cx="660" cy="90" r="36" fill="#ffd166"/>
+      <g fill="#7dd3fc">
+        <ellipse cx="200" cy="360" rx="220" ry="40"/>
+        <ellipse cx="460" cy="390" rx="260" ry="50" opacity=".9"/>
+        <ellipse cx="640" cy="430" rx="200" ry="40" opacity=".8"/>
+      </g>
+      <g transform="translate(360,240)" fill="#5dade2" stroke="#2b2b2b" stroke-width="3">
+        <path d="M0,0 C60,-40 140,-20 180,20 C140,28 90,35 50,28 C20,24 0,14 0,0Z"/>
+        <circle cx="160" cy="8" r="3" fill="#2b2b2b"/>
+        <path d="M30,22 C10,40 10,54 24,62 C30,50 32,36 30,22Z"/>
+        <path d="M120,30 C145,45 155,60 160,70 C150,64 130,50 120,30Z"/>
+      </g>
+      <g transform="translate(70,70)">
+        <rect x="0" y="0" width="120" height="44" rx="12" fill="#22c55e" stroke="#0f7a3a" stroke-width="3"/>
+        <text x="60" y="27" font-size="20" text-anchor="middle" font-weight="800" fill="#fff">OCEAN HERO</text>
+      </g>
+    </svg>
+    `,
+    // 3) Lighthouse beach
+    `
+    <svg viewBox="0 0 800 520" role="img" aria-label="Lighthouse and clean beach">
+      <rect width="800" height="360" fill="#9dd7ff"/>
+      <rect y="360" width="800" height="160" fill="#ffe8b0"/>
+      <g>
+        <rect x="120" y="160" width="40" height="180" fill="#ffffff" stroke="#2b2b2b" stroke-width="4"/>
+        <rect x="116" y="140" width="48" height="24" fill="#e11d48"/>
+        <rect x="112" y="120" width="56" height="20" fill="#111827"/>
+        <circle cx="140" cy="118" r="10" fill="#fef08a" stroke="#2b2b2b" stroke-width="3"/>
+      </g>
+      <g transform="translate(620,110)">
+        <path d="M0,0 L0,80" stroke="#111827" stroke-width="6"/>
+        <path d="M0,0 L90,18 L0,36 Z" fill="#22c55e" stroke="#0f7a3a" stroke-width="3"/>
+        <text x="45" y="28" font-size="16" font-weight="900" text-anchor="middle" fill="#fff">HERO</text>
+      </g>
+      <path d="M0,340 C120,360 240,320 360,340 C480,360 600,320 800,340" fill="none" stroke="#60a5fa" stroke-width="8" />
+    </svg>
+    `
+  ];
+  let sceneIdx = Math.floor(Math.random() * SCENES.length);
+  const sceneHost = document.getElementById('sceneHost');
+  function renderScene(i){ sceneHost.innerHTML = SCENES[i]; }
+  renderScene(sceneIdx);
+  const prevBtn = document.getElementById('prevScene');
+  const nextBtn = document.getElementById('nextScene');
+  if (prevBtn && nextBtn){
+    prevBtn.onclick = () => { sceneIdx = (sceneIdx + SCENES.length - 1) % SCENES.length; renderScene(sceneIdx); };
+    nextBtn.onclick = () => { sceneIdx = (sceneIdx + 1) % SCENES.length; renderScene(sceneIdx); };
+  }
+
+  // ===== Web Audio SFX =====
+  let actx;
+  function tone(freq=440, duration=0.12, type='sine', gain=0.06){
+    try{
+      actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = type; o.frequency.value = freq;
+      g.gain.value = gain; o.connect(g); g.connect(actx.destination);
+      o.start();
+      g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + duration);
+      o.stop(actx.currentTime + duration);
+    }catch(e){}
+  }
+  const sfx = {
+    start(){ tone(880,.12,'triangle'); tone(1320,.12,'triangle'); },
+    correct(){ tone(740,.08,'sine'); setTimeout(()=>tone(1040,.08,'sine'),80); },
+    wrong(){ tone(220,.16,'sawtooth',0.07); },
+    done(){ tone(660,.12,'triangle'); setTimeout(()=>tone(990,.12,'triangle'),110); setTimeout(()=>tone(1320,.12,'triangle'),220); }
+  };
+
+  // ===== Game data =====
+  const POOL = [
+    { id:'a1', type:'paper',  emoji:'📰', label:'Newspaper' },
+    { id:'a2', type:'paper',  emoji:'📦', label:'Cardboard' },
+    { id:'b1', type:'mpg',    emoji:'🧴', label:'Plastic Bottle' },
+    { id:'b2', type:'mpg',    emoji:'🥫', label:'Tin Can' },
+    { id:'b3', type:'mpg',    emoji:'🍾', label:'Glass Bottle' },
+    { id:'c1', type:'compost',emoji:'🍌', label:'Banana Peel' },
+    { id:'c2', type:'compost',emoji:'🐟', label:'Fish Bone' },
+    { id:'d1', type:'other',  emoji:'🧷', label:'Sharp Pin' },
+  ];
+  const BADGE_THRESHOLDS = { bronze:60, silver:90, gold:120 };
+
+  // ===== Game state =====
+  let items = [];
+  let score = 0;
+  let remainingTime = 90;
+  let timerId = null;
+  let running = false;
+  let bestBadge = null;
+
+  const shuffle = arr => arr.sort(() => Math.random() - .5);
+
+  // ===== UI helpers =====
+  function setBubble(msg, kind){
+    bubble.classList.remove('good','bad','show');
+    if(kind) bubble.classList.add(kind);
+    bubble.textContent = msg;
+    void bubble.offsetWidth; // restart animation
+    bubble.classList.add('show');
+    setTimeout(() => bubble.classList.remove('show'), 2200);
+  }
+
+  function renderItems(){
+    trayEl.innerHTML = '';
+    items.forEach(it => {
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.draggable = true;
+      el.dataset.id = it.id;
+      el.dataset.type = it.type;
+      el.innerHTML = `<div class="emoji">${it.emoji}</div><div class="label">${it.label}</div>`;
+      attachDrag(el);
+      trayEl.appendChild(el);
+    });
+  }
+
+  function attachDrag(el){
+    el.addEventListener('dragstart', e => {
+      if(!running) return e.preventDefault();
+      e.dataTransfer.setData('text/plain', JSON.stringify({ id:el.dataset.id, type:el.dataset.type }));
+      document.querySelectorAll('.bin').forEach(b => b.classList.remove('shake'));
+    });
+    el.addEventListener('dragend', () => {
+      document.querySelectorAll('.bin').forEach(b => b.classList.remove('hot'));
+    });
+  }
+
+  function setupBins(){
+    document.querySelectorAll('.bin').forEach(bin => {
+      bin.addEventListener('dragover', e => { if(!running) return; e.preventDefault(); bin.classList.add('hot'); });
+      bin.addEventListener('dragleave', () => bin.classList.remove('hot'));
+      bin.addEventListener('drop', e => {
+        if(!running) return;
+        e.preventDefault(); bin.classList.remove('hot');
+
+        const dataText = e.dataTransfer.getData('text/plain');
+        if(!dataText) return;
+        const data = JSON.parse(dataText);
+        const card = trayEl.querySelector(`[data-id="${data.id}"]`);
+        if(!card) return;
+
+        // One try per item: remove the card whether correct or not
+        const correct = data.type === bin.dataset.type;
+
+        if(correct){
+          score += 20;
+          scoreEl.textContent = score;
+          sfx.correct();
+          const facts = {
+            paper:  "Paper and card can be recycled into new paper.",
+            mpg:    "Metal/Plastic/Glass can be recycled again and again.",
+            compost:"Organics become compost that helps dune plants.",
+            other:  "Some items do not belong in recycling bins."
+          };
+          setBubble('✅ ' + (facts[bin.dataset.type] || 'Correct!'), 'good');
+          updateBadge();
+        }else{
+          // Deduct but never below 0
+          score = Math.max(0, score - 10);
+          scoreEl.textContent = score;
+          setBubble('❌ Oops! One try only—watch the label!', 'bad');
+          sfx.wrong();
+          bin.classList.add('shake'); setTimeout(()=>bin.classList.remove('shake'), 300);
+        }
+
+        // Remove the item from the tray/state
+        card.style.transform = 'scale(.9)'; card.style.opacity = '.3';
+        setTimeout(() => card.remove(), 90);
+        items = items.filter(x => x.id !== data.id);
+
+        // If all items sorted, end early
+        if(items.length === 0){
+          running = false;
+          clearInterval(timerId);
+          showEnd('All items sorted!');
+        }
+      });
+    });
+  }
+
+  function updateBadge(){
+    let badge = null, name='', emoji='';
+    if(score >= BADGE_THRESHOLDS.gold){ badge='gold'; name='Gold'; emoji='🥇'; }
+    else if(score >= BADGE_THRESHOLDS.silver){ badge='silver'; name='Silver'; emoji='🥈'; }
+    else if(score >= BADGE_THRESHOLDS.bronze){ badge='bronze'; name='Bronze'; emoji='🥉'; }
+
+    if(badge && badge !== bestBadge){
+      bestBadge = badge;
+      badgeChip.style.display = 'inline-flex';
+      badgeName.textContent = name;
+      badgeEmoji.textContent = emoji;
+      setBubble(`${emoji} ${name} badge unlocked!`, 'good');
+    }
+  }
+
+  function startTimer(){
+    clearInterval(timerId);
+    timerId = setInterval(() => {
+      remainingTime -= 1;
+      timeEl.textContent = remainingTime;
+      if(remainingTime <= 0){
+        clearInterval(timerId);
+        running = false;
+        sfx.done();
+        showEnd('Time’s Up!');
+      }
+    }, 1000);
+  }
+
+  function showEnd(title){
+    finalScore.textContent = score;
+    let emoji='', text='';
+    if(score >= BADGE_THRESHOLDS.gold){ emoji='🥇'; text='Gold Ocean Hero'; }
+    else if(score >= BADGE_THRESHOLDS.silver){ emoji='🥈'; text='Silver Ocean Hero'; }
+    else if(score >= BADGE_THRESHOLDS.bronze){ emoji='🥉'; text='Bronze Ocean Hero'; }
+    medalBlock.style.display = emoji ? 'block':'none';
+    medalEmoji.textContent = emoji; medalText.textContent = text;
+    endTitle.textContent = title || 'Time’s Up!';
+    endOverlay.classList.remove('hide');
+  }
+
+  function hideOverlays(){
+    startOverlay.classList.add('hide');
+    endOverlay.classList.add('hide');
+  }
+
+  function startGame(){
+    score = 0; scoreEl.textContent = '0';
+    remainingTime = 90; timeEl.textContent = remainingTime;
+    // One-shot pool: no refill
+    items = shuffle([...POOL]);
+    bestBadge = null; badgeChip.style.display = 'none'; badgeName.textContent=''; badgeEmoji.textContent='';
+    renderItems();
+    setBubble("Let’s go! Sort the trash!");
+    running = true;
+    startTimer();
+    sfx.start();
+  }
+
+  // ===== wire up events =====
+  document.getElementById('btnStart').addEventListener('click', () => { hideOverlays(); startGame(); });
+  resetBtn.addEventListener('click', startGame);
+  document.getElementById('btnAgain').addEventListener('click', () => { endOverlay.classList.add('hide'); startGame(); });
+  document.getElementById('btnClose').addEventListener('click', () => { endOverlay.classList.add('hide'); startOverlay.classList.remove('hide'); });
+
+  setupBins();
+  // Keep start overlay visible until user clicks "Let’s Go!"
+})();
+</script>
+</body>
+</html>

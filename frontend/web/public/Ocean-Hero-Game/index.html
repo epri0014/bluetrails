@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Junk Jumble</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <!-- 开始说明页（已移除封面图） -->
+  <div class="overlay" id="startOverlay" aria-modal="true" role="dialog">
+    <div class="panel">
+      <h2>Ready to Clean the Beach?</h2>
+
+      <div class="rules">
+        <p><b>How to play:</b> Drag the item into the correct bin. One try per item.</p>
+        <p><b>Scoring:</b> +20 points for correct answers, -10 for wrong answers (not below 0).<br>
+           <b>Timer:</b> 90 seconds</p>
+        <p><b>Badges:</b> Bronze🥉60+  Silver🥈90+  Gold🥇120+</p>
+      </div>
+
+      <div style="margin-top:12px; display:flex; justify-content:center; gap:12px">
+        <button id="musicToggle" class="btn js-music-toggle">🔊 Music</button>
+        <button id="btnStart" class="btn">🎮 Let’s Go!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 顶部 HUD -->
+  <header>
+    <h1>Junk Jumble</h1>
+    <div id="hud">
+      <div class="chip">Score: <span id="score">0</span></div>
+      <div class="chip">Time: <span id="time">90</span>s</div>
+      <div class="chip" id="badgeChip" style="display:none">
+        Badge: <span id="badgeName"></span> <span id="badgeEmoji"></span>
+      </div>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center">
+      <button id="musicToggleHeader" class="btn js-music-toggle">🔊 Music</button>
+      <button id="reset">Restart</button>
+    </div>
+    <div class="hint">Drop the item into the correct bin ⤵</div>
+  </header>
+
+  <!-- 背景动画层 -->
+  <div class="beach-anim" aria-hidden="true">
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+    <div class="cloud c3"></div>
+    <svg class="gull g1" viewBox="0 0 64 32">
+      <path d="M2 16 C18 6, 22 6, 32 16 C42 26, 46 26, 62 16"
+            fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <svg class="gull g2" viewBox="0 0 64 32">
+      <path d="M2 16 C18 6, 22 6, 32 16 C42 26, 46 26, 62 16"
+            fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <!-- 沙滩装饰（椰子树 + 小屋） -->
+  <div class="beach-decor" aria-hidden="true">
+    <!-- 左侧一组 -->
+    <img src="./palm-hut.png" alt="" class="decor hut-tree d1">
+    <!-- 右侧镜像一组 -->
+    <img src="./palm-hut.png" alt="" class="decor hut-tree d2">
+    <!-- 如需第三个小的：取消下一行注释 -->
+    <!-- <img src="./palm-hut.png" alt="" class="decor hut-tree d3"> -->
+  </div>
+
+  <!-- 鲸鱼跃起动画（仅显示海面以上） -->
+  <div class="whale-layer" aria-hidden="true">
+    <img src="./whale-right.png" alt="" class="whale jump">
+    <!-- 如需第二只错峰起跳，可取消下一行注释 -->
+    <!-- <img src="./whale-right.png" alt="" class="whale jump delay"> -->
+  </div>
+
+  <!-- 结束页（已移除封面图） -->
+  <div class="overlay hide" id="endOverlay" aria-modal="true" role="dialog">
+    <div class="panel">
+      <h2 id="endTitle">Time’s Up!</h2>
+      <div class="summary">Score: <span id="finalScore">0</span></div>
+      <div id="medalBlock" style="display:none">
+        <div class="medal" id="medalEmoji"></div>
+        <div style="font-weight:900" id="medalText"></div>
+      </div>
+      <div style="margin-top:16px; display:flex; gap:10px; justify-content:center">
+        <button id="btnAgain" class="btn">🔁 Play Again</button>
+        <button id="btnExit" class="btn" style="background:#228be6; border-color:#1b6ac0; box-shadow:0 6px 0 #1b6ac0">🚪 Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主舞台 -->
+  <main class="stage hide" aria-live="polite">
+    <section class="left character">
+      <!-- 左下角吉祥物（保留） -->
+      <div class="mascot">
+        <img src="./oceanhero.png" alt="Ocean hero helper" />
+        <div class="bubble mascot" id="bubble">Let’s go! Sort the trash!</div>
+      </div>
+    </section>
+    <section class="right">
+      <div class="airdrop">
+        <div class="plane" aria-hidden="true">✈️</div>
+        <div id="currentItem" class="current-item"></div>
+      </div>
+      <div class="bins three" id="bins">
+        <div class="bin" data-type="waste">
+          <div class="can">🗑️</div>
+          <div class="label">WASTE</div>
+        </div>
+        <div class="bin" data-type="recycle">
+          <div class="can">♻️</div>
+          <div class="label">RECYCLE</div>
+        </div>
+        <div class="bin" data-type="rubbish">
+          <div class="can">🚯</div>
+          <div class="label">RUBBISH</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 背景音乐 -->
+  <audio id="bgMusic" src="./Oceanhero.mp3" loop></audio>
+
+  <script type="module" src="./data.js"></script>
+  <script type="module" src="./sfx.js"></script>
+  <script type="module" src="./scenes.js"></script>
+  <script type="module" src="./game.js"></script>
+</body>
+</html>
