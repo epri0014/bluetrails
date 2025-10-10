@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <!-- 开始说明页（已移除封面图） -->
+  <!-- 开始说明页 -->
   <div class="overlay" id="startOverlay" aria-modal="true" role="dialog">
     <div class="panel">
       <h2>Ready to Clean the Beach?</h2>
@@ -32,6 +32,7 @@
     <div id="hud">
       <div class="chip">Score: <span id="score">0</span></div>
       <div class="chip">Time: <span id="time">90</span>s</div>
+      <div class="chip">Items: <span id="itemProgress">0/0</span></div>
       <div class="chip" id="badgeChip" style="display:none">
         Badge: <span id="badgeName"></span> <span id="badgeEmoji"></span>
       </div>
@@ -60,22 +61,18 @@
 
   <!-- 沙滩装饰（椰子树 + 小屋） -->
   <div class="beach-decor" aria-hidden="true">
-    <!-- 左侧一组 -->
     <img src="./palm-hut.png" alt="" class="decor hut-tree d1">
-    <!-- 右侧镜像一组 -->
     <img src="./palm-hut.png" alt="" class="decor hut-tree d2">
-    <!-- 如需第三个小的：取消下一行注释 -->
     <!-- <img src="./palm-hut.png" alt="" class="decor hut-tree d3"> -->
   </div>
 
   <!-- 鲸鱼跃起动画（仅显示海面以上） -->
   <div class="whale-layer" aria-hidden="true">
     <img src="./whale-right.png" alt="" class="whale jump">
-    <!-- 如需第二只错峰起跳，可取消下一行注释 -->
     <!-- <img src="./whale-right.png" alt="" class="whale jump delay"> -->
   </div>
 
-  <!-- 结束页（已移除封面图） -->
+  <!-- 结束页 -->
   <div class="overlay hide" id="endOverlay" aria-modal="true" role="dialog">
     <div class="panel">
       <h2 id="endTitle">Time’s Up!</h2>
@@ -94,12 +91,16 @@
   <!-- 主舞台 -->
   <main class="stage hide" aria-live="polite">
     <section class="left character">
-      <!-- 左下角吉祥物（保留） -->
+      <!-- 可选：场景插画挂载点 -->
+      <div id="sceneHost" class="scene-host" aria-hidden="true"></div>
+
+      <!-- 左下角吉祥物（放更大 & 自适应） -->
       <div class="mascot">
         <img src="./oceanhero.png" alt="Ocean hero helper" />
         <div class="bubble mascot" id="bubble">Let’s go! Sort the trash!</div>
       </div>
     </section>
+
     <section class="right">
       <div class="airdrop">
         <div class="plane" aria-hidden="true">✈️</div>
