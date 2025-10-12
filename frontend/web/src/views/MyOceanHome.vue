@@ -16,13 +16,24 @@
           </div>
         </div>
 
-        <!-- Right Section Skeleton -->
-        <div class="skeleton-right glass">
+        <!-- Center Section Skeleton -->
+        <div class="skeleton-center glass">
           <div class="skeleton-line medium"></div>
           <div class="skeleton-circles">
             <div class="skeleton-circle"></div>
             <div class="skeleton-circle"></div>
             <div class="skeleton-circle"></div>
+          </div>
+        </div>
+
+        <!-- Right Section Skeleton (Calendar) -->
+        <div class="skeleton-right glass">
+          <div class="skeleton-calendar">
+            <div class="skeleton-calendar-label"></div>
+            <div class="skeleton-line short"></div>
+            <div class="skeleton-calendar-day"></div>
+            <div class="skeleton-line short"></div>
+            <div class="skeleton-line short"></div>
           </div>
         </div>
       </div>
@@ -45,7 +56,7 @@
 
     <!-- Content -->
     <div v-else-if="prediction" class="content-wrapper">
-      <!-- Upper Area: Two-column grid -->
+      <!-- Upper Area: Three-column grid -->
       <div class="upper-area">
         <!-- Left Section: Back button, Animal photo, Text -->
         <section class="left-section glass">
@@ -63,8 +74,8 @@
           </div>
         </section>
 
-        <!-- Right Section: Vote buttons as circles -->
-        <section class="right-section glass">
+        <!-- Center Section: Vote buttons as circles -->
+        <section class="center-section glass">
           <div class="vote-content">
             <div class="q">What do you think about my home today?</div>
             <div class="circle-btns">
@@ -78,6 +89,17 @@
                 <span class="circle-label">Unsafe</span>
               </button>
             </div>
+          </div>
+        </section>
+
+        <!-- Right Section: Calendar display -->
+        <section class="right-section glass">
+          <div class="calendar-block">
+            <div class="calendar-label">📅 Today's Date</div>
+            <div class="calendar-month">{{ dateInfo.month }}</div>
+            <div class="calendar-day">{{ dateInfo.day }}</div>
+            <div class="calendar-dayname">{{ dateInfo.dayName }}</div>
+            <div class="calendar-year">{{ dateInfo.year }}</div>
           </div>
         </section>
       </div>
@@ -164,6 +186,22 @@ const getTodayDate = () => {
   const day = String(today.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
 }
+
+// Format date components for calendar display
+const dateInfo = computed(() => {
+  const today = new Date()
+  const day = today.getDate()
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December']
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
+  return {
+    month: monthNames[today.getMonth()].toUpperCase(),
+    day: day,
+    dayName: dayNames[today.getDay()],
+    year: today.getFullYear()
+  }
+})
 
 // Fetch data on mount
 onMounted(async () => {
@@ -358,13 +396,15 @@ function restartChallenge() {
   gap: 12px;
 }
 
-/* Upper Area - Two Column Grid */
+/* Upper Area - Three Column Grid */
 .upper-area{
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 220px 1fr 180px;
   gap: 12px;
   height: auto;
   min-height: 0;
+  position: relative;
+  z-index: 1;
 }
 
 /* Left Section */
@@ -433,8 +473,9 @@ function restartChallenge() {
   line-height: 1.4;
 }
 
-/* Right Section - Vote Buttons */
-.right-section{
+/* Center Section - Vote Buttons */
+.center-section{
+  position: relative;
   padding: 20px;
   display: flex;
   align-items: center;
@@ -444,6 +485,87 @@ function restartChallenge() {
 .vote-content{
   width: 100%;
   text-align: center;
+}
+
+/* Right Section - Calendar Block */
+.right-section{
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-block{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+}
+
+.calendar-label{
+  width: 100%;
+  font-size: 11px;
+  font-weight: 800;
+  color: white;
+  text-align: center;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+  border-radius: 14px 14px 0 0;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-month{
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: white;
+  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+  width: 100%;
+  text-align: center;
+  padding: 6px;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-day{
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 1;
+  color: #0c4a6e;
+  margin: 12px 0 8px 0;
+  text-shadow: 0 2px 4px rgba(12, 74, 110, 0.15);
+}
+
+.calendar-dayname{
+  font-size: 13px;
+  font-weight: 800;
+  color: #0369a1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+
+.calendar-year{
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  margin-top: 6px;
+  margin-bottom: 12px;
+  padding: 4px 12px;
+  background: #0284c7;
+  border-radius: 8px;
+  border: 1px solid #0369a1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .vote-content .q{
@@ -549,59 +671,65 @@ function restartChallenge() {
 
 /* Lower Area - Parameter Cards */
 .lower-area{
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
   gap: 12px;
-  overflow-x: auto;
   padding-bottom: 8px;
   flex: 1;
   min-height: 0;
+  position: relative;
+  z-index: 2;
 }
 
 .card{
-  flex: 1;
-  min-width: 180px;
-  max-width: 220px;
   padding: 20px 16px;
   transition: all 0.3s ease;
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card:hover{
   transform: translateY(-4px);
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 1);
 }
 
 /* Solid color backgrounds based on status */
 .card-green{
-  background: #1ec28b;
-  border-color: rgba(255, 255, 255, 0.6);
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  border-color: rgba(255, 255, 255, 0.7);
 }
 
 .card-amber{
-  background: #f0c145;
-  border-color: rgba(255, 255, 255, 0.6);
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  border-color: rgba(255, 255, 255, 0.7);
 }
 
 .card-red{
-  background: #e45b5b;
-  border-color: rgba(255, 255, 255, 0.6);
+  background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+  border-color: rgba(255, 255, 255, 0.7);
 }
 
 .card-content{
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   text-align: center;
   color: white;
+  width: 100%;
 }
 
 .card-amber .card-content{
-  color: #222;
+  color: #1f2937;
 }
 
 .emoji{
-  font-size: 36px;
+  font-size: 42px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .title-with-tooltip{
@@ -613,8 +741,9 @@ function restartChallenge() {
 
 .title-with-tooltip h3{
   margin: 0;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Tooltip */
@@ -653,7 +782,7 @@ function restartChallenge() {
   white-space: normal;
   width: 240px;
   text-align: left;
-  z-index: 1000;
+  z-index: 9999;
   transition: opacity 0.3s ease, visibility 0.3s ease;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
   pointer-events: none;
@@ -676,15 +805,16 @@ function restartChallenge() {
 
 .value{
   font-weight: 900;
-  font-size: 32px;
+  font-size: 30px;
   display: flex;
   align-items: baseline;
   gap: 4px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .value .unit{
   font-weight: 700;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 /* Skeleton Loading */
@@ -702,7 +832,7 @@ function restartChallenge() {
 /* Skeleton Upper Area */
 .skeleton-upper-area{
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 220px 1fr 180px;
   gap: 12px;
   height: auto;
   min-height: 0;
@@ -714,6 +844,15 @@ function restartChallenge() {
   flex-direction: column;
   align-items: center;
   gap: 12px;
+}
+
+.skeleton-center{
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
 }
 
 .skeleton-back-btn{
@@ -760,15 +899,6 @@ function restartChallenge() {
   margin: 0 auto;
 }
 
-.skeleton-right{
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-}
-
 .skeleton-circles{
   display: flex;
   gap: 32px;
@@ -785,20 +915,55 @@ function restartChallenge() {
   animation: skeleton-loading 1.5s ease-in-out infinite;
 }
 
+.skeleton-right{
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skeleton-calendar{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.skeleton-calendar-label{
+  width: 100%;
+  height: 32px;
+  background: linear-gradient(90deg, #e0e7ff 25%, #c7d2fe 50%, #e0e7ff 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 14px 14px 0 0;
+  margin: 0;
+}
+
+.skeleton-calendar-day{
+  width: 80px;
+  height: 60px;
+  background: linear-gradient(90deg, #e0e7ff 25%, #c7d2fe 50%, #e0e7ff 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
 /* Skeleton Lower Area */
 .skeleton-lower-area{
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
   gap: 12px;
-  overflow-x: auto;
   padding-bottom: 8px;
   flex: 1;
   min-height: 0;
 }
 
 .skeleton-card{
-  flex: 1;
-  min-width: 180px;
-  max-width: 220px;
   padding: 20px 16px;
   display: flex;
   flex-direction: column;
@@ -1048,6 +1213,7 @@ function restartChallenge() {
   }
 }
 
+/* Responsive Design */
 @media (max-width: 768px){
   .content-wrapper, .skeleton-wrapper{
     height: auto;
@@ -1076,8 +1242,36 @@ function restartChallenge() {
     font-size: 12px;
   }
 
+  .center-section, .skeleton-center{
+    padding: 16px;
+  }
+
   .right-section, .skeleton-right{
     padding: 16px;
+  }
+
+  .calendar-label{
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+
+  .calendar-day{
+    font-size: 44px;
+  }
+
+  .calendar-month{
+    font-size: 11px;
+    padding: 5px;
+  }
+
+  .calendar-dayname{
+    font-size: 12px;
+  }
+
+  .calendar-year{
+    font-size: 10px;
+    padding: 3px 10px;
+    margin-bottom: 10px;
   }
 
   .vote-content .q{
@@ -1099,7 +1293,7 @@ function restartChallenge() {
   }
 
   .lower-area, .skeleton-lower-area{
-    flex-direction: column;
+    grid-template-columns: 1fr;
     overflow-x: visible;
   }
 
