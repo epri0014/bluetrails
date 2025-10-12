@@ -1,40 +1,38 @@
 <!-- src/views/MyOceanHome.vue -->
 <template>
   <main class="page">
-    <!-- Back button -->
-    <button class="back-btn glass" @click="goBack">
-      ← Back
-    </button>
-
     <!-- Loading state with skeleton -->
-    <div v-if="loading" class="skeleton-container">
-      <div class="skeleton-header glass">
-        <div class="skeleton-avatar"></div>
-        <div class="skeleton-text-block">
-          <div class="skeleton-line short"></div>
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line medium"></div>
-        </div>
-      </div>
-
-      <div class="skeleton-cards">
-        <div v-for="i in 5" :key="i" class="skeleton-card glass">
-          <div class="skeleton-card-header">
-            <div class="skeleton-emoji"></div>
-            <div class="skeleton-title"></div>
-            <div class="skeleton-chip"></div>
+    <div v-if="loading" class="skeleton-wrapper">
+      <!-- Upper Area Skeleton -->
+      <div class="skeleton-upper-area">
+        <!-- Left Section Skeleton -->
+        <div class="skeleton-left glass">
+          <div class="skeleton-back-btn"></div>
+          <div class="skeleton-avatar"></div>
+          <div class="skeleton-text-block">
+            <div class="skeleton-line short"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line medium"></div>
           </div>
-          <div class="skeleton-line"></div>
-          <div class="skeleton-value"></div>
+        </div>
+
+        <!-- Right Section Skeleton -->
+        <div class="skeleton-right glass">
+          <div class="skeleton-line medium"></div>
+          <div class="skeleton-circles">
+            <div class="skeleton-circle"></div>
+            <div class="skeleton-circle"></div>
+            <div class="skeleton-circle"></div>
+          </div>
         </div>
       </div>
 
-      <div class="skeleton-vote glass">
-        <div class="skeleton-line medium"></div>
-        <div class="skeleton-buttons">
-          <div class="skeleton-btn"></div>
-          <div class="skeleton-btn"></div>
-          <div class="skeleton-btn"></div>
+      <!-- Lower Area Skeleton -->
+      <div class="skeleton-lower-area">
+        <div v-for="i in 5" :key="i" class="skeleton-card glass">
+          <div class="skeleton-emoji"></div>
+          <div class="skeleton-title"></div>
+          <div class="skeleton-value"></div>
         </div>
       </div>
     </div>
@@ -46,49 +44,64 @@
     </div>
 
     <!-- Content -->
-    <template v-else-if="prediction">
-      <section class="header glass">
-        <img :src="animalData?.cartoon_image_url" :alt="animalData?.name" class="avatar" />
-        <div class="title">
-          <div class="eyebrow">From {{ animalData?.name }}</div>
-          <h2>"This is my home, <span class="site-name">{{ siteName }}</span>."</h2>
-          <p class="lead">
-            Today my home looks like this. Can you tell me:
-            <strong>Is my home okay?</strong>
-          </p>
-        </div>
-      </section>
-
-      <section class="cards">
-        <article class="card glass" v-for="metric in metricsList" :key="metric.key" :class="`card-${metric.level}`">
-          <div class="row1">
-            <span class="emoji">{{ metric.emoji }}</span>
-            <h3>{{ metric.title }}</h3>
-            <span class="chip" :class="metric.level">{{ labelOf(metric.level) }}</span>
+    <div v-else-if="prediction" class="content-wrapper">
+      <!-- Upper Area: Two-column grid -->
+      <div class="upper-area">
+        <!-- Left Section: Back button, Animal photo, Text -->
+        <section class="left-section glass">
+          <button class="back-btn-inline" @click="goBack">
+            ← Back
+          </button>
+          <img :src="animalData?.cartoon_image_url" :alt="animalData?.name" class="avatar" />
+          <div class="animal-text">
+            <div class="eyebrow">{{ animalData?.name }}</div>
+            <h2>"This is my home: <span class="site-name">{{ siteName }}</span>"</h2>
+            <p class="lead">
+              Today my home looks like this. Can you tell me:
+              <strong>Is my home okay?</strong>
+            </p>
           </div>
-          <p class="desc" v-html="metric.desc"></p>
-          <div class="value-with-tooltip">
+        </section>
+
+        <!-- Right Section: Vote buttons as circles -->
+        <section class="right-section glass">
+          <div class="vote-content">
+            <div class="q">What do you think about my home today?</div>
+            <div class="circle-btns">
+              <button class="circle-btn green-circle" @click="vote('green')" aria-label="Safe">
+                <span class="circle-label">Safe</span>
+              </button>
+              <button class="circle-btn yellow-circle" @click="vote('amber')" aria-label="Caution">
+                <span class="circle-label">Caution</span>
+              </button>
+              <button class="circle-btn red-circle" @click="vote('red')" aria-label="Unsafe">
+                <span class="circle-label">Unsafe</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Lower Area: Parameter cards horizontally laid out -->
+      <section class="lower-area">
+        <article class="card glass" v-for="metric in metricsList" :key="metric.key" :class="`card-${metric.level}`">
+          <div class="card-content">
+            <span class="emoji">{{ metric.emoji }}</span>
+            <div class="title-with-tooltip">
+              <h3>{{ metric.title }}</h3>
+              <div class="tooltip">
+                <span class="tooltip-icon">❓</span>
+                <span class="tooltip-text">{{ metric.desc }}</span>
+              </div>
+            </div>
             <div class="value">
               <span class="num" v-if="metric.value !== null">{{ metric.value }}</span>
               <span class="unit" v-if="metric.unit">{{ metric.unit }}</span>
             </div>
-            <div class="tooltip">
-              <span class="tooltip-icon">💡</span>
-              <span class="tooltip-text">{{ metric.tip }}</span>
-            </div>
           </div>
         </article>
       </section>
-
-      <section class="vote glass">
-        <div class="q">What do you think about my home today?</div>
-        <div class="btns">
-          <button class="btn green" @click="vote('green')">Safe</button>
-          <button class="btn yellow" @click="vote('amber')">Caution</button>
-          <button class="btn red" @click="vote('red')">Unsafe</button>
-        </div>
-      </section>
-    </template>
+    </div>
 
     <!-- Validation Modal -->
     <div v-if="showModal" class="modal-overlay" @click="closeModal">
@@ -110,7 +123,7 @@
         <p class="modal-message">{{ modalMessage }}</p>
 
         <div class="modal-actions">
-          <button class="btn-secondary" @click="closeModal">Close</button>
+          <!--<button class="btn-secondary" @click="closeModal">Close</button>-->
           <button class="btn-primary" @click="restartChallenge">Restart Challenge</button>
         </div>
       </div>
@@ -333,59 +346,174 @@ function restartChallenge() {
   box-shadow: 0 12px 30px rgba(0,0,0,.18);
 }
 
-/* Back button */
-.back-btn{
-  position: absolute;
-  top: calc(var(--nav-h, 80px) + 24px);
-  left: 24px;
-  padding: 10px 20px;
-  font-size: 16px;
+/* Content Wrapper */
+.content-wrapper{
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+  height: calc(100vh - var(--nav-h, 80px) - 80px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Upper Area - Two Column Grid */
+.upper-area{
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 12px;
+  height: auto;
+  min-height: 0;
+}
+
+/* Left Section */
+.left-section{
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.back-btn-inline{
+  width: 100%;
+  padding: 8px 16px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   border: 2px solid #0369a1;
   color: #0369a1;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
   transition: all 0.2s ease;
-  z-index: 100;
 }
 
-.back-btn:hover{
+.back-btn-inline:hover{
   background: #0369a1;
   color: white;
   transform: translateX(-4px);
 }
 
-/* Header */
-.header{
-  max-width: 1100px;
-  margin: 16px auto 10px;
-  padding: 14px 18px;
-  display: flex;
-  gap: 14px;
-  align-items: center;
-}
-
 .avatar{
-  width: 72px;
-  height: 72px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   object-fit: cover;
   background: #fff;
   border: 3px solid #0369a1;
 }
 
+.animal-text{
+  width: 100%;
+}
+
 .eyebrow{
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: .12em;
   opacity: .75;
+  margin-bottom: 4px;
 }
 
-.title h2{
-  margin: .1em 0;
+.animal-text h2{
+  margin: .2em 0;
+  font-size: 16px;
+  line-height: 1.3;
 }
 
 .site-name{
   text-decoration: underline;
+}
+
+.lead{
+  font-size: 13px;
+  margin: 8px 0 0;
+  line-height: 1.4;
+}
+
+/* Right Section - Vote Buttons */
+.right-section{
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vote-content{
+  width: 100%;
+  text-align: center;
+}
+
+.vote-content .q{
+  font-weight: 800;
+  font-size: 20px;
+  margin-bottom: 24px;
+  color: #0f172a;
+}
+
+.circle-btns{
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.circle-btn{
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: blink-circle 2s ease-in-out infinite;
+}
+
+.circle-btn:hover{
+  transform: scale(1.1);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+.green-circle{
+  background: #1ec28b;
+}
+
+.yellow-circle{
+  background: #f0c145;
+}
+
+.red-circle{
+  background: #e45b5b;
+}
+
+.circle-label{
+  font-weight: 900;
+  font-size: 18px;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.yellow-circle .circle-label{
+  color: #222;
+}
+
+@keyframes blink-circle {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 30px currentColor;
+  }
 }
 
 /* Loading and error states */
@@ -419,89 +547,74 @@ function restartChallenge() {
   transform: translateY(-2px);
 }
 
-/* Cards */
-.cards{
-  max-width: 1100px;
-  margin: 12px auto;
-  padding: 8px;
-  display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+/* Lower Area - Parameter Cards */
+.lower-area{
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  flex: 1;
+  min-height: 0;
 }
 
 .card{
-  padding: 14px 16px;
+  flex: 1;
+  min-width: 180px;
+  max-width: 220px;
+  padding: 20px 16px;
   transition: all 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.5);
 }
 
-/* Card backgrounds based on status */
+.card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
+}
+
+/* Solid color backgrounds based on status */
 .card-green{
-  background: linear-gradient(135deg, rgba(232, 247, 236, 0.95) 0%, rgba(182, 229, 195, 0.85) 100%);
+  background: #1ec28b;
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 .card-amber{
-  background: linear-gradient(135deg, rgba(255, 247, 226, 0.95) 0%, rgba(242, 209, 137, 0.85) 100%);
+  background: #f0c145;
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 .card-red{
-  background: linear-gradient(135deg, rgba(255, 232, 230, 0.95) 0%, rgba(241, 176, 173, 0.85) 100%);
+  background: #e45b5b;
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
-.row1{
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+.card-content{
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  text-align: center;
+  color: white;
+}
+
+.card-amber .card-content{
+  color: #222;
 }
 
 .emoji{
-  font-size: 20px;
+  font-size: 36px;
 }
 
-.chip{
-  font-size: 12px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(0,0,0,.1);
-}
-
-.chip.green{
-  background: #e8f7ec;
-  border-color: #b6e5c3;
-}
-
-.chip.amber{
-  background: #fff7e2;
-  border-color: #f2d189;
-}
-
-.chip.red{
-  background: #ffe8e6;
-  border-color: #f1b0ad;
-}
-
-.desc{
-  margin: .3rem 0 .6rem;
-  opacity: .9;
-}
-
-.value-with-tooltip{
-  position: relative;
+.title-with-tooltip{
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  justify-content: center;
 }
 
-.value{
+.title-with-tooltip h3{
+  margin: 0;
+  font-size: 16px;
   font-weight: 800;
-  font-size: 20px;
-}
-
-.value .unit{
-  font-weight: 600;
-  font-size: 14px;
-  margin-left: 4px;
-  opacity: .8;
 }
 
 /* Tooltip */
@@ -513,12 +626,14 @@ function restartChallenge() {
 }
 
 .tooltip-icon{
-  font-size: 18px;
+  font-size: 16px;
   transition: transform 0.2s ease;
+  opacity: 0.8;
 }
 
 .tooltip:hover .tooltip-icon{
   transform: scale(1.2);
+  opacity: 1;
 }
 
 .tooltip-text{
@@ -536,11 +651,12 @@ function restartChallenge() {
   font-weight: 600;
   line-height: 1.4;
   white-space: normal;
-  width: 220px;
+  width: 240px;
   text-align: left;
   z-index: 1000;
   transition: opacity 0.3s ease, visibility 0.3s ease;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
 }
 
 .tooltip-text::after{
@@ -558,73 +674,60 @@ function restartChallenge() {
   opacity: 1;
 }
 
-/* Vote section */
-.vote{
-  max-width: 1100px;
-  margin: 10px auto 30px;
-  padding: 14px 16px;
-  text-align: center;
-}
-
-.vote .q{
-  font-weight: 800;
-  margin-bottom: 10px;
-}
-
-.btns{
+.value{
+  font-weight: 900;
+  font-size: 32px;
   display: flex;
-  gap: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
 }
 
-.btn{
-  border-radius: 999px;
-  padding: 10px 16px;
-  font-weight: 800;
-  border: 0;
-  cursor: pointer;
-  box-shadow: 0 10px 22px rgba(0,0,0,.15);
-}
-
-.btn.green{
-  background: #1ec28b;
-  color: #fff;
-}
-
-.btn.yellow{
-  background: #f0c145;
-  color: #222;
-}
-
-.btn.red{
-  background: #e45b5b;
-  color: #fff;
-}
-
-.thanks{
-  margin-top: 10px;
+.value .unit{
   font-weight: 700;
+  font-size: 18px;
 }
 
 /* Skeleton Loading */
-.skeleton-container{
-  max-width: 1100px;
+.skeleton-wrapper{
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0 16px;
+  box-sizing: border-box;
+  height: calc(100vh - var(--nav-h, 80px) - 80px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.skeleton-header{
+/* Skeleton Upper Area */
+.skeleton-upper-area{
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 12px;
+  height: auto;
+  min-height: 0;
+}
+
+.skeleton-left{
+  padding: 16px 12px;
   display: flex;
-  gap: 14px;
+  flex-direction: column;
   align-items: center;
-  padding: 14px 18px;
-  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.skeleton-back-btn{
+  width: 100%;
+  height: 36px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #e0e7ff 25%, #c7d2fe 50%, #e0e7ff 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
 }
 
 .skeleton-avatar{
-  width: 72px;
-  height: 72px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   background: linear-gradient(90deg, #e0e7ff 25%, #c7d2fe 50%, #e0e7ff 75%);
   background-size: 200% 100%;
@@ -632,7 +735,7 @@ function restartChallenge() {
 }
 
 .skeleton-text-block{
-  flex: 1;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -644,45 +747,76 @@ function restartChallenge() {
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s ease-in-out infinite;
   border-radius: 4px;
+  width: 100%;
 }
 
 .skeleton-line.short{
-  width: 30%;
+  width: 50%;
+  margin: 0 auto;
 }
 
 .skeleton-line.medium{
-  width: 70%;
+  width: 80%;
+  margin: 0 auto;
 }
 
-.skeleton-cards{
-  display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
-  margin-bottom: 10px;
+.skeleton-right{
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.skeleton-circles{
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  align-items: center;
+}
+
+.skeleton-circle{
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #e0e7ff 25%, #c7d2fe 50%, #e0e7ff 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+/* Skeleton Lower Area */
+.skeleton-lower-area{
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  flex: 1;
+  min-height: 0;
 }
 
 .skeleton-card{
-  padding: 14px 16px;
-}
-
-.skeleton-card-header{
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 10px;
+  flex: 1;
+  min-width: 180px;
+  max-width: 220px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 12px;
+  gap: 12px;
 }
 
 .skeleton-emoji{
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   background: linear-gradient(90deg, #e0e7ff 25%, #c7d2fe 50%, #e0e7ff 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s ease-in-out infinite;
 }
 
 .skeleton-title{
+  width: 80%;
   height: 18px;
   background: linear-gradient(90deg, #e0e7ff 25%, #c7d2fe 50%, #e0e7ff 75%);
   background-size: 200% 100%;
@@ -690,44 +824,14 @@ function restartChallenge() {
   border-radius: 4px;
 }
 
-.skeleton-chip{
-  width: 60px;
-  height: 20px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #e0e7ff 25%, #c7d2fe 50%, #e0e7ff 75%);
-  background-size: 200% 100%;
-  animation: skeleton-loading 1.5s ease-in-out infinite;
-}
-
 .skeleton-value{
-  height: 24px;
-  width: 50%;
+  width: 60%;
+  height: 32px;
   margin-top: 8px;
   background: linear-gradient(90deg, #e0e7ff 25%, #c7d2fe 50%, #e0e7ff 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s ease-in-out infinite;
   border-radius: 4px;
-}
-
-.skeleton-vote{
-  padding: 14px 16px;
-  text-align: center;
-}
-
-.skeleton-buttons{
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 12px;
-}
-
-.skeleton-btn{
-  width: 120px;
-  height: 40px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #e0e7ff 25%, #c7d2fe 50%, #e0e7ff 75%);
-  background-size: 200% 100%;
-  animation: skeleton-loading 1.5s ease-in-out infinite;
 }
 
 @keyframes skeleton-loading {
@@ -945,23 +1049,66 @@ function restartChallenge() {
 }
 
 @media (max-width: 768px){
-  .header{
-    flex-direction: column;
-    text-align: center;
+  .content-wrapper, .skeleton-wrapper{
+    height: auto;
+    padding: 0 12px;
   }
 
-  .back-btn{
-    left: 16px;
-    padding: 8px 16px;
-    font-size: 14px;
-  }
-
-  .cards, .skeleton-cards{
+  .upper-area, .skeleton-upper-area{
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .left-section, .skeleton-left{
+    padding: 16px;
+  }
+
+  .avatar, .skeleton-avatar{
+    width: 100px;
+    height: 100px;
+  }
+
+  .animal-text h2{
+    font-size: 15px;
+  }
+
+  .lead{
+    font-size: 12px;
+  }
+
+  .right-section, .skeleton-right{
+    padding: 16px;
+  }
+
+  .vote-content .q{
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  .circle-btns, .skeleton-circles{
+    gap: 20px;
+  }
+
+  .circle-btn, .skeleton-circle{
+    width: 100px;
+    height: 100px;
+  }
+
+  .circle-label{
+    font-size: 16px;
+  }
+
+  .lower-area, .skeleton-lower-area{
+    flex-direction: column;
+    overflow-x: visible;
+  }
+
+  .card, .skeleton-card{
+    max-width: 100%;
   }
 
   .tooltip-text{
-    width: 180px;
+    width: 200px;
   }
 
   .modal-content{
