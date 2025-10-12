@@ -109,14 +109,16 @@
         <article class="card glass" v-for="metric in metricsList" :key="metric.key" :class="`card-${metric.level}`">
           <div class="card-content">
             <div class="title-with-tooltip">
-              <span>{{ metric.emoji }}</span>
-              <h3>{{ metric.title }}</h3>
+              <span class="emoji-box">{{ metric.emoji }}</span>
+              <span class="title-box">{{ metric.title }}</span>
             </div>
             <div class="value">
               <span class="num" v-if="metric.value !== null">{{ metric.value }}</span>
               <span class="unit" v-if="metric.unit">{{ metric.unit }}</span>
             </div>
           </div>
+          <!-- Tooltip -->
+          <div class="card-tooltip" v-if="metric.tip">{{ metric.tip }}</div>
         </article>
       </section>
     </div>
@@ -693,6 +695,11 @@ function restartChallenge() {
   border-color: rgba(255, 255, 255, 1);
 }
 
+.card:hover .card-tooltip{
+  visibility: visible;
+  opacity: 1;
+}
+
 /* Solid color backgrounds based on status */
 .card-green{
   background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
@@ -730,16 +737,39 @@ function restartChallenge() {
 
 .title-with-tooltip{
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   justify-content: center;
+  padding: 6px 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-height: 45px;
 }
 
-.title-with-tooltip h3{
+.card:hover .title-with-tooltip{
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.emoji-box{
+  font-size: 36px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  line-height: 1;
+}
+
+.title-box{
   margin: 0;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  color: #1e293b;
+  text-shadow: none;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
 }
 
 /* Tooltip */
@@ -797,6 +827,44 @@ function restartChallenge() {
 .tooltip:hover .tooltip-text{
   visibility: visible;
   opacity: 1;
+}
+
+/* Card Tooltip */
+.card-tooltip{
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.95);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: normal;
+  width: 280px;
+  text-align: center;
+  z-index: 9999;
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+.card-tooltip::after{
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: rgba(15, 23, 42, 0.95);
+}
+
+.card:hover .card-tooltip{
+  transform: translateX(-50%) translateY(-8px);
 }
 
 .value{
@@ -1299,6 +1367,26 @@ function restartChallenge() {
 
   .tooltip-text{
     width: 200px;
+  }
+
+  .card-tooltip{
+    width: 240px;
+    font-size: 12px;
+    padding: 10px 14px;
+  }
+
+  .title-with-tooltip{
+    padding: 5px 10px;
+    gap: 6px;
+    min-height: 40px;
+  }
+
+  .emoji-box{
+    font-size: 30px;
+  }
+
+  .title-box{
+    font-size: 14px;
   }
 
   .modal-content{
