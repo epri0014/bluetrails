@@ -140,29 +140,41 @@ export const getQuestionCategories = async (locale = 'en') => {
   return result;
 };
 
-// 追加在文件末尾 —— services/database.js
+// Get habitats/sites by animal slug
 export const getHabitatsByAnimal = async (slug, locale = 'en') => {
-  // 先按请求的 locale 查
+  // Try to get data in requested locale from v_animal_site
   let result = await supabase
-    .from('v_animal_sites')         // ← 换成你的真实视图/表名
+    .from('v_animal_site')
     .select('*')
-    .eq('slug', slug)
+    .eq('animal_slug', slug)
     .eq('locale', locale)
-    .order('site_order');           // ← 如无该字段可去掉
+    .order('site_id');
 
-  // 若没数据且 locale 不是 en，则回退到英文
+  // If no data found and locale is not 'en', fallback to English
   if ((!result.data || result.data.length === 0) && locale !== 'en') {
     result = await supabase
-      .from('v_animal_sites')       // ← 同上
+      .from('v_animal_site')
       .select('*')
-      .eq('slug', slug)
+      .eq('animal_slug', slug)
       .eq('locale', 'en')
-      .order('site_order');         // ← 同上
+      .order('site_id');
 
     if (result.data && result.data.length > 0) {
       result.fellBackToEn = true;
     }
   }
+
+  return result;
+};
+
+// Get EPA water quality prediction with traffic light status
+export const getEpaPrediction = async (siteId, date) => {
+  const result = await supabase
+    .from('v_epa_measurements_wide_prediction_tl')
+    .select('*')
+    .eq('site_id', siteId)
+    .eq('date', date)
+    .single();
 
   return result;
 };

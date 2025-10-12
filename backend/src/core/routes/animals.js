@@ -1,4 +1,4 @@
-import { getAnimals, getAnimalBySlug } from '../services/database.js';
+import { getAnimals, getAnimalBySlug, getHabitatsByAnimal } from '../services/database.js';
 import { createSuccessResponse, createErrorResponse } from '../utils/response.js';
 import { validateParams } from '../middleware/validation.js';
 

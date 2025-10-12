@@ -83,3 +83,16 @@ export const getHabitatsByAnimal = async (slug, locale = 'en') => {
     throw error
   }
 }
+
+// Get EPA water quality prediction with traffic light status
+export const getEpaPrediction = async (siteId, date) => {
+  try {
+    const response = await api.get(`/api/epa/prediction`, {
+      params: { site_id: siteId, date }
+    })
+    return response.data.data || null
+  } catch (error) {
+    console.error('Error fetching EPA prediction:', error)
+    throw error
+  }
+}

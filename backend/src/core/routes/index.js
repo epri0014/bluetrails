@@ -2,6 +2,7 @@ import { Router } from 'itty-router';
 import { handleGetAnimals, handleGetAnimalBySlug, handleGetHabitatsByAnimal} from './animals.js';
 import { handleGetSpeeches } from './speeches.js';
 import { handleGetQuestions, handleGetCategories } from './quiz.js';
+import { handleGetEpaPrediction } from './epa.js';
 import { handleCors } from '../middleware/cors.js';
 import { createErrorResponse } from '../utils/response.js';
 
@@ -47,8 +48,10 @@ export const createRouter = () => {
     return await handleGetCategories(request);
   });
 
-  
-  
+  router.get('/api/epa/prediction', async (request) => {
+    return await handleGetEpaPrediction(request);
+  });
+
   // 404 handler
   router.all('*', () => {
     return createErrorResponse(

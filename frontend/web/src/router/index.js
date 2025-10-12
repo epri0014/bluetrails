@@ -17,9 +17,7 @@ const routes = [
   { path: '/stories', name: 'stories', component: StoriesLibrary },
   { path: '/stories/:id',         component: StoryReader },
   { path: '/stories/:id/finish',  component: StoryFinish },
-  { path: '/choose',      name: 'ChooseAnimal', component: () => import('@/views/ChooseHero.vue') },
-  { path: '/choose/:slug',name: 'HabitatChoose',component: () => import('@/views/TestHabitatChoose.vue') },
-  { path: '/home', name: 'MyOceanHome', component: () => import('@/views/MyOceanHome.vue') },
+  { path: '/challenge', name: 'Challenge', component: () => import('@/views/ChallengeWrapper.vue') },
   { path: '/:catchAll(.*)', redirect: '/' },
 ]
 
