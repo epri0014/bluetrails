@@ -108,13 +108,9 @@
       <section class="lower-area">
         <article class="card glass" v-for="metric in metricsList" :key="metric.key" :class="`card-${metric.level}`">
           <div class="card-content">
-            <span class="emoji">{{ metric.emoji }}</span>
             <div class="title-with-tooltip">
+              <span>{{ metric.emoji }}</span>
               <h3>{{ metric.title }}</h3>
-              <div class="tooltip">
-                <span class="tooltip-icon">❓</span>
-                <span class="tooltip-text">{{ metric.desc }}</span>
-              </div>
             </div>
             <div class="value">
               <span class="num" v-if="metric.value !== null">{{ metric.value }}</span>
