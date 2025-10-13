@@ -57,7 +57,7 @@
                 <span>{{ $t('nav.playGames') }}</span>
               </RouterLink>
               <RouterLink class="dropdown-item" to="/quiz" data-nav-index="3">
-                🤓
+                🧠
                 <span>{{ $t('nav.practiceQuiz') }}</span>
               </RouterLink>
               <RouterLink class="dropdown-item" to="/challenge" data-nav-index="4" @click="restartChallenge">
