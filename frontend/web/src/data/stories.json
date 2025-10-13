@@ -58,5 +58,35 @@
       }
     ],
     "takeaway": "Only rain in the drain—keep streets clean!"
+  },
+  {
+    "id": "Seahorse-rubbish",
+    "title": "Seahorse&Rubbish",
+    "mascot": "Seahorse",
+    "accent": "#f6a53f",
+    "duration": "~1 min",
+    "age": "6+",
+    "cover": "/assets/img/placeholder3.png",
+    "pages": [
+      {
+        "img": "/assets/img/s1.png",
+        "text": "A seahorse discovers floating trash in corals.",
+        "tip": "Why it matters: tiny plastics hide in coral and look like food.",
+        "speech": "Hmm? What’s this junk floating in my coral garden?"
+      },
+      {
+        "img": "/assets/img/s2.png",
+        "text": "They take the trash back to the shore.",
+        "tip": "Do it safely: use a bag or gloves—never disturb sea creatures.",
+        "speech": "Let’s carry it out carefully and keep friends safe!"
+      },
+      {
+        "img": "/assets/img/s3.png",
+        "text": "Protect the ocean, protect our home.",
+        "tip": "Simple rule: bin it, recycle it, and share one ocean-safe habit today.",
+        "speech": "Protect the ocean—protect our home!"
+      }
+    ],
+    "takeaway": "Clean corals, happy ocean—bin and recycle rubbish!"
   }
 ]

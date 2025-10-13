@@ -12,21 +12,133 @@ const isLast = computed(() => pageIndex.value === story.pages.length - 1);
 const progress = computed(() => Math.round(((pageIndex.value + 1) / story.pages.length) * 100));
 
 const showMascotBubble = ref(false);
+const isPaused = ref(false);    // 是否暂停
+const isFinished = ref(false);  // ✅ 是否播放完毕
 
-/* ======== 播放当前页文字（caption text） ======== */
-function playText() {
-  const text = story.pages[pageIndex.value]?.text;
-  if (!text) return;
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.rate = 0.95;
-  utter.pitch = 1.05;
-  utter.lang = 'en-US'; // 强制英语朗读
+const highlightedHTML = ref(story.pages[pageIndex.value]?.text || '');
+const currentWordIndex = ref(-1);
+
+const suppressEndHighlight = ref(false);
+
+function cancelSpeech() {
+  suppressEndHighlight.value = true;       // 标记为“由我们主动取消”
   window.speechSynthesis.cancel();
+}
+
+function speakLine(line) {
+  if (!line) return;
+  const utter = new SpeechSynthesisUtterance(line);
+  utter.lang = 'en-US';
+  utter.rate = 0.98;
+  utter.pitch = 1.0;
+  if (englishVoice) utter.voice = englishVoice;
+
+  cancelSpeech();                 // 先取消上一次
+  suppressEndHighlight.value = true; // 不去补最后高亮
   window.speechSynthesis.speak(utter);
 }
 
-function stopText() {
-  window.speechSynthesis.cancel();
+function speakSpeech() {
+  const speech = story.pages[pageIndex.value]?.speech
+              || story.pages[pageIndex.value]?.tip
+              || `Hi! I'm ${story.mascot}. Let's learn together!`;
+  speakLine(speech);
+}
+
+function playText() {
+  // ✅ 若处于暂停状态，则恢复播放
+  if (isPaused.value && window.speechSynthesis.paused) {
+    window.speechSynthesis.resume();
+    isPaused.value = false;
+    return;
+  }
+
+  const text = story.pages[pageIndex.value]?.text;
+  if (!text) return;
+
+  // ✅ 将文字拆分为单词数组，准备高亮
+ const words = text.trim().split(/\s+/);
+  highlightedHTML.value = words.map(w => `<span>${w}</span>`).join(' ');
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = 0.95;
+  utter.pitch = 1.05;
+  utter.lang = 'en-US';
+
+  utter.onstart = () => {
+    isPaused.value = false;
+    isFinished.value = false;
+    currentWordIndex.value = -1;
+  };
+
+  // ✅ 每当朗读到一个单词时触发
+utter.onboundary = (event) => {
+  console.log('boundary event:', event.charIndex, event.name);
+  if (event.charIndex >= 0) {
+    const idx = getWordIndexByChar(event.charIndex, text);
+    if (idx >= 0 && idx < words.length) {
+      currentWordIndex.value = idx;
+      updateHighlight(words, idx);
+    }
+  }
+};
+
+// ✅ 播放结束：如果不是我们主动取消，就补最后一次高亮到最后一个词
+utter.onend = () => {
+  isPaused.value = false;
+  isFinished.value = true;
+
+  if (!suppressEndHighlight.value && words.length > 0) {
+    currentWordIndex.value = words.length - 1;
+    updateHighlight(words, words.length - 1);
+  }
+};
+
+cancelSpeech();                 // 先取消上一次（会把 suppressEndHighlight 置 true）
+suppressEndHighlight.value = false;  // 立刻恢复为“非主动取消”状态（自然结束才补高亮）
+window.speechSynthesis.speak(utter);
+}
+
+/* 辅助函数：通过字符位置推测当前朗读单词索引 */
+function getWordIndexByChar(charIndex, fullText) {
+  const before = fullText.slice(0, charIndex);
+  return before.trim().split(/\s+/).length - 1;
+}
+
+/* 根据当前索引更新高亮 HTML */
+function updateHighlight(words, activeIdx) {
+  // 把每个单词包裹在 span 里，当前单词加 highlight
+  const html = words.map((w, i) => {
+    // 防止空字符 / 标点断裂
+    const safeWord = w.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+    return i === activeIdx
+      ? `<span class="highlight">${safeWord}</span>`
+      : `<span>${safeWord}</span>`;
+  }).join(' ');
+  highlightedHTML.value = html;
+}
+
+function syncCaptionToPage() {
+  highlightedHTML.value = story.pages[pageIndex.value]?.text || '';
+  currentWordIndex.value = -1;
+  isPaused.value = false;
+  isFinished.value = false;
+}
+
+/* ======== 暂停当前语音 ======== */
+function pauseText() {
+  if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+    window.speechSynthesis.pause();
+    isPaused.value = true;
+  }
+}
+
+/* ======== 重新播放（Replay） ======== */
+function replayText() {
+  cancelSpeech();
+  isPaused.value = false;
+  isFinished.value = false;
+  playText();
 }
 
 /* ======== Tip 英语朗读 ======== */
@@ -50,7 +162,8 @@ function speakTip() {
   utter.rate = 0.98;
   utter.pitch = 1.0;
   if (englishVoice) utter.voice = englishVoice;
-  window.speechSynthesis.cancel();
+  cancelSpeech(); // ✅ 用带 suppress 标记的取消
+  suppressEndHighlight.value = true;
   window.speechSynthesis.speak(utter);
 }
 function toggleTip(e){
@@ -61,11 +174,38 @@ function toggleTip(e){
   if (expanded) speakTip();
 }
 
-function next(){ if(isLast.value) router.push(`/stories/${story.id}/finish`); else pageIndex.value++; }
-function prev(){ if(pageIndex.value>0) pageIndex.value--; }
+function goPage(i) {
+  if (i === pageIndex.value) return;
+  cancelSpeech();
+  showMascotBubble.value = false;
+  pageIndex.value = i;
+  syncCaptionToPage();
+}
 
-onBeforeUnmount(()=> window.speechSynthesis.cancel());
+/* ======== 翻页导航 ======== */
+function next(){
+  cancelSpeech();
+  if (isLast.value) {
+    router.push(`/stories/${story.id}/finish`);
+  } else {
+    pageIndex.value++;
+    showMascotBubble.value = false;
+    syncCaptionToPage();
+  }
+}
+
+function prev(){
+  cancelSpeech();
+  if (pageIndex.value > 0) {
+    pageIndex.value--;
+    showMascotBubble.value = false;
+    syncCaptionToPage();
+  }
+}
+
+onBeforeUnmount(()=> cancelSpeech());
 </script>
+
 
 <template>
   <div class="reader ocean-page" :style="{ '--accent': story.accent || '#9fe2ff' }">
@@ -82,24 +222,30 @@ onBeforeUnmount(()=> window.speechSynthesis.cancel());
 
         <!-- 吉祥物（可朗读 Tip） -->
         <button
-          class="mascot-float ocean-card"
-          :style="{ '--accent': story.accent || '#0aa3c2' }"
-          @click="(showMascotBubble = !showMascotBubble, showMascotBubble && speakTip())"
-        >
+  class="mascot-float ocean-card"
+  :style="{ '--accent': story.accent || '#0aa3c2' }"
+  @click="(showMascotBubble = !showMascotBubble, showMascotBubble ? speakSpeech() : cancelSpeech())"
+>
           <img class="mascot-img" :src="story.cover" :alt="`${story.mascot} mascot`" />
           <span class="bubble" v-show="showMascotBubble">
-            {{ story.pages[pageIndex].tip || `Hi! I'm ${story.mascot}. Let's learn together!` }}
-          </span>
+  {{ story.pages[pageIndex].speech
+     || story.pages[pageIndex].tip
+     || `Hi! I'm ${story.mascot}. Let's learn together!` }}
+</span>
+
         </button>
       </div>
 
       <!-- 漫画下方 caption -->
       <div class="caption">
-        <p class="text">{{ story.pages[pageIndex].text }}</p>
+       <p class="text" v-html="highlightedHTML"></p>
 
         <div class="controls">
-          <button class="play" @click="playText">▶ Play</button>
-          <button class="stop" @click="stopText">⏹ Stop</button>
+          <button class="play" @click="playText">
+            {{ isPaused ? '▶ Resume' : '▶ Play' }}
+          </button>
+          <button class="pause" @click="pauseText">⏸ Pause</button>
+          <button class="replay" v-if="isFinished" @click="replayText">🔁 Replay</button>
         </div>
 
         <button
@@ -112,15 +258,15 @@ onBeforeUnmount(()=> window.speechSynthesis.cancel());
         </button>
       </div>
 
-      <div class="dots">
-        <button
-          v-for="(p,i) in story.pages"
-          :key="i"
-          class="dot"
-          :class="{ active: i===pageIndex }"
-          @click="pageIndex=i"
-        />
-      </div>
+<div class="dots">
+  <button
+    v-for="(p, i) in story.pages"
+    :key="i"
+    class="dot"
+    :class="{ active: i === pageIndex }"
+    @click="goPage(i)"
+  />
+</div>
     </section>
 
     <nav class="nav">
@@ -163,7 +309,7 @@ onBeforeUnmount(()=> window.speechSynthesis.cancel());
 .stage{display:grid;justify-items:center}
 .figure img{
   width:min(100%,900px);
-  max-height:500px;
+  max-height:700px;
   object-fit:contain;
   border-radius:12px;
   background:#f9ffff;
@@ -176,8 +322,8 @@ onBeforeUnmount(()=> window.speechSynthesis.cancel());
 .caption{text-align:center;margin-top:12px}
 .text{font-size:18px;margin:8px auto;max-width:720px}
 .controls{display:flex;gap:10px;justify-content:center;margin-bottom:10px}
-.play,.stop{padding:8px 16px;border-radius:10px;border:1px solid #ccc;background:#fff;font-weight:600}
-.play:hover,.stop:hover{background:#f0fbff}
+.play,.pause,.replay{padding:8px 16px;border-radius:10px;border:1px solid #ccc;background:#fff;font-weight:600}
+.play:hover,.pause:hover,.replay:hover{background:#f0fbff}
 .tip{display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:8px 12px;
   border-radius:999px;background:#fff4c2;border:1px solid #f2d98b;font-weight:700;cursor:pointer;position:relative}
 .tip .bubble{position:absolute;left:50%;transform:translateX(-50%);
@@ -191,4 +337,10 @@ onBeforeUnmount(()=> window.speechSynthesis.cancel());
 .nav{margin-top:14px;display:flex;justify-content:center;gap:12px}
 .nav button{padding:8px 14px;border-radius:10px;border:1px solid #dbe9ee;background:#fff}
 .nav button:hover{background:#f0fbff}
+.text :deep(.highlight) {
+  background: linear-gradient(90deg, #fff5a0 0%, #ffe85f 100%);
+  border-radius: 4px;
+  padding: 2px 4px;
+  transition: background .2s ease;
+}
 </style>
