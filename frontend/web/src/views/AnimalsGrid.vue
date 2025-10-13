@@ -3,8 +3,39 @@
     <h1 id="title" class="visually-hidden">{{ $t('animals.pageTitle') }} - {{ $t('animals.learnPlayAct') }}</h1>
 
     <section class="wrap">
-      <!-- Loading state -->
-      <LoadingOverlay v-if="loading" :message="`🐠 ${$t('loading.animals')}`" />
+      <!-- Loading skeleton -->
+      <div v-if="loading" class="loading-skeleton">
+        <!-- Skeleton carousel -->
+        <div class="skeleton-carousel glass">
+          <div class="skeleton-nav"></div>
+          <div class="skeleton-rail">
+            <div class="skeleton-chip shimmer"></div>
+            <div class="skeleton-chip shimmer"></div>
+            <div class="skeleton-chip shimmer"></div>
+            <div class="skeleton-chip shimmer"></div>
+          </div>
+          <div class="skeleton-nav"></div>
+          <div class="skeleton-mode">
+            <div class="skeleton-btn shimmer"></div>
+            <div class="skeleton-btn shimmer"></div>
+          </div>
+        </div>
+
+        <!-- Skeleton stage -->
+        <div class="skeleton-stage glass">
+          <div class="sky"></div>
+          <div class="sun"></div>
+          <div class="ocean">
+            <div class="wave w1"></div>
+            <div class="wave w2"></div>
+            <div class="wave w3"></div>
+          </div>
+          <div class="beach"></div>
+
+          <div class="skeleton-animal shimmer"></div>
+          <div class="skeleton-bubble shimmer"></div>
+        </div>
+      </div>
 
       <!-- Error state -->
       <div v-else-if="error" class="error-container glass">
@@ -82,11 +113,6 @@
           </button>
         </div>
 
-        <div v-show="!infoOpen" class="tap-hint" :style="{ left: arrowLeft, top: hintTop }" aria-hidden="true">
-          <span class="tap-badge">{{ $t('animals.tapMe') }}</span>
-          <span class="tap-hand">👆</span>
-        </div>
-
         <transition name="pop">
           <div
             v-if="current"
@@ -113,6 +139,10 @@
               :alt="current.name + ' cartoon'"
               @error="onImgError"
             />
+            <div v-show="!infoOpen" class="tap-hint" aria-hidden="true">
+              <span class="tap-badge">{{ $t('animals.tapMe') }}</span>
+              <span class="tap-hand">👆</span>
+            </div>
           </div>
         </transition>
 
@@ -124,9 +154,9 @@
             :aria-label="$t('animals.messageFrom') + ' ' + current.name"
             :style="{ '--arrow-left': arrowLeft }"
           >
-            <div class="bubble-title">{{ $t('animals.hiIm') }} {{ current.name }} 🫧</div>
-            <ul v-if="!loadingDetail && current.lines && current.lines.length > 0">
-              <li v-for="line in current.lines" :key="line">{{ line }}</li>
+            <div class="bubble-title typing-text">{{ $t('animals.hiIm') }} {{ current.name }} 🫧</div>
+            <ul v-if="!loadingDetail && current.lines && current.lines.length > 0" class="typing-list">
+              <li v-for="(line, index) in current.lines" :key="line" :style="{ animationDelay: `${index * 0.5}s` }">{{ line }}</li>
             </ul>
             <div v-else class="skeleton-lines">
               <div class="skeleton-line"></div>
@@ -217,7 +247,6 @@
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { getAnimals, getAnimalBySlug } from '@/services/api.js'
-import LoadingOverlay from '@/components/LoadingOverlay.vue'
 
 const { locale } = useI18n()
 
@@ -344,7 +373,6 @@ function onPreviewError(ev, animal){
 const stageEl = ref(null)
 const animalEl = ref(null)
 const arrowLeft = ref('50%')
-const hintTop = ref('16px')
 function updateArrow(){
   const stage = stageEl.value?.getBoundingClientRect()
   const animal = animalEl.value?.getBoundingClientRect()
@@ -352,9 +380,6 @@ function updateArrow(){
   const centerX = animal.left + animal.width/2
   const pct = Math.max(6, Math.min(94, ((centerX - stage.left) / stage.width) * 100))
   arrowLeft.value = pct.toFixed(1) + '%'
-  const railRect = railBox.value?.getBoundingClientRect()
-  const safe = 8
-  hintTop.value = railRect ? Math.min(Math.max(12, Math.round(railRect.bottom - stage.top + safe)), 64) + 'px' : '16px'
 }
 
 const prevIndex = computed(() => animals.value.length > 0 ? (idx.value - 1 + animals.value.length) % animals.value.length : 0)
@@ -398,32 +423,33 @@ onMounted(async () => {
 
 <style scoped>
 .page{
-  min-height:100vh; padding-top:var(--nav-h); padding-bottom:40px; color:#fff;
+  height:100vh; padding-top:var(--nav-h); overflow:hidden; color:#fff;
   background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 20%, #40E0D0 40%, #20B2AA 60%, #008B8B 80%, #F4A460 90%, #DEB887 100%);
 }
-.wrap{ max-width:min(1400px, 96vw); margin:0 auto; padding:16px 16px 0; }
+.wrap{ max-width:min(1400px, 96vw); margin:0 auto; padding:8px 16px 0; height:calc(100vh - var(--nav-h)); display:flex; flex-direction:column; }
 .glass{ background:rgba(17,25,40,.56); border:1px solid rgba(255,255,255,.14); border-radius:16px; backdrop-filter:blur(8px); box-shadow:0 12px 30px rgba(0,0,0,.28); }
 
-.carousel{ display:flex; align-items:center; gap:10px; padding:10px; margin-bottom:14px; }
+.carousel{ display:flex; align-items:center; gap:10px; padding:8px 10px; margin-bottom:8px; flex-shrink:0; }
 .mode{ margin-left:auto; display:flex; gap:8px; }
 .btn{ height:32px; padding:0 10px; border-radius:10px; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.12); color:#fff; font-weight:700; cursor:pointer; }
 .btn.on{ background:#22d3ee; color:#083344; border-color:#67e8f9; }
 .nav{ width:36px; height:36px; border-radius:10px; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.12); color:#fff; font-weight:900; cursor:pointer; }
 .nav:hover{ background:rgba(255,255,255,.18); }
-.rail{ display:flex; gap:10px; list-style:none; padding:0; margin:0; overflow:auto; scroll-snap-type:x mandatory; }
+.rail{ display:flex; gap:8px; list-style:none; padding:0; margin:0; overflow:auto; scroll-snap-type:x mandatory; }
 .rail::-webkit-scrollbar{ height:6px; } .rail::-webkit-scrollbar-thumb{ background:#9ca3af; border-radius:999px; }
-.chip{ min-width:180px; scroll-snap-align:center; display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18); padding:10px 12px; border-radius:12px; cursor:pointer; outline:none; }
+.chip{ min-width:150px; scroll-snap-align:center; display:flex; align-items:center; gap:8px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18); padding:8px 10px; border-radius:10px; cursor:pointer; outline:none; }
 .chip:hover{ background:rgba(255,255,255,.18); }
 .chip.active{ background:#22d3ee; color:#083344; border-color:#67e8f9; }
-.avatar{ width:56px; height:56px; border-radius:14px; object-fit:cover; background:#fff; }
-.label{ font-weight:800; }
+.avatar{ width:48px; height:48px; border-radius:12px; object-fit:cover; background:#fff; }
+.label{ font-weight:800; font-size:14px; }
 
 .stage{
-  position:relative; overflow:hidden; padding-top:18px;
-  height: clamp(680px, 75vh, 920px);
+  position:relative; overflow:hidden; padding-top:8px;
+  flex:1;
+  min-height:0;
 }
 .sky{ position:absolute; inset:0 0 35% 0; background:linear-gradient(#a5d8ff,#e0f2fe); }
-.sun{ position:absolute; top:30px; right:36px; width:70px; height:70px; border-radius:50%; background:#fde047; box-shadow:0 0 40px rgba(253,224,71,.8); opacity:.9; }
+.sun{ position:absolute; top:12px; right:24px; width:60px; height:60px; border-radius:50%; background:#fde047; box-shadow:0 0 40px rgba(253,224,71,.8); opacity:.9; }
 .ocean{ position:absolute; left:0; right:0; top:35%; height:40%; background:linear-gradient(#60a5fa,#2563eb); overflow:hidden; }
 .wave{ position:absolute; left:-50%; right:-50%; height:40px; background:radial-gradient(circle at 10px -10px, transparent 14px, rgba(255,255,255,.5) 15px) 0 0/20px 20px repeat-x; opacity:.55; animation:drift 10s linear infinite; }
 .w1{ bottom:26px; } .w2{ bottom:14px; opacity:.4; animation-duration:13s; } .w3{ bottom:2px; opacity:.35; animation-duration:16s; }
@@ -432,24 +458,34 @@ onMounted(async () => {
 
 .stage-nav{ position:absolute; inset:0; display:block; pointer-events:none; z-index:5; }
 .stage-btn{
-  position:absolute; top:50%; transform:translateY(-50%) scale(.94);
-  width:min(18vw, 180px); height:min(24vw, 220px);
-  border:none; outline:none; cursor:pointer; border-radius:14px; overflow:hidden;
-  background:rgba(255,255,255,.18); box-shadow:0 10px 24px rgba(0,0,0,.28);
-  transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;
-  pointer-events:auto; opacity:.98;
+  position:absolute; top:45%; transform:translateY(-50%) scale(.94);
+  width:min(14vw, 140px); height:min(18vw, 170px);
+  border:none; outline:none; cursor:pointer; border-radius:12px; overflow:hidden;
+  background:rgba(255,255,255,.18); box-shadow:0 8px 20px rgba(0,0,0,.28);
+  transition:transform .15s ease, box-shadow .15s ease;
+  pointer-events:auto;
+  animation: blink-preview 3s ease-in-out infinite;
 }
 .stage-btn img{ width:100%; height:100%; object-fit:cover; display:block; filter:saturate(.96) contrast(.97); }
-.stage-btn.left{ left:clamp(8px, 2.6vw, 32px); }
-.stage-btn.right{ right:clamp(8px, 2.6vw, 32px); }
-.stage-btn:hover{ transform:translateY(-50%) scale(.98); box-shadow:0 14px 30px rgba(0,0,0,.35); }
-.stage-btn .chev{
-  position:absolute; top:8px; inset-inline-start:8px; width:26px; height:26px; border-radius:999px; display:grid; place-items:center;
-  background:rgba(0,0,0,.55); color:#fff; font-weight:900; font-size:18px; line-height:1;
-}
-.stage-btn.right .chev{ inset-inline-start:auto; inset-inline-end:8px; }
 
-.tap-hint{ position:absolute; transform:translateX(-50%); z-index:6; pointer-events:none; display:flex; flex-direction:column; align-items:center; gap:6px; }
+@keyframes blink-preview {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+.stage-btn.left{ left:clamp(6px, 2vw, 24px); }
+.stage-btn.right{ right:clamp(6px, 2vw, 24px); }
+.stage-btn:hover{ transform:translateY(-50%) scale(.98); box-shadow:0 12px 26px rgba(0,0,0,.35); }
+.stage-btn .chev{
+  position:absolute; top:6px; inset-inline-start:6px; width:24px; height:24px; border-radius:999px; display:grid; place-items:center;
+  background:rgba(0,0,0,.55); color:#fff; font-weight:900; font-size:16px; line-height:1;
+}
+.stage-btn.right .chev{ inset-inline-start:auto; inset-inline-end:6px; }
+
+.tap-hint{ position:absolute; top:10%; left:50%; transform:translateX(-50%); z-index:6; pointer-events:none; display:flex; flex-direction:column; align-items:center; gap:6px; }
 .tap-badge{ background:#22d3ee; color:#083344; font-weight:900; padding:6px 10px; border-radius:999px; box-shadow:0 6px 18px rgba(34,211,238,.35);
   animation: hint-pop .6s cubic-bezier(.2,.9,.2,1) 1, hint-pulse 1.5s ease-in-out infinite .6s;
 }
@@ -459,11 +495,21 @@ onMounted(async () => {
 @keyframes hand-bounce{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(6px) } }
 
 .animal-box{
-  position:absolute; left:50%; transform:translateX(-50%); bottom:22%;
-  width: clamp(420px, 34vw, 520px); height: clamp(360px, 30vw, 460px);
+  position:absolute; left:50%; transform:translateX(-50%); bottom:24%;
+  width: clamp(340px, 28vw, 420px); height: clamp(290px, 24vw, 360px);
   display:flex; align-items:center; justify-content:center; filter: drop-shadow(0 14px 26px rgba(0,0,0,.4)); z-index:4;
+  animation: gentle-bounce 2s ease-in-out infinite;
 }
 .photo, .cartoon-img{ width:100%; height:100%; object-fit:contain; image-rendering:auto; border-radius:14px; }
+
+@keyframes gentle-bounce {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-12px);
+  }
+}
 .pop-enter-from{ transform: translate(-50%, 40%) scale(.85); opacity:0; }
 .pop-enter-active{ transition: all .55s cubic-bezier(.2,.9,.2,1); }
 .pop-enter-to{ transform: translate(-50%, 0%) scale(1); opacity:1; }
@@ -478,6 +524,49 @@ onMounted(async () => {
 }
 .bubble-title{ font-weight:900; margin-bottom:6px; }
 .bubble ul{ margin:0; padding-left:18px; line-height:1.55; }
+
+/* Typing animation for bubble text */
+.typing-text {
+  overflow: hidden;
+  border-right: 2px solid transparent;
+  white-space: nowrap;
+  animation: typing 1.5s steps(40, end), blink-caret 0.75s step-end 5;
+  max-width: fit-content;
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink-caret {
+  from, to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #0f172a;
+  }
+}
+
+.typing-list li {
+  opacity: 0;
+  animation: fade-in-text 0.8s ease forwards;
+}
+
+@keyframes fade-in-text {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 .sheet-mask{
   position:absolute; inset:0; background:rgba(0,0,0,.35); display:grid; place-items:center; z-index:20;
@@ -585,9 +674,293 @@ onMounted(async () => {
 }
 
 @media (max-width: 720px){
-  .stage-btn{ display:none; }
-  .animal-box{ width:min(70vw, 320px); height:min(60vw, 280px); }
-  .sheet-grid{ grid-template-columns: 1fr; }
-  .term{ margin-top:8px; }
+  .stage-btn{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    top: 35%;
+  }
+  .stage-btn img{ display: none; }
+  .stage-btn.left::before,
+  .stage-btn.right::before {
+    content: '←';
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 28px;
+    font-weight: 900;
+    color: #fff;
+  }
+  .stage-btn.right::before {
+    content: '→';
+  }
+  .stage-btn .chev { display: none; }
+
+  .animal-box{
+    width: min(60vw, 280px);
+    height: min(50vw, 240px);
+    bottom: 32%;
+  }
+
+  .bubble {
+    bottom: 4%;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  .bubble-title {
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .bubble ul {
+    padding-left: 14px;
+    line-height: 1.4;
+    font-size: 12px;
+  }
+
+  .sun {
+    top: 8px;
+    right: 12px;
+    width: 45px;
+    height: 45px;
+  }
+
+  .fact-sheet {
+    width: 95vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 14px 12px 10px;
+  }
+
+  .sheet-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .sheet-avatar {
+    width: 80px;
+    height: 80px;
+    align-self: center;
+  }
+
+  .sheet-title h2 {
+    font-size: 20px;
+  }
+
+  .sheet-close {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  .sheet-grid {
+    grid-template-columns: 1fr;
+    gap: 6px 10px;
+    font-size: 13px;
+  }
+
+  .term {
+    margin-top: 6px;
+    font-size: 12px;
+  }
+
+  .val {
+    font-size: 13px;
+  }
+}
+
+/* Landscape mobile */
+@media (max-width: 920px) and (orientation: landscape) {
+  .animal-box {
+    width: min(35vw, 240px);
+    height: min(30vw, 200px);
+    bottom: 38%;
+  }
+
+  .bubble {
+    bottom: 2%;
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  .bubble-title {
+    font-size: 12px;
+    margin-bottom: 2px;
+  }
+  .bubble ul {
+    padding-left: 12px;
+    line-height: 1.3;
+    font-size: 10px;
+  }
+
+  .stage-btn {
+    width: 45px;
+    height: 45px;
+    top: 40%;
+  }
+  .stage-btn.left::before,
+  .stage-btn.right::before {
+    font-size: 24px;
+  }
+
+  .fact-sheet {
+    width: 96vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 12px 10px 8px;
+  }
+
+  .sheet-header {
+    flex-direction: row;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .sheet-avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .sheet-title h2 {
+    font-size: 16px;
+    margin: 0.05em 0;
+  }
+
+  .sci {
+    font-size: 11px;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+  }
+
+  .sheet-close {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+    top: 6px;
+    right: 6px;
+  }
+
+  .sheet-grid {
+    gap: 4px 8px;
+    font-size: 11px;
+  }
+
+  .term {
+    margin-top: 4px;
+    font-size: 10px;
+  }
+
+  .val {
+    font-size: 11px;
+  }
+
+  .val li {
+    margin-left: 12px;
+  }
+}
+
+/* Skeleton Loading Styles */
+.loading-skeleton {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.skeleton-carousel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.skeleton-nav {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.skeleton-rail {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.skeleton-chip {
+  min-width: 150px;
+  height: 66px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.skeleton-mode {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.skeleton-btn {
+  width: 80px;
+  height: 32px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.skeleton-stage {
+  position: relative;
+  overflow: hidden;
+  padding-top: 8px;
+  flex: 1;
+  min-height: 0;
+}
+
+.skeleton-animal {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 24%;
+  width: clamp(340px, 28vw, 420px);
+  height: clamp(290px, 24vw, 360px);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 4;
+}
+
+.skeleton-bubble {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 6%;
+  width: min(980px, 96%);
+  height: 80px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Shimmer animation */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 </style>
