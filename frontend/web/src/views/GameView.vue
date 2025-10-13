@@ -4,7 +4,7 @@
       <LoadingOverlay v-if="loading" :message="`🎮 ${$t('loading.game')}`" />
       <iframe
         ref="gameFrame"
-        src="https://oceanhero-game.pages.dev/"
+        src="/Ocean-Hero-Game/index.html"
         class="game-iframe"
         frameborder="0"
         allowfullscreen
