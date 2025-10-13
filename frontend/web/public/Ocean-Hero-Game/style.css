@@ -51,7 +51,7 @@ h1{ margin:0; font-size:20px }
 
 /* Mascot */
 .mascot{
-  position:absolute; left:16px; bottom:16px;
+  position:absolute; left:-80px; bottom:100px;
   display:flex; align-items:flex-end; gap:10px;
   z-index:1;
 }
@@ -66,57 +66,61 @@ h1{ margin:0; font-size:20px }
   image-rendering:auto;
 }
 
-/* Bubble 紧贴吉祥物右侧 */
+/* === Bigger speech bubble & text === */
 .bubble{
   position:absolute;
   display:inline-block;
-  max-width: 520px;
-  min-width: 200px;
-  padding:12px 16px;
+  max-width: 680px;          /* was 520px */
+  min-width: 260px;          /* was 200px */
+  padding:18px 22px;         /* was 12px 16px */
   white-space: normal; word-break: break-word; overflow-wrap: anywhere;
-  background:#fff; border:4px solid #000; border-radius:16px;
-  font-weight:900; font-size:16px; line-height:1.6; color:#333;
+  background:#fff; border:5px solid #000; /* border thicker */
+  border-radius:22px;        /* was 16px */
+  font-weight:900;
+  font-size: clamp(18px, 2.0vw, 24px);  /* was 16px / 1.6vw / 20px */
+  line-height:1.7;           /* a bit looser for readability */
   transform:scale(0);
-  filter: drop-shadow(0 6px 0 rgba(0,0,0,.15));
+  filter: drop-shadow(0 8px 0 rgba(0,0,0,.15)); /* deeper shadow */
   z-index:2;
 }
-.bubble.show{ animation:pop .28s ease-out forwards }
-@keyframes pop{ from{transform:scale(0)} to{transform:scale(1)} }
 
 .bubble.mascot{
-  /* 关键：相对于 .mascot 容器放置在右侧 */
-  left: calc(100% - 10px);
-  bottom: 40%;
+  /* 贴着吉祥物，但更大一些的框 */
+  left: calc(100% - 12px);   /* 稍微右移以给更粗边留空间 */
+  bottom: 42%;               /* 提高一点，避免遮挡吉祥物脚部 */
   transform: translateY(20%);
-  font-size: clamp(16px, 1.6vw, 20px);
-  padding: 16px 20px;
-  max-width: clamp(260px, 34vw, 440px);
+  padding: 22px 26px;        /* was 16px 20px */
+  max-width: clamp(320px, 40vw, 560px); /* was 260/34vw/440 */
   background:#fffbe6;
-  border:4px solid #222; border-radius:20px;
-  box-shadow:6px 6px 0 #00000040;
+  border:5px solid #222;     /* was 4px */
+  border-radius:24px;        /* was 20px */
+  box-shadow:8px 8px 0 #00000040;
+  font-size: clamp(20px, 2.2vw, 26px);  /* 更大的文字（覆盖 .bubble 通用设置） */
 }
 
-/* 左侧尾巴 */
+/* 左侧小尾巴同步放大并微调位置/阴影 */
 .bubble.mascot::after{
   content:"";
   position:absolute;
-  left:-16px; bottom:22px;
-  border-width:12px; border-style:solid;
+  left:-20px;                /* was -16px */
+  bottom:26px;               /* was 22px */
+  border-width:14px;         /* was 12px */
+  border-style:solid;
   border-color: transparent #fffbe6 transparent transparent;
-  filter: drop-shadow(-2px 2px 0 #222);
+  filter: drop-shadow(-3px 3px 0 #222);
 }
 
 /* Current item */
 .current-item{
   display:flex; align-items:center; justify-content:center;
-  height:260px; margin-top:64px; background:transparent; border:none;
+  height:320px; margin-top:70px; background:transparent; border:none;
 }
 .card.big{
   border:none; box-shadow:none; background:transparent; width:auto; height:auto;
   display:flex; flex-direction:column; align-items:center; gap:8px; cursor:grab; user-select:none;
 }
-.card.big .emoji{ font-size:72px }
-.card.big .label{ font-size:18px; font-weight:900; text-align:center }
+.card.big .emoji{ font-size:120px }
+.card.big .label{ font-size:25px; font-weight:900; text-align:center }
 
 /* Airdrop */
 .airdrop{
@@ -151,11 +155,23 @@ img.plane{ width:112px; height:auto }
 }
 
 /* Bins */
-.bins.three{ display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:34px }
+.bins.three{ display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:170px }
 .bin{ background:transparent; border:none; box-shadow:none; padding:12px 8px; min-height:200px;
   display:flex; flex-direction:column; align-items:center; justify-content:flex-end }
-.bin .can{ font-size:64px; margin-bottom:10px }
-.bin .label{ font-weight:1000; text-align:center; color:#fff; padding:8px 12px; border-radius:12px; width:auto }
+/* 新的（给 PNG 用） */
+.bin .can { margin-bottom: 10px; }
+.bin .can img{
+  width: 240px;         /* 桌面端大小：按需改 120~180 都可以 */
+  height: auto;
+  object-fit: contain;
+  image-rendering: auto;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,.2)); /* 可选小阴影 */
+  user-select: none;
+  pointer-events: none;  /* 重要：不阻挡 drop 事件 */
+  transition: transform .15s ease;
+}
+.bin .can img:hover{ transform: scale(1.04); } /* 可选悬停效果 */
+.bin .label{ font-weight:1000; text-align:center; color:#fff; padding:8px 12px; border-radius:12px; width:auto; font-size: 25px; }
 .bin[data-type="waste"] .label{ background:var(--green) }
 .bin[data-type="recycle"] .label{ background:var(--yellow); color:#222 }
 .bin[data-type="rubbish"] .label{ background:var(--red) }
@@ -238,7 +254,7 @@ img.plane{ width:112px; height:auto }
 }
 .whale{
   position:absolute; width:min(18vw, 220px); height:auto;
-  left:24vw; bottom:-8px; filter: drop-shadow(0 10px 0 rgba(0,0,0,.08)); opacity:0; will-change:transform;
+  left:4vw; bottom:-8px; filter: drop-shadow(0 10px 0 rgba(0,0,0,.08)); opacity:0; will-change:transform;
 }
 .whale.jump{ animation: whaleJump 4.8s cubic-bezier(.35,.02,.23,1) infinite }
 .whale.jump.delay{ animation-delay:2.2s }
@@ -277,4 +293,114 @@ img.plane{ width:112px; height:auto }
 /* 低动效偏好：减少动画 */
 @media (prefers-reduced-motion: reduce){
   .plane, .gull, .cloud, .whale.jump{ animation: none !important }
+}
+
+/* =========================
+   Kids Game Font System
+   ========================= */
+:root{
+  /* 统一字体变量：圆润可爱 + 现有 Nunito 作为 UI 正文字体 */
+  --font-display: "Baloo 2", "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-ui: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* 自适应字号刻度（clamp 最小 / 理想 / 最大） */
+  --fs-xs: clamp(12px, 1.2vw, 14px);
+  --fs-sm: clamp(14px, 1.4vw, 16px);
+  --fs-md: clamp(16px, 1.6vw, 18px);
+  --fs-lg: clamp(18px, 2.0vw, 22px);
+  --fs-xl: clamp(22px, 2.6vw, 28px);
+  --fs-xxl: clamp(28px, 3.4vw, 40px);
+  --fs-hero: clamp(32px, 4.2vw, 52px);
+}
+
+/* 全局：用 Nunito 做正文，稍微加粗一点显童趣 */
+body{
+  font-family: var(--font-ui);
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+/* 顶部游戏标题 h1：大、圆、显眼 */
+header h1{
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+}
+
+/* 弹窗标题（Ready to Clean the Beach? / Time’s Up!）：更大一级 */
+.panel h2{
+  font-family: var(--font-display);
+  font-size: var(--fs-xxl);
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 10px 0 14px;
+}
+
+/* 顶部 HUD 的小胶囊文字：稳一点，不抢戏 */
+#hud .chip{
+  font-size: var(--fs-sm);
+  font-weight: 800;
+}
+
+/* 按钮：大、厚、适合小朋友点击 */
+.btn{
+  font-size: var(--fs-md);
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+/* 提示（hint）：要更大更醒目（你特别要求放大） */
+.hint{
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+/* 规则说明：比正文略大一点，行距更舒适 */
+.rules{
+  font-size: var(--fs-md);
+  line-height: 1.65;
+  font-weight: 700;
+}
+
+/* 垃圾桶标签：更醒目（WASTE/RECYCLE/RUBBISH） */
+.bin .label{
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 1000;
+  letter-spacing: 0.5px;
+}
+
+/* 当前物品卡片文字（大 emoji 下面的标签） */
+.card.big .label{
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 900;
+}
+
+/* 结算页分数文字 */
+.summary{
+  font-size: var(--fs-lg);
+  font-weight: 900;
+}
+
+/* 气泡对白：保持你原有的放大逻辑，但字体更童趣 */
+.bubble{
+  font-family: var(--font-display);
+  font-size: clamp(18px, 2.0vw, 24px);
+  font-weight: 900;
+}
+.bubble.mascot{
+  font-size: clamp(20px, 2.2vw, 26px);
+}
+
+/* 小屏优化：标题与 hint 再放大一点，按钮不缩 */
+@media (max-width: 980px){
+  header h1{ font-size: clamp(24px, 6vw, 34px); }
+  .hint{ font-size: clamp(18px, 4.4vw, 24px); }
+  .btn{ font-size: clamp(16px, 4.2vw, 20px); }
+  .panel h2{ font-size: clamp(24px, 6.2vw, 36px); }
 }
