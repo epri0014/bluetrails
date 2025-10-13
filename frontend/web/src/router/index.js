@@ -13,7 +13,7 @@ const routes = [
   { path: '/',        name: 'home', component: Home },
   { path: '/animals', name: 'animals', component: AnimalsGrid },
   { path: '/water',   name: 'water',  component: WaterView },
-  { path: '/game',    name: 'game',   component: Game },
+  { path: '/game',    name: 'game',   component: GameView },
   { path: '/quiz',    name: 'quiz',   component: QuizView },
   { path: '/stories', name: 'stories', component: StoriesLibrary },
   { path: '/stories/:id',         component: StoryReader },
