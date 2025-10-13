@@ -30,7 +30,9 @@ h1{ margin:0; font-size:20px }
 
 /* hint */
 .hint{
-  position:absolute; bottom:-38px; left:14px;
+  position:absolute; bottom:-140px;
+  left: 60%;              /* 水平居中起点 */
+  transform: translateX(-50%);  /* 👈 让元素中心对齐到页面中间 */
   background:#fff; border:3px solid #0003; border-radius:12px;
   padding:6px 12px; font-size:14px; font-weight:700;
   box-shadow:2px 2px 6px rgba(0,0,0,.1);
@@ -126,7 +128,7 @@ h1{ margin:0; font-size:20px }
 .plane {
   position: absolute;
   bottom: 60vh;        /* 初始高度：屏幕中上方 */
-  right: 15%;           /* 控制水平位置（越大越靠右） */
+  right: 10%;           /* 控制水平位置（越小越靠右） */
   font-size: 96px;     /* 飞机大小 */
   line-height: 1;
   opacity: 0.9;
@@ -255,7 +257,7 @@ h1{ margin:0; font-size:20px }
   filter: drop-shadow(0 8px 0 rgba(0,0,0,.08)); opacity:.98;
 }
 .hut-tree.d1{ left:5%;  bottom:4vh; transform:translateY(0) rotate(-1deg) }
-.hut-tree.d2{ right:6%; bottom:5vh; transform:scaleX(-1) scale(.95) rotate(1deg) }
+.hut-tree.d2{ right:6%; bottom:20vh; transform:scaleX(-1) scale(.95) rotate(1deg) }
 .hut-tree.d3{ left:38%; bottom:3.5vh; transform:scale(.8) rotate(.5deg); opacity:.95 }
 
 /* 鲸鱼层（仅海面以上可见），不挡交互 */
