@@ -28,21 +28,20 @@
             <div v-if="showOceanFriendsDropdown" class="dropdown-menu" @mouseenter="keepOceanFriendsDropdown" @mouseleave="hideOceanFriendsDropdown">
               <RouterLink class="dropdown-item" to="/animals" data-nav-index="0" @click="resetNavbarStates">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c.64.16 1.31.26 2 .26s1.36-.1 2-.26V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm-2 7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm4 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
+                  <path d="M12.5 8c-1.5 0-2.5.5-3.5 1.5L8 10.5C7.5 11 7 11.5 6.5 11.5S5.5 11 5 10.5L4 9.5C3 8.5 2 8 .5 8L0 9.5c.5.5 1 1 1.5 1.5L2.5 12l1 1c1 1 2.5 1.5 4 1.5s3-.5 4-1.5l1-1 1-1c.5-.5 1-1 1.5-1.5L15.5 8h-3zM9 14.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm6.5 0c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zM18.5 6C17 6 16 6.5 15 7.5l-1 1c-.5.5-1 1-1.5 1.5L12 10.5c-.5.5-1 1-1.5 1.5L10 12.5c-1 1-2 1.5-3.5 1.5l-.5-1.5c.5-.5 1-1 1.5-1.5L8 10.5c1-1 2-1.5 3.5-1.5h6l-.5-1.5c-.5-.5-1-1-1.5-1.5L15 5.5C14 4.5 13 4 11.5 4l-.5 1.5c.5.5 1 1 1.5 1.5l.5.5 1 1c.5.5 1 1 1.5 1.5L16 11l1 1c1 1 2.5 1.5 4 1.5s3-.5 4-1.5l1-1 1-1c.5-.5 1-1 1.5-1.5L24 6.5l-5.5-.5z"/>
                 </svg>
                 <span>{{ $t('nav.meetOceanFriends') }}</span>
               </RouterLink>
               <RouterLink class="dropdown-item" to="/water" data-nav-index="1" @click="resetNavbarStates">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                  <path d="M12 2S6.5 8 6.5 14c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5C17.5 8 12 2 12 2z"/>
+                  <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
                 </svg>
                 <span>{{ $t('nav.visitOceanHome') }}</span>
               </RouterLink>
               <!-- Ocean Adventures (Stories) -->
               <RouterLink to="/stories" class="dropdown-item" data-nav-index="2" @click="resetNavbarStates">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                  <path d="M4 6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 6v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6zM15 6h3a2 2 0 0 1 2 2v10l-3-2-3 2V6z"/>
-                  <path d="M11.5 8.5l.6 1.2 1.3.2-1 .9.2 1.3-1.1-.6-1.1.6.2-1.3-1-.9 1.3-.2.6-1.2z"/>
+                  <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>
                 </svg>
                 <span>{{ $t('nav.oceanStories') }}</span>
               </RouterLink>
@@ -65,19 +64,19 @@
             <div v-if="showPlayPracticeDropdown" class="dropdown-menu" @mouseenter="keepPlayPracticeDropdown" @mouseleave="hidePlayPracticeDropdown">
               <RouterLink class="dropdown-item" to="/game" data-nav-index="2">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                  <path d="M17.5 7c-1.66 0-3 1.34-3 3 0 .35.07.69.18 1H16v2h-1.32c-.11.31-.18.65-.18 1 0 1.66 1.34 3 3 3s3-1.34 3-3V10c0-1.66-1.34-3-3-3zM8 9c0-1.66-1.34-3-3-3S2 7.34 2 10v3c0 1.66 1.34 3 3 3s3-1.34 3-3c0-.35-.07-.69-.18-1H9v-2H7.82c.11-.31.18-.65.18-1zm8-2V5c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h6c.55 0 1-.45 1-1z"/>
+                  <path d="M15 4l-4 4v3l-4 4-3-3v6h6l-3-3 4-4h3l4-4z"/>
                 </svg>
                 <span>{{ $t('nav.playGames') }}</span>
               </RouterLink>
               <RouterLink class="dropdown-item" to="/quiz" data-nav-index="3">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                  <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                  <path d="M13 3C9.23 3 6.19 5.95 6 9.66l-1.92-.64L2 13l4 1.5v.5l4 1.5 1.5-4.05-2.3-.77c.2-2.5 2.28-4.48 4.8-4.48 2.76 0 5 2.24 5 5 0 2.64-2.05 4.78-4.65 4.96l-.77 2.3C16.79 18.95 20 15.77 20 12c0-3.87-3.13-7-7-7zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8H12z"/>
                 </svg>
                 <span>{{ $t('nav.practiceQuiz') }}</span>
               </RouterLink>
               <RouterLink class="dropdown-item" to="/challenge" data-nav-index="4" @click="restartChallenge">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm-1 5h2v5h-2zm1 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                  <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm7 6c-1.65 0-3-1.35-3-3V3h6v8c0 1.65-1.35 3-3 3zm7-6c0 1.3-.84 2.4-2 2.82V7h2v1z"/>
                 </svg>
                 <span>{{ $t('nav.buddyChallenge') }}</span>
               </RouterLink>
@@ -105,28 +104,28 @@
 
         <RouterLink class="dlink" to="/animals" @click="open=false; resetNavbarStates()">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c.64.16 1.31.26 2 .26s1.36-.1 2-.26V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm-2 7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm4 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
+            <path d="M12.5 8c-1.5 0-2.5.5-3.5 1.5L8 10.5C7.5 11 7 11.5 6.5 11.5S5.5 11 5 10.5L4 9.5C3 8.5 2 8 .5 8L0 9.5c.5.5 1 1 1.5 1.5L2.5 12l1 1c1 1 2.5 1.5 4 1.5s3-.5 4-1.5l1-1 1-1c.5-.5 1-1 1.5-1.5L15.5 8h-3zM9 14.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm6.5 0c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zM18.5 6C17 6 16 6.5 15 7.5l-1 1c-.5.5-1 1-1.5 1.5L12 10.5c-.5.5-1 1-1.5 1.5L10 12.5c-1 1-2 1.5-3.5 1.5l-.5-1.5c.5-.5 1-1 1.5-1.5L8 10.5c1-1 2-1.5 3.5-1.5h6l-.5-1.5c-.5-.5-1-1-1.5-1.5L15 5.5C14 4.5 13 4 11.5 4l-.5 1.5c.5.5 1 1 1.5 1.5l.5.5 1 1c.5.5 1 1 1.5 1.5L16 11l1 1c1 1 2.5 1.5 4 1.5s3-.5 4-1.5l1-1 1-1c.5-.5 1-1 1.5-1.5L24 6.5l-5.5-.5z"/>
           </svg>
           <span>{{ $t('nav.meetOceanFriends') }}</span>
         </RouterLink>
 
         <RouterLink class="dlink" to="/water" @click="open=false; resetNavbarStates()">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-            <path d="M12 2S6.5 8 6.5 14c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5C17.5 8 12 2 12 2z"/>
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
           </svg>
           <span>{{ $t('nav.visitOceanHome') }}</span>
         </RouterLink>
 
         <RouterLink class="dlink" to="/game" @click="open=false">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-            <path d="M17.5 7c-1.66 0-3 1.34-3 3 0 .35.07.69.18 1H16v2h-1.32c-.11.31-.18.65-.18 1 0 1.66 1.34 3 3 3s3-1.34 3-3V10c0-1.66-1.34-3-3-3zM8 9c0-1.66-1.34-3-3-3S2 7.34 2 10v3c0 1.66 1.34 3 3 3s3-1.34 3-3c0-.35-.07-.69-.18-1H9v-2H7.82c.11-.31.18-.65.18-1zm8-2V5c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h6c.55 0 1-.45 1-1z"/>
+            <path d="M15 4l-4 4v3l-4 4-3-3v6h6l-3-3 4-4h3l4-4z"/>
           </svg>
           <span>{{ $t('nav.playGames') }}</span>
         </RouterLink>
 
         <RouterLink class="dlink" to="/quiz" @click="open=false">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-            <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+            <path d="M13 3C9.23 3 6.19 5.95 6 9.66l-1.92-.64L2 13l4 1.5v.5l4 1.5 1.5-4.05-2.3-.77c.2-2.5 2.28-4.48 4.8-4.48 2.76 0 5 2.24 5 5 0 2.64-2.05 4.78-4.65 4.96l-.77 2.3C16.79 18.95 20 15.77 20 12c0-3.87-3.13-7-7-7zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8H12z"/>
           </svg>
           <span>{{ $t('nav.practiceQuiz') }}</span>
         </RouterLink>
@@ -134,8 +133,7 @@
         <!-- Ocean Adventures (mobile) -->
         <RouterLink class="dlink" to="/stories" @click="open=false; resetNavbarStates()">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="24" height="24">
-            <path d="M4 6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6zM15 6h3a2 2 0 0 1 2 2v10l-3-2-3 2V6z"/>
-            <path d="M11.5 8.5l.6 1.2 1.3.2-1 .9.2 1.3-1.1-.6-1.1.6.2-1.3-1-.9 1.3-.2.6-1.2z"/>
+            <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>
           </svg>
           <span>{{ $t('nav.oceanStories') }}</span>
         </RouterLink>
@@ -143,7 +141,7 @@
         <!-- Buddy Challenge (mobile) -->
         <RouterLink class="dlink" to="/challenge" @click="open=false; restartChallenge()">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm-1 5h2v5h-2zm1 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+            <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm7 6c-1.65 0-3-1.35-3-3V3h6v8c0 1.65-1.35 3-3 3zm7-6c0 1.3-.84 2.4-2 2.82V7h2v1z"/>
           </svg>
           <span>{{ $t('nav.buddyChallenge') }}</span>
         </RouterLink>
