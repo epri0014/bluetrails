@@ -139,3 +139,42 @@ export const getQuestionCategories = async (locale = 'en') => {
 
   return result;
 };
+
+// Get habitats/sites by animal slug
+export const getHabitatsByAnimal = async (slug, locale = 'en') => {
+  // Try to get data in requested locale from v_animal_site
+  let result = await supabase
+    .from('v_animal_site')
+    .select('*')
+    .eq('animal_slug', slug)
+    .eq('locale', locale)
+    .order('site_id');
+
+  // If no data found and locale is not 'en', fallback to English
+  if ((!result.data || result.data.length === 0) && locale !== 'en') {
+    result = await supabase
+      .from('v_animal_site')
+      .select('*')
+      .eq('animal_slug', slug)
+      .eq('locale', 'en')
+      .order('site_id');
+
+    if (result.data && result.data.length > 0) {
+      result.fellBackToEn = true;
+    }
+  }
+
+  return result;
+};
+
+// Get EPA water quality prediction with traffic light status
+export const getEpaPrediction = async (siteId, date) => {
+  const result = await supabase
+    .from('v_epa_measurements_wide_prediction_tl')
+    .select('*')
+    .eq('site_id', siteId)
+    .eq('date', date)
+    .single();
+
+  return result;
+};

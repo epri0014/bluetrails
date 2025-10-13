@@ -10,16 +10,18 @@ import StoryFinish from '../views/StoryFinish.vue';
 
 
 const routes = [
-  { path: '/', name: 'home', component: Home },
+  { path: '/',        name: 'home', component: Home },
   { path: '/animals', name: 'animals', component: AnimalsGrid },
-  { path: '/water', name: 'water', component: WaterView },
-  { path: '/game', name: 'game', component: GameView },
-  { path: '/quiz', name: 'quiz', component: QuizView },
-  { path: '/stories', component: StoriesLibrary },
-  { path: '/stories/:id', component: StoryReader },
-  { path: '/stories/:id/finish', component: StoryFinish },
+  { path: '/water',   name: 'water',  component: WaterView },
+  { path: '/game',    name: 'game',   component: Game },
+  { path: '/quiz',    name: 'quiz',   component: QuizView },
+  { path: '/stories', name: 'stories', component: StoriesLibrary },
+  { path: '/stories/:id',         component: StoryReader },
+  { path: '/stories/:id/finish',  component: StoryFinish },
+  { path: '/challenge', name: 'Challenge', component: () => import('@/views/ChallengeWrapper.vue') },
   { path: '/:catchAll(.*)', redirect: '/' },
 ]
+
 
 export default createRouter({
   history: createWebHistory(),
