@@ -1,4 +1,4 @@
-# ====================== app.R (Kids Water Guide - Seaweeds + Right Calendar Icon) ======================
+# app.R (Kids Water Guide)
 suppressWarnings({
   app_dir <- tryCatch({
     if (requireNamespace("rstudioapi", quietly = TRUE) && rstudioapi::isAvailable())
@@ -6,21 +6,21 @@ suppressWarnings({
   }, error = function(e) getwd())
 })
 
-# ---- data files (adjust paths if needed) ----
-file_ppb <- file.path(app_dir, "1984_07-2024_06_Port_Phillip_Bay_Water_quality_data.xlsx")
-file_wp  <- file.path(app_dir, "1990_02-2024_06_Western_Port_Water_quality_data.xlsx")
-file_gl  <- file.path(app_dir, "1990_01-2024_06_Gippsland_Lakes_Water_quality_data_coord.xlsx")
+# Data files (stored alongside the app)
+file_ppb <- file.path(app_dir, "1984_07-2025_06_Port_Phillip_Bay_Water_quality_data.xlsx")
+file_wp  <- file.path(app_dir, "1990_02-2025_05_Western_Port_Water_quality_data.xlsx")
+file_gl  <- file.path(app_dir, "1990_01-2025_06_Gippsland_Lakes_Water_quality_data.xlsx")
 
 for (p in c(file_ppb, file_wp, file_gl)) if (!file.exists(p)) stop("File not found: ", p)
 
-# ---------- packages ----------
+# Packages
 library(shiny)
 pkgs <- c("bslib","leaflet","dplyr","readxl","lubridate","stringr","purrr","tibble","htmltools","digest")
 need <- setdiff(pkgs, rownames(installed.packages()))
 if (length(need)) install.packages(need, repos = "https://cloud.r-project.org")
 invisible(lapply(pkgs, library, character.only=TRUE))
 
-# ---------- helpers ----------
+# Helpers: parsing and value checks
 numify <- function(x){ suppressWarnings(as.numeric(gsub("[^0-9.\\-]", "", as.character(x)))) }
 parse_date_any <- function(x){
   if (inherits(x, "Date")) return(as.Date(x))
@@ -29,7 +29,7 @@ parse_date_any <- function(x){
 }
 clip_invalid <- function(x, lo, hi){ ifelse(x < lo | x > hi, NA_real_, x) }
 
-# Vectorized formatter
+# Numeric formatter for popup text
 fmt_num <- function(x){
   y <- suppressWarnings(as.numeric(x))
   d <- ifelse(abs(y) >= 10, 3, 2)
@@ -38,7 +38,7 @@ fmt_num <- function(x){
   as.character(out)
 }
 
-# rotate a choice deterministically by time slot
+# Deterministic random pick that rotates over time
 pick_rotating <- function(items, key = "", period_seconds = 15){
   if (length(items) == 0) return(NA_character_)
   slot <- floor(as.numeric(Sys.time()) / period_seconds)
@@ -49,7 +49,7 @@ pick_rotating <- function(items, key = "", period_seconds = 15){
   sample(items, 1)
 }
 
-# ---------- content pools ----------
+# Content pools used in the UI
 FUN_FACTS <- c(
   "Seahorses are fish that swim upright","Dolphins sleep with one eye open",
   "Sea stars can regrow arms","Octopuses have three hearts",
@@ -79,7 +79,6 @@ TRY_THIS_CLOUDY <- c("Foam detective - watch bubbles pop and name the shapes","C
 TRY_THIS_WARM   <- c("Toe test - count to ten with toes in the water","Sand bakery - make a warm sand cupcake with a shell on top")
 TRY_THIS_COOL   <- c("Skip and splash - ten quick jumps then warm towel time","Stone stacker - build a tiny cool-stone tower")
 
-# Ocean friends for Bits slide
 OCEAN_FRIENDS <- c(
   "🐬 Dolphins leap outside the heads - racing the waves",
   "🐋 Whales pass by in deep seasons - singing low songs",
@@ -92,7 +91,7 @@ OCEAN_FRIENDS <- c(
   "🐢 Gentle turtles cruise the weeds - calm and steady"
 )
 
-# ---------- flexible sheet helpers ----------
+# Sheet name helpers for flexible workbooks
 normalize <- function(x) gsub("[^a-z0-9]", "", tolower(x))
 find_sheet <- function(path, candidates){
   sheets <- try(readxl::excel_sheets(path), silent = TRUE)
@@ -111,7 +110,7 @@ find_sheet <- function(path, candidates){
        " - looked for one of: ", paste(candidates, collapse=", "))
 }
 
-# ---------- read & clean ----------
+# Read a workbook and return a standardised tibble
 read_clean <- function(path, region_name){
   data_sheet <- find_sheet(path, c("Data","Measurements","Sheet1","Sheet 1"))
   meta_sheet_try <- try(find_sheet(path, c("Site Metadata","Sites","Site_Meta","Metadata","Site Info",
@@ -119,6 +118,8 @@ read_clean <- function(path, region_name){
   
   raw_data <- readxl::read_excel(path, sheet = data_sheet)
   nm <- names(raw_data)
+  
+  # Map common variants to standard names
   rename_map <- c(
     "site"="site_id","site_code"="site_id","siteid"="site_id","station"="site_id",
     "site_name"="site_name_short","sitename"="site_name_short","beach"="site_name_short",
@@ -136,6 +137,7 @@ read_clean <- function(path, region_name){
     }
   }
   
+  # Parse and constrain fields of interest
   need_cols_data <- c("site_id","site_name_short","date","CHL_A","Turb","DO_mg","Temperature","N_TOTAL")
   data <- raw_data %>%
     mutate(
@@ -153,6 +155,7 @@ read_clean <- function(path, region_name){
     distinct(site_name_short, date, .keep_all = TRUE) %>%
     mutate(site_name_short = stringr::str_squish(as.character(site_name_short)))
   
+  # Metadata for coordinates
   meta <- NULL
   if (!inherits(meta_sheet_try, "try-error")){
     raw_meta <- readxl::read_excel(path, sheet = meta_sheet_try)
@@ -184,6 +187,7 @@ read_clean <- function(path, region_name){
       mutate(site_name_short = stringr::str_squish(as.character(site_name_short)))
   }
   
+  # Join with coordinates and flag region
   if (!is.null(meta)){
     df <- dplyr::left_join(data, meta, by = c("site_id","site_name_short")) %>%
       dplyr::filter(!is.na(latitude), !is.na(longitude)) %>%
@@ -199,12 +203,12 @@ read_clean <- function(path, region_name){
   df %>% dplyr::mutate(region = region_name)
 }
 
-# read three
+# Load three regions
 ppb <- read_clean(file_ppb, "Port Phillip Bay")
 wp  <- read_clean(file_wp,  "Western Port")
 gl  <- read_clean(file_gl,  "Gippsland Lakes")
 
-# union & globals
+# Combine and compute global bounds
 all_df <- dplyr::bind_rows(ppb, wp, gl)
 if (nrow(all_df) == 0) stop("No rows after cleaning - datasets lacked coordinates.")
 all_regions <- c("All regions", sort(unique(all_df$region)))
@@ -212,7 +216,7 @@ all_sites   <- sort(unique(all_df$site_name_short))
 min_d <- min(all_df$date, na.rm=TRUE)
 max_d <- max(all_df$date, na.rm=TRUE)
 
-# ---------- R-A-G logic ----------
+# Status code rules and colours
 code_to_color <- c(green="#24c38b", amber="#ffb000", red="#e74a5f")
 code_to_label <- c(green="Safe", amber="Caution", red="Rest")
 region_fills  <- c(
@@ -232,7 +236,7 @@ overall_code <- function(a,c,o,n,t){
   ifelse(red_any, "red", ifelse(amb_any, "amber", "green"))
 }
 
-# ---------- kid lines ----------
+# Short explanatory strings for kids panel
 kidline <- function(metric, code) switch(metric,
                                          "Algal Bloom"=switch(code, green="Tiny plants. A few is fine. Too many can make fish tired.",
                                                               amber="Some algae around. Keep watch.",
@@ -251,7 +255,7 @@ kidline <- function(metric, code) switch(metric,
                                                               red  ="Very warm. Animals get sleepy."),
                                          "")
 
-# ---------- theme ----------
+# Theming
 theme <- bslib::bs_theme(
   version = 5,
   bootswatch = "minty",
@@ -262,12 +266,12 @@ theme <- bslib::bs_theme(
   heading_font = bslib::font_google("Baloo 2")
 )
 
-# ---------- UI ----------
+# UI
 ui <- bslib::page_navbar(
   title = "Kids’ Water Guide - Port Phillip Bay, Western Port & Gippsland Lakes",
   theme = theme,
   header = tagList(
-    # CSS + JS
+    # CSS and JS assets
     tags$head(
       tags$style(HTML('
 :root{ --sea1:#8fd3ff; --sea2:#a4ffd8; --sea3:#ffe6a3; --sea4:#b7f2ff; }
@@ -301,7 +305,7 @@ body{
 .story .metric{ font-weight:800; }
 .muted{ opacity:.7; font-size:.95rem; }
 
-/* Insights Carousel (manual only - no auto jump) */
+/* Insights carousel */
 .insights-kids{
   background:
     linear-gradient(135deg, rgba(255,255,255,.95), rgba(255,255,255,.95)),
@@ -354,7 +358,7 @@ body{
 .snap-left:after{ content:"‹"; font-size:20px; font-weight:900; line-height:1; }
 .snap-right:after{ content:"›"; font-size:20px; font-weight:900; line-height:1; }
 
-/* Quick Help - full width, solid */
+/* Quick Help */
 details.quickhelp{
   border:2px solid #000; border-radius:22px; padding:14px; background:#ffffff;
   box-shadow:6px 6px 0 #00000018; width:100%;
@@ -364,7 +368,7 @@ details.quickhelp > summary::-webkit-details-marker{ display:none; }
 details.quickhelp > summary:before{ content:"▸"; margin-right:8px; font-weight:900; }
 details.quickhelp[open] > summary:before{ content:"▾"; }
 
-/* Bubbles background (behind everything) */
+/* Background bubbles and critters */
 .ocean-bubbles{ position:fixed; inset:0; pointer-events:none; z-index:0; }
 .ocean-bubbles span{
   position:absolute; border-radius:50%; opacity:.9;
@@ -374,10 +378,7 @@ details.quickhelp[open] > summary:before{ content:"▾"; }
 }
 @keyframes rise{ from{ transform:translateY(30px) scale(.9) } to{ transform:translateY(-120vh) scale(1.1) } }
 
-/* Horizontal sea animals (bottom quarter), behind cards/map */
-.ocean-critters{
-  position:fixed; inset:0; pointer-events:none; z-index:0;
-}
+.ocean-critters{ position:fixed; inset:0; pointer-events:none; z-index:0; }
 .ocean-critters span{
   position:absolute; left:-12%;
   bottom:8vh;
@@ -392,7 +393,7 @@ details.quickhelp[open] > summary:before{ content:"▾"; }
   100% { transform: translateX(0) scaleX(-1); }
 }
 
-/* NEW: Seaweeds band at bottom (gently sway in place, behind UI) */
+/* Seaweeds band along the bottom */
 .ocean-seaweeds{
   position:fixed; left:0; right:0; bottom:0;
   height:16vh; pointer-events:none; z-index:0;
@@ -426,25 +427,24 @@ details.quickhelp[open] > summary:before{ content:"▾"; }
   100%{ transform: rotate(2.4deg); }
 }
 
-/* Keep UI above all background layers */
+/* Layering order to keep UI above background */
 .navbar, .container-lg, .card-cute, .insights-kids, .map-legend, .leaflet-container, .leaflet-control {
   position:relative; z-index:5;
 }
 
-/* Date input with calendar icon on the RIGHT */
+/* Date input with calendar icon on the right */
 .date-wrap{ position:relative; }
 .date-wrap .calendar-ico{
   position:absolute; right:10px; top:50%; transform:translateY(-50%);
   font-size:1.15rem; opacity:.85; cursor:pointer; pointer-events:auto;
 }
-/* space on the right so text doesn’t collide with icon */
 div#pick_date input.form-control{ padding-right:2rem; }
 
-/* misc */
+/* Misc */
 .flash{ animation: flash 1.2s ease-in-out 1; }
 @keyframes flash{ 0%{box-shadow:0 0 0 0 rgba(26,123,214,.0)} 50%{box-shadow:0 0 0 10px rgba(26,123,214,.25)} 100%{box-shadow:0 0 0 0 rgba(26,123,214,0)} }
 
-/* hide any legacy egg classes */
+/* Hide legacy egg classes if present */
 .egg,.eggs,.egg-stack,.traffic-eggs,.traffic-ovals,.status-egg,.status-oval,[class*="egg" i],[class*="oval" i]{display:none !important;}
       ')),
       tags$script(HTML('
@@ -469,7 +469,6 @@ div#pick_date input.form-control{ padding-right:2rem; }
     setTimeout(()=>{ box.remove(); }, durationMs);
   }
 
-  // placeholder for date input (blank until picked)
   function setDatePlaceholder(){
     var el = document.querySelector("div#pick_date input.form-control");
     if(el){ el.setAttribute("placeholder","Pick a day"); el.value = el.value || ""; }
@@ -477,7 +476,6 @@ div#pick_date input.form-control{ padding-right:2rem; }
   document.addEventListener("DOMContentLoaded", setDatePlaceholder);
   setTimeout(setDatePlaceholder, 0);
 
-  // clicking calendar icon opens the date picker
   function hookCalendarIcon(){
     var ico = document.querySelector(".date-wrap .calendar-ico");
     var input = document.querySelector("div#pick_date input.form-control");
@@ -490,7 +488,6 @@ div#pick_date input.form-control{ padding-right:2rem; }
   document.addEventListener("DOMContentLoaded", hookCalendarIcon);
   setTimeout(hookCalendarIcon, 0);
 
-  // Shiny message handlers
   window.Shiny && Shiny.addCustomMessageHandler("scrollTo", function(id){
     var el = document.getElementById(id);
     if(!el) return;
@@ -510,7 +507,6 @@ div#pick_date input.form-control{ padding-right:2rem; }
     setTimeout(()=>{ t.classList.remove("show"); t.remove(); }, 2200);
   });
 
-  // Carousel - manual only, remembers index
   window.initInsightsCarousel = function(rootId){
     const root = document.getElementById(rootId);
     if(!root) return;
@@ -551,13 +547,11 @@ div#pick_date input.form-control{ padding-right:2rem; }
     left && left.addEventListener("click", prev);
     right && right.addEventListener("click", next);
 
-    // drag
     let sx=null, ss=null;
     track.addEventListener("pointerdown",(e)=>{ sx=e.clientX; ss=track.scrollLeft; track.setPointerCapture(e.pointerId); });
     track.addEventListener("pointermove",(e)=>{ if(sx!=null){ track.scrollLeft = ss - (e.clientX-sx); }});
     track.addEventListener("pointerup",()=>{ if(sx!=null){ const w = track.clientWidth; const i = Math.round(track.scrollLeft / w); sx=null; ss=null; goTo(i); }});
 
-    // observe to sync dots
     let io = new IntersectionObserver((entries)=>{
       entries.forEach(en=>{
         if(en.isIntersecting){
@@ -574,15 +568,13 @@ div#pick_date input.form-control{ padding-right:2rem; }
 })();
       '))
     ),
-    # --- Background layers (BEHIND all UI) ---
-    # bubbles
+    # Background layers
     tags$div(class="ocean-bubbles",
              lapply(1:48, function(i){
                left <- sample(2:98,1); delay <- runif(1,0,10); size <- sample(12:26,1)
                tags$span(style=sprintf("left:%d%%; bottom:-20px; width:%dpx; height:%dpx; animation-delay:%.2fs;", left,size,size,delay))
              })
     ),
-    # horizontal critters (bottom quarter) — behind UI
     tags$div(class="ocean-critters",
              lapply(1:12, function(i){
                emojis <- c("🐬","🐢","🐠","🦀","🐋","🐡","🐙","🦑")
@@ -594,7 +586,6 @@ div#pick_date input.form-control{ padding-right:2rem; }
                tags$span(style=sprintf("bottom:%dvh; font-size:%.1frem; animation-duration:%.1fs; animation-delay:%.1fs;", bottom,size,dur,delay), emoji)
              })
     ),
-    # NEW: seaweeds band (replaces coral reef), swaying in place at bottom (behind UI)
     tags$div(class="ocean-seaweeds",
              lapply(1:18, function(i){
                cls <- sample(c("weed","weed s2","weed s3","weed s4"), 1)
@@ -603,9 +594,8 @@ div#pick_date input.form-control{ padding-right:2rem; }
     )
   ),
   
-  # -------- MAIN PAGE ----------
+  # Main content
   div(class="container-lg pt-2",
-      # Intro card (top card)
       div(class="card-cute mb-2",
           tags$div(style="font-weight:900; font-size:1.35rem;", "Play by the Bay - Pick a Friendly Splash Spot"),
           HTML("
@@ -614,9 +604,8 @@ div#pick_date input.form-control{ padding-right:2rem; }
       ")
       ),
       
-      # Main two-column layout
       div(class="top-grid",
-          # LEFT: Map + Carousel
+          # Map and insights
           div(
             bslib::card(class="card-cute", card_header = "Tap a region or a beach to learn its story",
                         leafletOutput("map", height = "68vh")
@@ -670,7 +659,7 @@ div#pick_date input.form-control{ padding-right:2rem; }
             )
           ),
           
-          # RIGHT: Pickers + Story
+          # Controls and story
           div(class="rightcol",
               bslib::card(class="card-cute", id="pickCard",
                           div(class="big-step","Pick a region"),
@@ -681,8 +670,8 @@ div#pick_date input.form-control{ padding-right:2rem; }
                               span("Pick a day"), NULL
                           ),
                           div(class="date-wrap",
-                              # NOTE: value = NA leaves it blank; placeholder set via JS above
-                              dateInput("pick_date", NULL, value = NA, min=min_d, max=max_d, width="100%"),
+                              # Default to the latest available date in the dataset
+                              dateInput("pick_date", NULL, value = max_d, min=min_d, max=max_d, width="100%"),
                               span(class="calendar-ico","📅")
                           ),
                           div(class="mt-3 d-flex gap-2",
@@ -698,7 +687,7 @@ div#pick_date input.form-control{ padding-right:2rem; }
           )
       ),
       
-      # Bottom Quick Help - full width
+      # Bottom quick help
       div(class="mt-3", id="quickHelpBottom",
           tags$details(class="quickhelp", open=NA,
                        tags$summary(HTML("🌎 Quick Help for Kids")),
@@ -713,16 +702,17 @@ div#pick_date input.form-control{ padding-right:2rem; }
   )
 )
 
-# ---------- server ----------
+# Server
 server <- function(input, output, session){
+  # Current selections kept in a reactive list
   rv <- reactiveValues(region_sel="All regions", site_sel="All sites", date_sel=max_d)
-  tick15 <- reactiveTimer(15000)  # refresh for Bits and friend line
+  tick15 <- reactiveTimer(15000)  # periodic refresh for bits/facts
   
   set_hint <- function(txt){ session$sendCustomMessage("setHint", txt) }
   scroll_flash <- function(id){ session$sendCustomMessage("scrollTo", id) }
   celebrate_safe <- function(){ session$sendCustomMessage("celebrate", list(title="Safe spot!", subtitle="The water sparkles for you. Splash and play.")) }
   
-  # region -> site choices
+  # Update site options when region changes
   observeEvent(input$region, {
     sites <- if (is.null(input$region) || input$region=="All regions") all_sites else sort(unique(all_df$site_name_short[all_df$region==input$region]))
     updateSelectInput(session, "site", choices=c("All sites", sites), selected="All sites")
@@ -730,15 +720,16 @@ server <- function(input, output, session){
     else set_hint("Great - pick a beach in this region, then a day")
   }, ignoreInit = TRUE)
   
+  # Hinting when site changes
   observeEvent(input$site, {
     if (input$site=="All sites") set_hint("Pick a day - or tap a pin")
     else set_hint("Good pick - choose a day, then tap OK")
   }, ignoreInit = TRUE)
   
-  # When date changes, update hint
+  # Hinting when date changes
   observeEvent(input$pick_date, { set_hint("Looks good - tap OK to show the story") }, ignoreInit = TRUE)
   
-  # prefer row with Temperature, else latest
+  # Choose latest row that has Temperature when available
   pick_latest_with_temp <- function(tbl){
     tbl <- tbl[order(tbl$date, decreasing=TRUE),]
     idx <- which(!is.na(tbl$Temperature))
@@ -750,7 +741,7 @@ server <- function(input, output, session){
     pick_latest_with_temp(prev)
   }
   
-  # map-ready data
+  # Map data for the current filters
   map_data <- reactive({
     sub <- all_df[all_df$date <= as.Date(rv$date_sel), ]
     if (!is.null(rv$region_sel) && rv$region_sel != "All regions") sub <- sub[sub$region==rv$region_sel,]
@@ -802,7 +793,7 @@ server <- function(input, output, session){
     mdf
   })
   
-  # region polys
+  # Region polygons and label positions
   region_polys <- reactive({
     dat <- all_df[all_df$date <= as.Date(rv$date_sel),]
     res <- list(); cents <- list()
@@ -824,7 +815,7 @@ server <- function(input, output, session){
     list(polys=res, cents=cents)
   })
   
-  # apply/reset
+  # Apply and reset actions
   observeEvent(input$apply, {
     rv$region_sel <- input$region
     rv$site_sel   <- input$site
@@ -844,12 +835,12 @@ server <- function(input, output, session){
   observeEvent(input$reset, {
     updateSelectInput(session, "region", selected="All regions")
     updateSelectInput(session, "site",   choices=c("All sites", all_sites), selected="All sites")
-    updateDateInput(session, "pick_date", value = NA, min = min_d, max = max_d)
+    updateDateInput(session, "pick_date", value = max_d, min = min_d, max = max_d)
     rv$region_sel <- "All regions"; rv$site_sel <- "All sites"; rv$date_sel <- max_d
     set_hint("Start again - pick a region, beach, day and then click OK"); scroll_flash("pickCard")
   })
   
-  # marker click -> prefill
+  # Click handlers from the map
   observeEvent(input$map_marker_click, {
     id <- input$map_marker_click$id
     reg <- input$map_marker_click$group
@@ -861,7 +852,6 @@ server <- function(input, output, session){
     }
   })
   
-  # polygon click -> select + zoom
   observeEvent(input$map_shape_click, {
     sid <- input$map_shape_click$id
     if (!is.null(sid) && startsWith(sid, "poly_")){
@@ -882,7 +872,7 @@ server <- function(input, output, session){
     }
   }, ignoreInit = TRUE)
   
-  # -------- MAP with base + labels overlay --------
+  # Base map and label overlay
   output$map <- renderLeaflet({
     leaflet(options = leafletOptions(minZoom=7, maxZoom=16)) %>%
       addMapPane("basemap", zIndex = 200) %>%
@@ -894,6 +884,7 @@ server <- function(input, output, session){
       addProviderTiles(providers$CartoDB.PositronOnlyLabels, options = providerTileOptions(pane = "labels", opacity = 0.95))
   })
   
+  # Legends and layer updates when filters change
   add_dynamic_legends <- function(proxy, regions_present){
     proxy %>% clearControls()
     proxy <- proxy %>% addControl(html = HTML(sprintf(
@@ -924,7 +915,7 @@ server <- function(input, output, session){
     regions_present <- sort(unique(c(mdf$region, names(polys))))
     proxy <- add_dynamic_legends(proxy, regions_present)
     
-    # polygons
+    # Region polygons
     for (nm in names(polys)){
       poly <- polys[[nm]]
       if (!is.null(poly) && nrow(poly) > 2){
@@ -939,7 +930,7 @@ server <- function(input, output, session){
         )
       }
     }
-    # region labels
+    # Region labels
     if (length(cents)){
       lab_lng <- sapply(cents, `[[`, "lon")
       lab_lat <- sapply(cents, `[[`, "lat")
@@ -954,7 +945,7 @@ server <- function(input, output, session){
       )
     }
     
-    # markers
+    # Site markers
     if (nrow(mdf)>0){
       if (!is.null(rv$site_sel) && rv$site_sel != "All sites" && any(mdf$site_name_short==rv$site_sel)) {
         sel <- mdf %>% dplyr::filter(site_name_short == rv$site_sel) %>% dplyr::slice(1)
@@ -980,7 +971,7 @@ server <- function(input, output, session){
     }
   }, ignoreInit = FALSE)
   
-  # ---------- Panels ----------
+  # Title above the story panel
   output$panel_title <- renderUI({
     date_str <- format(as.Date(rv$date_sel), "%d %B %Y")
     if (is.null(rv$site_sel) || rv$site_sel=="All sites"){
@@ -998,6 +989,7 @@ server <- function(input, output, session){
     }
   })
   
+  # Build the story text for a selected site
   pct_rank <- function(x, vec, high_good=TRUE){
     if (is.na(x)) return(NA_real_)
     vec <- vec[!is.na(vec)]
@@ -1006,7 +998,6 @@ server <- function(input, output, session){
     round(p*100)
   }
   
-  # build story, hiding any metric line that has NA
   make_story <- function(row, prev, bay_df){
     codes <- list(a = code_algae(row$CHL_A), c = code_clarity(row$Turb), o = code_oxygen(row$DO_mg),
                   n = code_nutr(row$N_TOTAL), t = code_temp(row$Temperature))
@@ -1025,7 +1016,7 @@ server <- function(input, output, session){
       p <- mean(if (high_good) vec <= val else vec >= val)
       round(p*100)
     }
-    p_clear <- pct_rank_safe(row$Turb, bay_df$Turb, high_good=FALSE)  # lower is better
+    p_clear <- pct_rank_safe(row$Turb, bay_df$Turb, high_good=FALSE)  # lower turbidity is better
     p_oxy   <- pct_rank_safe(row$DO_mg, bay_df$DO_mg, high_good=TRUE)
     p_chl   <- pct_rank_safe(row$CHL_A, bay_df$CHL_A, high_good=FALSE)
     p_temp  <- pct_rank_safe(row$Temperature, bay_df$Temperature, high_good=TRUE)
@@ -1062,7 +1053,6 @@ server <- function(input, output, session){
       else "Algae is high"
     } else NULL
     
-    # trend arrows
     trend <- c()
     if (!is.null(prev)){
       add <- function(label, now, old, good_low=NA){
@@ -1082,7 +1072,6 @@ server <- function(input, output, session){
       ))
     }
     
-    # activity pick based on clarity/temp
     act_pool <- TRY_THIS_BASE
     if (!is.na(row$Turb)){
       if (row$Turb <= 2) act_pool <- c(act_pool, TRY_THIS_CLEAR) else if (row$Turb > 5) act_pool <- c(act_pool, TRY_THIS_CLOUDY)
@@ -1092,7 +1081,6 @@ server <- function(input, output, session){
     }
     act_pick <- pick_rotating(act_pool, key = paste0(row$site_name_short, "_", row$date, "_try"), period_seconds = 15)
     
-    # helper to build metric paragraph only if value exists
     metric_line <- function(icon, label, value, unit, detail_text){
       if (is.na(value)) return(NULL)
       paste0("<p>", icon, " <span class='metric'>", label, "</span> ",
@@ -1121,6 +1109,7 @@ server <- function(input, output, session){
     HTML(do.call(paste0, as.list(Filter(Negate(is.null), parts))))
   }
   
+  # Story panel rendering
   output$story_block <- renderUI({
     if (is.null(rv$site_sel) || rv$site_sel == "All sites") {
       mdf <- map_data()
@@ -1144,7 +1133,7 @@ server <- function(input, output, session){
     }
   })
   
-  # -------- Insights pieces (manual carousel; only text refreshes) --------
+  # Insights cards
   output$top_picks <- renderUI({
     mdf <- map_data()
     regline <- if (!is.null(rv$region_sel) && rv$region_sel != "All regions") paste0("In ", rv$region_sel, ": ") else "All regions: "
