@@ -132,6 +132,9 @@ h1{ margin:0; font-size:20px }
 .card.big{
   border:none; box-shadow:none; background:transparent; width:auto; height:auto;
   display:flex; flex-direction:column; align-items:center; gap:6px; cursor:grab; user-select:none;
+  touch-action:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
 }
 .card.big .emoji{ font-size:clamp(50px, 8vw, 90px) }
 .card.big .label{ font-size:clamp(14px, 2vw, 20px); font-weight:900; text-align:center }
@@ -295,25 +298,88 @@ h1{ margin:0; font-size:20px }
 
 /* 响应式：小屏优化避免遮挡 */
 @media (max-width: 980px){
-  .stage{ grid-template-columns:1fr }
-  .left{ min-height:0 }
-  .right{ min-height:0; padding-bottom:12px }
-  .airdrop{ height:clamp(180px, 30vh, 300px); margin-top:12px }
-  .plane{ font-size:clamp(60px, 10vw, 84px) }
-  img.plane{ width:clamp(70px, 12vw, 96px) }
-  .current-item{ margin-top:clamp(20px, 4vh, 48px); height:clamp(150px, 20vh, 230px) }
-  .bins.three{ margin-top:clamp(20px, 4vh, 40px) }
-  .card.big .emoji{ font-size:clamp(40px, 8vw, 58px) }
-  .card.big .label{ font-size:clamp(14px, 3vw, 16px) }
-  .bin .can img{ width: clamp(100px, 20vw, 160px) }
+  header{
+    margin:4px 0 4px;
+    padding:6px 8px;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+  h1{ font-size:16px !important; }
+  #hud{ gap:8px; font-size:12px; }
+  .chip{ padding:3px 8px; font-size:11px; }
+  #reset{ padding:6px 10px; font-size:13px; }
+
+  .hint{
+    bottom:-60px;
+    font-size:11px !important;
+    padding:4px 8px;
+  }
+
+  .stage{
+    grid-template-columns:1fr 2fr;
+    padding:6px 0 6px;
+    gap:8px;
+  }
+  .left{
+    min-height:0;
+    padding:4px;
+  }
+  .right{
+    min-height:0;
+    padding:6px;
+  }
+
+  .current-item{
+    margin-top:8px;
+    height:clamp(100px, 15vh, 160px);
+  }
+  .card.big .emoji{ font-size:clamp(40px, 12vw, 70px) }
+  .card.big .label{ font-size:clamp(12px, 3.5vw, 16px) }
+
+  .plane{
+    font-size:clamp(40px, 8vw, 60px);
+    bottom: 50vh;
+  }
+
+  .bins.three{
+    margin-top:clamp(8px, 2vh, 16px);
+    gap:clamp(6px, 2vw, 12px);
+  }
+  .bin{ padding:4px 2px; }
+  .bin .can { margin-bottom: 4px; }
+  .bin .can img{ width: clamp(80px, 22vw, 130px) }
+  .bin .label{
+    font-size:clamp(12px, 3.5vw, 16px) !important;
+    padding:4px 8px;
+  }
 
   /* 手机端只保留左侧装饰，避免右侧遮挡 bins */
+  .hut-tree.d1{ width:min(18vw, 200px); }
   .hut-tree.d2{ display:none }
 
-  /* 吉祥物略缩，气泡宽度也略缩 */
-  .mascot{ left:-40px; bottom:40px }
-  .mascot img{ width: clamp(150px, 28vw, 250px) }
-  .bubble.mascot{ max-width: clamp(200px, 50vw, 320px) }
+  /* 吉祥物略缩 */
+  .mascot{ left:-20px; bottom:20px; }
+  .mascot img{ width: clamp(80px, 22vw, 150px) }
+  .bubble.mascot{
+    max-width: clamp(150px, 35vw, 250px);
+    font-size: clamp(10px, 2.5vw, 14px) !important;
+    padding:12px 14px;
+  }
+}
+
+/* Portrait mobile - extra small screens */
+@media (max-width: 600px) and (orientation: portrait){
+  .stage{
+    grid-template-columns:1fr;
+  }
+  .left{
+    display:none;
+  }
+
+  .bins.three{
+    margin-top:clamp(20px, 8vh, 60px);
+  }
+  .bin .can img{ width: clamp(90px, 24vw, 140px) }
 }
 
 /* 低动效偏好：减少动画 */

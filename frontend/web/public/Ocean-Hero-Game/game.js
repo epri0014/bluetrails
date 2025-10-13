@@ -126,8 +126,9 @@ function renderNextItem(){
   if (itemProgress) itemProgress.textContent = `${currentIndex+1}/${items.length}`;
 }
 
-// —— 拖拽绑定（集成飞机 shake）——
+// —— 拖拽绑定（集成飞机 shake + 移动端触摸）——
 function attachDrag(el){
+  // Desktop drag events
   el.addEventListener('dragstart', e => {
     if (!running) return e.preventDefault();
     e.dataTransfer.setData('text/plain', JSON.stringify({
@@ -148,6 +149,112 @@ function attachDrag(el){
 
     document.querySelectorAll('.bin').forEach(b => b.classList.remove('hot'));
   });
+
+  // Mobile touch events
+  let isDragging = false;
+  let startX, startY;
+  let clone = null;
+
+  el.addEventListener('touchstart', e => {
+    if (!running) return;
+    isDragging = true;
+    const touch = e.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+
+    // Create a clone for dragging
+    clone = el.cloneNode(true);
+    clone.style.position = 'fixed';
+    clone.style.pointerEvents = 'none';
+    clone.style.zIndex = '9999';
+    clone.style.opacity = '0.8';
+    clone.style.transform = 'scale(1.1)';
+    clone.style.left = `${touch.clientX - el.offsetWidth / 2}px`;
+    clone.style.top = `${touch.clientY - el.offsetHeight / 2}px`;
+    document.body.appendChild(clone);
+
+    // Add shake to plane
+    const plane = document.querySelector('.plane');
+    if (plane) plane.classList.add('shake');
+
+    e.preventDefault();
+  }, { passive: false });
+
+  el.addEventListener('touchmove', e => {
+    if (!isDragging || !clone) return;
+    const touch = e.touches[0];
+    clone.style.left = `${touch.clientX - el.offsetWidth / 2}px`;
+    clone.style.top = `${touch.clientY - el.offsetHeight / 2}px`;
+
+    // Check which bin is under the touch
+    const binUnder = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.bin');
+    document.querySelectorAll('.bin').forEach(b => {
+      if (b === binUnder) {
+        b.classList.add('hot');
+      } else {
+        b.classList.remove('hot');
+      }
+    });
+
+    e.preventDefault();
+  }, { passive: false });
+
+  el.addEventListener('touchend', e => {
+    if (!isDragging) return;
+    isDragging = false;
+
+    // Remove clone
+    if (clone) {
+      clone.remove();
+      clone = null;
+    }
+
+    // Remove plane shake
+    const plane = document.querySelector('.plane');
+    if (plane) plane.classList.remove('shake');
+
+    // Get the bin under the touch end point
+    const touch = e.changedTouches[0];
+    const binUnder = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.bin');
+
+    document.querySelectorAll('.bin').forEach(b => b.classList.remove('hot'));
+
+    if (binUnder) {
+      // Trigger drop logic
+      const correct = el.dataset.type === binUnder.dataset.type;
+
+      if (correct){
+        score += 20;
+        if (scoreEl) scoreEl.textContent = String(score);
+        sfx.correct();
+        const facts = {
+          waste:   "Food scraps go back to nature",
+          recycle: "Recycling makes new things",
+          rubbish: "This one just goes to the bin."
+        };
+        setBubble('✅ ' + (facts[binUnder.dataset.type] || 'Correct!'), 'good');
+        updateBadge();
+      }else{
+        score = Math.max(0, score - 10);
+        if (scoreEl) scoreEl.textContent = String(score);
+        setBubble('❌ Almost! Try again', 'bad');
+        sfx.wrong();
+        binUnder.classList.add('shake');
+        setTimeout(()=>binUnder.classList.remove('shake'), 300);
+        // ❌ 让物品自身回弹
+        const card = currentHost?.querySelector('.card.big');
+        if (card){
+          card.classList.add('shake');
+          setTimeout(()=>card.classList.remove('shake'), 240);
+        }
+      }
+
+      currentIndex += 1;
+      renderNextItem();
+    }
+
+    e.preventDefault();
+  }, { passive: false });
 }
 
 // ---------- Bins setup ----------
