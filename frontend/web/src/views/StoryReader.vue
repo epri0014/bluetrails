@@ -15,7 +15,16 @@ const showMascotBubble = ref(false);
 const isPaused = ref(false);    // 是否暂停
 const isFinished = ref(false);  // ✅ 是否播放完毕
 
-/* ======== 播放 / 恢复当前页文字（caption text） ======== */
+const highlightedHTML = ref(story.pages[pageIndex.value]?.text || '');
+const currentWordIndex = ref(-1);
+
+const suppressEndHighlight = ref(false);
+
+function cancelSpeech() {
+  suppressEndHighlight.value = true;       // 标记为“由我们主动取消”
+  window.speechSynthesis.cancel();
+}
+
 function playText() {
   // ✅ 若处于暂停状态，则恢复播放
   if (isPaused.value && window.speechSynthesis.paused) {
@@ -27,6 +36,10 @@ function playText() {
   const text = story.pages[pageIndex.value]?.text;
   if (!text) return;
 
+  // ✅ 将文字拆分为单词数组，准备高亮
+ const words = text.trim().split(/\s+/);
+  highlightedHTML.value = words.map(w => `<span>${w}</span>`).join(' ');
+
   const utter = new SpeechSynthesisUtterance(text);
   utter.rate = 0.95;
   utter.pitch = 1.05;
@@ -35,14 +48,61 @@ function playText() {
   utter.onstart = () => {
     isPaused.value = false;
     isFinished.value = false;
-  };
-  utter.onend = () => {
-    isPaused.value = false;
-    isFinished.value = true; // ✅ 播放结束
+    currentWordIndex.value = -1;
   };
 
-  window.speechSynthesis.cancel(); // 停止旧播放
-  window.speechSynthesis.speak(utter);
+  // ✅ 每当朗读到一个单词时触发
+utter.onboundary = (event) => {
+  console.log('boundary event:', event.charIndex, event.name);
+  if (event.charIndex >= 0) {
+    const idx = getWordIndexByChar(event.charIndex, text);
+    if (idx >= 0 && idx < words.length) {
+      currentWordIndex.value = idx;
+      updateHighlight(words, idx);
+    }
+  }
+};
+
+// ✅ 播放结束：如果不是我们主动取消，就补最后一次高亮到最后一个词
+utter.onend = () => {
+  isPaused.value = false;
+  isFinished.value = true;
+
+  if (!suppressEndHighlight.value && words.length > 0) {
+    currentWordIndex.value = words.length - 1;
+    updateHighlight(words, words.length - 1);
+  }
+};
+
+cancelSpeech();                 // 先取消上一次（会把 suppressEndHighlight 置 true）
+suppressEndHighlight.value = false;  // 立刻恢复为“非主动取消”状态（自然结束才补高亮）
+window.speechSynthesis.speak(utter);
+}
+
+/* 辅助函数：通过字符位置推测当前朗读单词索引 */
+function getWordIndexByChar(charIndex, fullText) {
+  const before = fullText.slice(0, charIndex);
+  return before.trim().split(/\s+/).length - 1;
+}
+
+/* 根据当前索引更新高亮 HTML */
+function updateHighlight(words, activeIdx) {
+  // 把每个单词包裹在 span 里，当前单词加 highlight
+  const html = words.map((w, i) => {
+    // 防止空字符 / 标点断裂
+    const safeWord = w.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+    return i === activeIdx
+      ? `<span class="highlight">${safeWord}</span>`
+      : `<span>${safeWord}</span>`;
+  }).join(' ');
+  highlightedHTML.value = html;
+}
+
+function syncCaptionToPage() {
+  highlightedHTML.value = story.pages[pageIndex.value]?.text || '';
+  currentWordIndex.value = -1;
+  isPaused.value = false;
+  isFinished.value = false;
 }
 
 /* ======== 暂停当前语音 ======== */
@@ -55,10 +115,10 @@ function pauseText() {
 
 /* ======== 重新播放（Replay） ======== */
 function replayText() {
-  window.speechSynthesis.cancel();
+  cancelSpeech();
   isPaused.value = false;
   isFinished.value = false;
-  playText(); // 直接重新开始朗读
+  playText();
 }
 
 /* ======== Tip 英语朗读 ======== */
@@ -82,7 +142,8 @@ function speakTip() {
   utter.rate = 0.98;
   utter.pitch = 1.0;
   if (englishVoice) utter.voice = englishVoice;
-  window.speechSynthesis.cancel();
+  cancelSpeech(); // ✅ 用带 suppress 标记的取消
+  suppressEndHighlight.value = true;
   window.speechSynthesis.speak(utter);
 }
 function toggleTip(e){
@@ -93,24 +154,33 @@ function toggleTip(e){
   if (expanded) speakTip();
 }
 
+function goPage(i) {
+  if (i === pageIndex.value) return;
+  cancelSpeech();
+  pageIndex.value = i;
+  syncCaptionToPage();
+}
+
 /* ======== 翻页导航 ======== */
 function next(){
-  window.speechSynthesis.cancel();
-  if(isLast.value) router.push(`/stories/${story.id}/finish`);
-  else {
+  cancelSpeech();
+  if (isLast.value) {
+    router.push(`/stories/${story.id}/finish`);
+  } else {
     pageIndex.value++;
-    isFinished.value = false;
-  }
-}
-function prev(){
-  window.speechSynthesis.cancel();
-  if(pageIndex.value>0){
-    pageIndex.value--;
-    isFinished.value = false;
+    syncCaptionToPage();
   }
 }
 
-onBeforeUnmount(()=> window.speechSynthesis.cancel());
+function prev(){
+  cancelSpeech();
+  if (pageIndex.value > 0) {
+    pageIndex.value--;
+    syncCaptionToPage();
+  }
+}
+
+onBeforeUnmount(()=> cancelSpeech());
 </script>
 
 
@@ -142,7 +212,7 @@ onBeforeUnmount(()=> window.speechSynthesis.cancel());
 
       <!-- 漫画下方 caption -->
       <div class="caption">
-        <p class="text">{{ story.pages[pageIndex].text }}</p>
+       <p class="text" v-html="highlightedHTML"></p>
 
         <div class="controls">
           <button class="play" @click="playText">
@@ -162,15 +232,15 @@ onBeforeUnmount(()=> window.speechSynthesis.cancel());
         </button>
       </div>
 
-      <div class="dots">
-        <button
-          v-for="(p,i) in story.pages"
-          :key="i"
-          class="dot"
-          :class="{ active: i===pageIndex }"
-          @click="pageIndex=i"
-        />
-      </div>
+<div class="dots">
+  <button
+    v-for="(p, i) in story.pages"
+    :key="i"
+    class="dot"
+    :class="{ active: i === pageIndex }"
+    @click="goPage(i)"
+  />
+</div>
     </section>
 
     <nav class="nav">
@@ -241,4 +311,10 @@ onBeforeUnmount(()=> window.speechSynthesis.cancel());
 .nav{margin-top:14px;display:flex;justify-content:center;gap:12px}
 .nav button{padding:8px 14px;border-radius:10px;border:1px solid #dbe9ee;background:#fff}
 .nav button:hover{background:#f0fbff}
+.text :deep(.highlight) {
+  background: linear-gradient(90deg, #fff5a0 0%, #ffe85f 100%);
+  border-radius: 4px;
+  padding: 2px 4px;
+  transition: background .2s ease;
+}
 </style>
