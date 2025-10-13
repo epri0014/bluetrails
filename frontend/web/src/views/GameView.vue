@@ -10,7 +10,7 @@
         allowfullscreen
         loading="lazy"
         title="Ocean Hero Game"
-        scrolling="no"
+        scrolling="yes"
         @load="onLoad"
       ></iframe>
     </div>
@@ -36,7 +36,7 @@ function onLoad() {
   left: 0;
   right: 0;
   bottom: 0;
-  width: 100vw;
+  width: 100%;
   height: calc(100vh - var(--nav-h, 80px));
   margin: 0;
   padding: 0;
@@ -50,43 +50,40 @@ function onLoad() {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .game-iframe {
   position: absolute;
   top: 0;
   left: 0;
-  width: 133%;
-  height: 133%;
+  width: 100%;
+  height: 100%;
   border: none;
   display: block;
-  transform: scale(0.75);
-  transform-origin: top left;
-  overflow: hidden;
 }
 
-/* Responsive scaling for optimal fit */
+/* Ensure consistent display on all screen sizes */
 @media (max-width: 1200px) {
   .game-iframe {
-    width: 140%;
-    height: 140%;
-    transform: scale(0.71);
+    width: 100%;
+    height: 100%;
   }
 }
 
 @media (max-width: 768px) {
   .game-iframe {
-    width: 150%;
-    height: 150%;
-    transform: scale(0.67);
+    width: 100%;
+    height: 100%;
   }
 }
 
 @media (max-width: 480px) {
   .game-iframe {
-    width: 180%;
-    height: 180%;
-    transform: scale(0.56);
+    width: 100%;
+    height: 100%;
   }
 }
 </style>
