@@ -17,15 +17,24 @@
     </button>
 
     <!-- Loading state with skeleton -->
-    <div v-if="loading" class="content">
-      <div class="skeleton-header glass">
-        <div class="skeleton-avatar"></div>
-        <div class="skeleton-text-block">
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line short"></div>
+    <div v-if="loading" class="content-grid">
+      <!-- Left Panel Skeleton -->
+      <aside class="left-panel">
+        <div class="skeleton-back-btn glass"></div>
+        <div class="skeleton-animal-info glass">
+          <div class="skeleton-avatar"></div>
+          <div class="skeleton-text-block">
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line short"></div>
+            <div class="skeleton-line medium"></div>
+          </div>
         </div>
-      </div>
-      <div class="skeleton-map glass"></div>
+      </aside>
+
+      <!-- Right Panel Skeleton -->
+      <section class="right-panel">
+        <div class="skeleton-map glass"></div>
+      </section>
     </div>
 
     <!-- Error state -->
@@ -518,20 +527,25 @@ onBeforeUnmount(() => {
 }
 
 /* Skeleton Loading */
-.skeleton-header {
-  position: relative;
-  z-index: 10;
-  max-width: 960px;
-  margin: 16px auto 20px;
-  padding: 20px 24px;
+.skeleton-back-btn {
+  height: 36px;
+  background: linear-gradient(90deg, #e0e7ff 25%, #c7d2fe 50%, #e0e7ff 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 16px;
+}
+
+.skeleton-animal-info {
+  padding: 16px 12px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
 }
 
 .skeleton-avatar {
-  width: 96px;
-  height: 96px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   background: linear-gradient(90deg, #e0e7ff 25%, #c7d2fe 50%, #e0e7ff 75%);
   background-size: 200% 100%;
@@ -539,14 +553,16 @@ onBeforeUnmount(() => {
 }
 
 .skeleton-text-block {
-  flex: 1;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  align-items: center;
 }
 
 .skeleton-line {
-  height: 20px;
+  height: 16px;
+  width: 100%;
   background: linear-gradient(90deg, #e0e7ff 25%, #c7d2fe 50%, #e0e7ff 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s ease-in-out infinite;
@@ -554,18 +570,20 @@ onBeforeUnmount(() => {
 }
 
 .skeleton-line.short {
-  width: 70%;
+  width: 60%;
+}
+
+.skeleton-line.medium {
+  width: 80%;
 }
 
 .skeleton-map {
-  position: relative;
-  z-index: 10;
-  max-width: 1200px;
-  margin: 0 auto;
-  height: 500px;
+  height: 100%;
+  min-height: 400px;
   background: linear-gradient(90deg, #e0e7ff 25%, #c7d2fe 50%, #e0e7ff 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 16px;
 }
 
 @keyframes skeleton-loading {

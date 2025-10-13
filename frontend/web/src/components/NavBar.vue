@@ -38,6 +38,14 @@
                 </svg>
                 <span>{{ $t('nav.visitOceanHome') }}</span>
               </RouterLink>
+              <!-- Ocean Adventures (Stories) -->
+              <RouterLink to="/stories" class="dropdown-item" data-nav-index="2" @click="resetNavbarStates">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                  <path d="M4 6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 6v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6zM15 6h3a2 2 0 0 1 2 2v10l-3-2-3 2V6z"/>
+                  <path d="M11.5 8.5l.6 1.2 1.3.2-1 .9.2 1.3-1.1-.6-1.1.6.2-1.3-1-.9 1.3-.2.6-1.2z"/>
+                </svg>
+                <span>{{ $t('nav.oceanStories') }}</span>
+              </RouterLink>
             </div>
           </Transition>
         </div>
@@ -67,24 +75,18 @@
                 </svg>
                 <span>{{ $t('nav.practiceQuiz') }}</span>
               </RouterLink>
+              <RouterLink class="dropdown-item" to="/challenge" data-nav-index="4" @click="restartChallenge">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm-1 5h2v5h-2zm1 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                </svg>
+                <span>{{ $t('nav.buddyChallenge') }}</span>
+              </RouterLink>
             </div>
           </Transition>
         </div>
 
-        <!-- Ocean Adventures (Stories) -->
-        <RouterLink to="/stories" class="link" @click="resetNavbarStates">
-          <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="20" height="20">
-            <path d="M4 6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6zM15 6h3a2 2 0 0 1 2 2v10l-3-2-3 2V6z"/>
-            <path d="M11.5 8.5l.6 1.2 1.3.2-1 .9.2 1.3-1.1-.6-1.1.6.2-1.3-1-.9 1.3-.2.6-1.2z"/>
-          </svg>
-          <span>Ocean Adventures</span>
-        </RouterLink>
-                <RouterLink class="link" to="/challenge" aria-label="Be an Ocean Hero" @click="restartChallenge">
-          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm-1 5h2v5h-2zm1 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-          </svg>
-          <span>Buddy Challenge</span>
-        </RouterLink>
+        
+        
       </nav>
 
       <!-- Mobile menu button -->
@@ -135,7 +137,7 @@
             <path d="M4 6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6zM15 6h3a2 2 0 0 1 2 2v10l-3-2-3 2V6z"/>
             <path d="M11.5 8.5l.6 1.2 1.3.2-1 .9.2 1.3-1.1-.6-1.1.6.2-1.3-1-.9 1.3-.2.6-1.2z"/>
           </svg>
-          <span>Ocean Adventures</span>
+          <span>{{ $t('nav.oceanStories') }}</span>
         </RouterLink>
 
         <!-- Buddy Challenge (mobile) -->
@@ -143,7 +145,7 @@
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm-1 5h2v5h-2zm1 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
           </svg>
-          <span>Buddy Challenge</span>
+          <span>{{ $t('nav.buddyChallenge') }}</span>
         </RouterLink>
       </nav>
     </div>

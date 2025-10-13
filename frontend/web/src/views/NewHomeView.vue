@@ -250,9 +250,9 @@ const typeText = async (text) => {
   isTyping.value = false
 
   // Show arrows for specific speech texts, reset on final speech
-  if (currentSpeechIndex.value >= 1 && currentSpeechIndex.value <= 4) {
+  if (currentSpeechIndex.value >= 1 && currentSpeechIndex.value <= 6) {
     showNavigationArrow()
-  } else if (currentSpeechIndex.value === 5) {
+  } else if (currentSpeechIndex.value === 7) {
     // Reset navbar animations on final "thank you" speech
     const allElements = document.querySelectorAll('.highlight-bounce')
     allElements.forEach(el => el.classList.remove('highlight-bounce'))
@@ -347,11 +347,11 @@ const showNavigationArrow = () => {
         // Find all dropdown triggers in the links section
         const dropdownTriggers = navbar.querySelectorAll('.links .dropdown .dropdown-trigger')
 
-        if (speechIndex <= 1) {
-          // Speech 1 & 2: Ocean Friends group (Meet Our Ocean Friends, Visit Ocean Friends Home)
+        if (speechIndex <= 2) {
+          // Speech 1, 2 & 3: Ocean Friends group (Meet Our Ocean Friends, Visit Ocean Friends Home, Ocean Stories)
           triggerToAnimate = dropdownTriggers[0] // First dropdown (Ocean Friends)
-        } else if (speechIndex >= 2 && speechIndex <= 3) {
-          // Speech 3 & 4: Play & Practice group (Play Ocean Fun Games, Practice Ocean Quiz)
+        } else if (speechIndex >= 3 && speechIndex <= 5) {
+          // Speech 4, 5 & 6: Play & Practice group (Play Ocean Fun Games, Practice Ocean Quiz, Buddy Challenge)
           triggerToAnimate = dropdownTriggers[1] // Second dropdown (Play & Practice)
         }
 
