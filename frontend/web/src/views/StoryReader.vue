@@ -12,21 +12,53 @@ const isLast = computed(() => pageIndex.value === story.pages.length - 1);
 const progress = computed(() => Math.round(((pageIndex.value + 1) / story.pages.length) * 100));
 
 const showMascotBubble = ref(false);
+const isPaused = ref(false);    // 是否暂停
+const isFinished = ref(false);  // ✅ 是否播放完毕
 
-/* ======== 播放当前页文字（caption text） ======== */
+/* ======== 播放 / 恢复当前页文字（caption text） ======== */
 function playText() {
+  // ✅ 若处于暂停状态，则恢复播放
+  if (isPaused.value && window.speechSynthesis.paused) {
+    window.speechSynthesis.resume();
+    isPaused.value = false;
+    return;
+  }
+
   const text = story.pages[pageIndex.value]?.text;
   if (!text) return;
+
   const utter = new SpeechSynthesisUtterance(text);
   utter.rate = 0.95;
   utter.pitch = 1.05;
-  utter.lang = 'en-US'; // 强制英语朗读
-  window.speechSynthesis.cancel();
+  utter.lang = 'en-US';
+
+  utter.onstart = () => {
+    isPaused.value = false;
+    isFinished.value = false;
+  };
+  utter.onend = () => {
+    isPaused.value = false;
+    isFinished.value = true; // ✅ 播放结束
+  };
+
+  window.speechSynthesis.cancel(); // 停止旧播放
   window.speechSynthesis.speak(utter);
 }
 
-function stopText() {
+/* ======== 暂停当前语音 ======== */
+function pauseText() {
+  if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+    window.speechSynthesis.pause();
+    isPaused.value = true;
+  }
+}
+
+/* ======== 重新播放（Replay） ======== */
+function replayText() {
   window.speechSynthesis.cancel();
+  isPaused.value = false;
+  isFinished.value = false;
+  playText(); // 直接重新开始朗读
 }
 
 /* ======== Tip 英语朗读 ======== */
@@ -61,11 +93,26 @@ function toggleTip(e){
   if (expanded) speakTip();
 }
 
-function next(){ if(isLast.value) router.push(`/stories/${story.id}/finish`); else pageIndex.value++; }
-function prev(){ if(pageIndex.value>0) pageIndex.value--; }
+/* ======== 翻页导航 ======== */
+function next(){
+  window.speechSynthesis.cancel();
+  if(isLast.value) router.push(`/stories/${story.id}/finish`);
+  else {
+    pageIndex.value++;
+    isFinished.value = false;
+  }
+}
+function prev(){
+  window.speechSynthesis.cancel();
+  if(pageIndex.value>0){
+    pageIndex.value--;
+    isFinished.value = false;
+  }
+}
 
 onBeforeUnmount(()=> window.speechSynthesis.cancel());
 </script>
+
 
 <template>
   <div class="reader ocean-page" :style="{ '--accent': story.accent || '#9fe2ff' }">
@@ -98,8 +145,11 @@ onBeforeUnmount(()=> window.speechSynthesis.cancel());
         <p class="text">{{ story.pages[pageIndex].text }}</p>
 
         <div class="controls">
-          <button class="play" @click="playText">▶ Play</button>
-          <button class="stop" @click="stopText">⏹ Stop</button>
+          <button class="play" @click="playText">
+            {{ isPaused ? '▶ Resume' : '▶ Play' }}
+          </button>
+          <button class="pause" @click="pauseText">⏸ Pause</button>
+          <button class="replay" v-if="isFinished" @click="replayText">🔁 Replay</button>
         </div>
 
         <button
@@ -163,7 +213,7 @@ onBeforeUnmount(()=> window.speechSynthesis.cancel());
 .stage{display:grid;justify-items:center}
 .figure img{
   width:min(100%,900px);
-  max-height:500px;
+  max-height:700px;
   object-fit:contain;
   border-radius:12px;
   background:#f9ffff;
@@ -176,8 +226,8 @@ onBeforeUnmount(()=> window.speechSynthesis.cancel());
 .caption{text-align:center;margin-top:12px}
 .text{font-size:18px;margin:8px auto;max-width:720px}
 .controls{display:flex;gap:10px;justify-content:center;margin-bottom:10px}
-.play,.stop{padding:8px 16px;border-radius:10px;border:1px solid #ccc;background:#fff;font-weight:600}
-.play:hover,.stop:hover{background:#f0fbff}
+.play,.pause,.replay{padding:8px 16px;border-radius:10px;border:1px solid #ccc;background:#fff;font-weight:600}
+.play:hover,.pause:hover,.replay:hover{background:#f0fbff}
 .tip{display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:8px 12px;
   border-radius:999px;background:#fff4c2;border:1px solid #f2d98b;font-weight:700;cursor:pointer;position:relative}
 .tip .bubble{position:absolute;left:50%;transform:translateX(-50%);
