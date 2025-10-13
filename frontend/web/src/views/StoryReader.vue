@@ -177,6 +177,7 @@ function toggleTip(e){
 function goPage(i) {
   if (i === pageIndex.value) return;
   cancelSpeech();
+  showMascotBubble.value = false;
   pageIndex.value = i;
   syncCaptionToPage();
 }
@@ -188,6 +189,7 @@ function next(){
     router.push(`/stories/${story.id}/finish`);
   } else {
     pageIndex.value++;
+    showMascotBubble.value = false;
     syncCaptionToPage();
   }
 }
@@ -196,6 +198,7 @@ function prev(){
   cancelSpeech();
   if (pageIndex.value > 0) {
     pageIndex.value--;
+    showMascotBubble.value = false;
     syncCaptionToPage();
   }
 }
