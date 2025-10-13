@@ -25,6 +25,26 @@ function cancelSpeech() {
   window.speechSynthesis.cancel();
 }
 
+function speakLine(line) {
+  if (!line) return;
+  const utter = new SpeechSynthesisUtterance(line);
+  utter.lang = 'en-US';
+  utter.rate = 0.98;
+  utter.pitch = 1.0;
+  if (englishVoice) utter.voice = englishVoice;
+
+  cancelSpeech();                 // 先取消上一次
+  suppressEndHighlight.value = true; // 不去补最后高亮
+  window.speechSynthesis.speak(utter);
+}
+
+function speakSpeech() {
+  const speech = story.pages[pageIndex.value]?.speech
+              || story.pages[pageIndex.value]?.tip
+              || `Hi! I'm ${story.mascot}. Let's learn together!`;
+  speakLine(speech);
+}
+
 function playText() {
   // ✅ 若处于暂停状态，则恢复播放
   if (isPaused.value && window.speechSynthesis.paused) {
@@ -199,14 +219,17 @@ onBeforeUnmount(()=> cancelSpeech());
 
         <!-- 吉祥物（可朗读 Tip） -->
         <button
-          class="mascot-float ocean-card"
-          :style="{ '--accent': story.accent || '#0aa3c2' }"
-          @click="(showMascotBubble = !showMascotBubble, showMascotBubble && speakTip())"
-        >
+  class="mascot-float ocean-card"
+  :style="{ '--accent': story.accent || '#0aa3c2' }"
+  @click="(showMascotBubble = !showMascotBubble, showMascotBubble ? speakSpeech() : cancelSpeech())"
+>
           <img class="mascot-img" :src="story.cover" :alt="`${story.mascot} mascot`" />
           <span class="bubble" v-show="showMascotBubble">
-            {{ story.pages[pageIndex].tip || `Hi! I'm ${story.mascot}. Let's learn together!` }}
-          </span>
+  {{ story.pages[pageIndex].speech
+     || story.pages[pageIndex].tip
+     || `Hi! I'm ${story.mascot}. Let's learn together!` }}
+</span>
+
         </button>
       </div>
 
