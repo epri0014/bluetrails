@@ -188,7 +188,7 @@ function setupBins(){
       }else{
         score = Math.max(0, score - 10);
         if (scoreEl) scoreEl.textContent = String(score);
-        setBubble('❌ Oops! Wrong', 'bad');
+        setBubble('❌ Almost! Try again', 'bad');
         sfx.wrong();
         bin.classList.add('shake');
         setTimeout(()=>bin.classList.remove('shake'), 300);
