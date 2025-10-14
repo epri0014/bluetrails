@@ -75,5 +75,16 @@
       "good": "Great job! You have a good understanding of our ocean friends.",
       "excellent": "Excellent! You are an ocean hero!"
     }
+  },
+  "floatingGuide": {
+    "visitWaterMessage": "Hey there! 👋 Want to learn about our home conditions and how the ocean is doing?",
+    "visitWaterButton": "🏠 Visit Our Home",
+    "ariaLabel": "Visit Ocean Friends Home guide",
+    "buddyChallengeMessage": "Now you learned about our home water condition, why don't you play Buddy Challenge, guessing today's water condition?",
+    "buddyChallengeButton": "🏆 Buddy Challenge",
+    "buddyChallengeAriaLabel": "Play Buddy Challenge guide",
+    "playGameMessage": "You read the fun story about treating trash correctly! Now play our fun game?",
+    "playGameButton": "🎮 Play Ocean Fun Games",
+    "playGameAriaLabel": "Play Ocean Fun Games guide"
   }
 }

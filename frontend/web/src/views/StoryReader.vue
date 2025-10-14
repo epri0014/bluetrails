@@ -1,11 +1,16 @@
 <script setup>
-import { ref, computed, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { getAnimals } from '@/services/api.js';
 import stories from '../data/stories.json';
+import FloatingAnimalGuide from '@/components/FloatingAnimalGuide.vue';
 
 const route = useRoute();
 const router = useRouter();
+const { locale } = useI18n();
 const story = stories.find(s => s.id === route.params.id);
+const animals = ref([]);
 
 const pageIndex = ref(0);
 const isLast = computed(() => pageIndex.value === story.pages.length - 1);
@@ -203,13 +208,37 @@ function prev(){
   }
 }
 
+// Load animals for the floating guide
+const loadAnimals = async () => {
+  try {
+    const data = await getAnimals(locale.value);
+    animals.value = data.map(animal => ({
+      slug: animal.slug,
+      name: animal.name,
+      cartoon: animal.cartoon_image_url
+    }));
+  } catch (err) {
+    console.error('Failed to load animals for floating guide:', err);
+  }
+};
+
+// Navigate to game page
+function navigateToGame() {
+  router.push('/game');
+}
+
+onMounted(() => {
+  loadAnimals();
+});
+
 onBeforeUnmount(()=> cancelSpeech());
 </script>
 
 
 <template>
-  <div class="reader ocean-page" :style="{ '--accent': story.accent || '#9fe2ff' }">
-    <header class="top">
+  <div class="story-reader-view">
+    <div class="reader ocean-page" :style="{ '--accent': story.accent || '#9fe2ff' }">
+      <header class="top">
       <h2>{{ story.title }}</h2>
       <div class="progress"><div class="bar" :style="{ width: progress + '%' }"></div></div>
     </header>
@@ -274,6 +303,17 @@ onBeforeUnmount(()=> cancelSpeech());
       <span>{{ pageIndex + 1 }} / {{ story.pages.length }}</span>
       <button @click="next">{{ isLast ? 'Finish ▶' : 'Next ▶' }}</button>
     </nav>
+    </div>
+
+    <!-- Floating Animal Guide -->
+    <FloatingAnimalGuide
+      v-if="animals.length > 0"
+      :available-animals="animals"
+      :message="$t('floatingGuide.playGameMessage')"
+      :button-text="$t('floatingGuide.playGameButton')"
+      :aria-label="$t('floatingGuide.playGameAriaLabel')"
+      @click="navigateToGame"
+    />
   </div>
 </template>
 

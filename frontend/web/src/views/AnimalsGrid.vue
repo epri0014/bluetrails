@@ -113,38 +113,36 @@
           </button>
         </div>
 
-        <transition name="pop">
-          <div
-            v-if="current"
-            class="animal-box"
-            :key="current.slug + mode"
-            ref="animalEl"
-            @click="openInfo"
-            role="button"
-            :aria-label="$t('animals.openInfoFor') + ' ' + current.name"
-            tabindex="0"
-            @keydown.enter.prevent="openInfo"
-          >
-            <img
-              v-if="mode === 'photo'"
-              class="photo"
-              :src="imgSrc(current.file)"
-              :alt="current.name"
-              @error="onImgError"
-            />
-            <img
-              v-else
-              class="cartoon-img"
-              :src="imgSrc(current.cartoon)"
-              :alt="current.name + ' cartoon'"
-              @error="onImgError"
-            />
-            <div v-show="!infoOpen" class="tap-hint" aria-hidden="true">
-              <span class="tap-badge">{{ $t('animals.tapMe') }}</span>
-              <span class="tap-hand">👆</span>
-            </div>
+        <div
+          v-if="current"
+          class="animal-box"
+          :key="current.slug"
+          ref="animalEl"
+          @click="openInfo"
+          role="button"
+          :aria-label="$t('animals.openInfoFor') + ' ' + current.name"
+          tabindex="0"
+          @keydown.enter.prevent="openInfo"
+        >
+          <img
+            v-if="mode === 'photo'"
+            class="photo"
+            :src="imgSrc(current.file)"
+            :alt="current.name"
+            @error="onImgError"
+          />
+          <img
+            v-else
+            class="cartoon-img"
+            :src="imgSrc(current.cartoon)"
+            :alt="current.name + ' cartoon'"
+            @error="onImgError"
+          />
+          <div v-show="!infoOpen" class="tap-hint" aria-hidden="true">
+            <span class="tap-badge">{{ $t('animals.tapMe') }}</span>
+            <span class="tap-hand">👆</span>
           </div>
-        </transition>
+        </div>
 
         <transition name="bubble">
           <div
@@ -240,15 +238,28 @@
         </transition>
       </div>
     </section>
+
+    <!-- Floating Animal Guide -->
+    <FloatingAnimalGuide
+      v-if="animals.length > 0"
+      :available-animals="animals"
+      :message="$t('floatingGuide.visitWaterMessage')"
+      :button-text="$t('floatingGuide.visitWaterButton')"
+      :aria-label="$t('floatingGuide.ariaLabel')"
+      @click="navigateToWater"
+    />
   </main>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { getAnimals, getAnimalBySlug } from '@/services/api.js'
+import FloatingAnimalGuide from '@/components/FloatingAnimalGuide.vue'
 
 const { locale } = useI18n()
+const router = useRouter()
 
 // Dynamic animals data from API
 const animalsData = ref([])
@@ -393,6 +404,11 @@ const infoOpen = ref(false)
 function openInfo(){ infoOpen.value = true }
 function closeInfo(){ infoOpen.value = false }
 
+// Navigate to water page
+function navigateToWater() {
+  router.push('/water')
+}
+
 // Watch for locale changes and reload animals
 watch(locale, async () => {
   animalDetails.value = {} // Clear cached details
@@ -510,9 +526,12 @@ onMounted(async () => {
     transform: translateX(-50%) translateY(-12px);
   }
 }
-.pop-enter-from{ transform: translate(-50%, 40%) scale(.85); opacity:0; }
-.pop-enter-active{ transition: all .55s cubic-bezier(.2,.9,.2,1); }
+.pop-enter-from{ transform: translate(-50%, 0%) scale(.95); opacity:0; }
+.pop-enter-active{ transition: all .15s ease-out; }
 .pop-enter-to{ transform: translate(-50%, 0%) scale(1); opacity:1; }
+.pop-leave-from{ transform: translate(-50%, 0%) scale(1); opacity:1; }
+.pop-leave-active{ transition: all .15s ease-in; }
+.pop-leave-to{ transform: translate(-50%, 0%) scale(.95); opacity:0; }
 
 .bubble{
   position:absolute; left:50%; transform:translateX(-50%); bottom:6%;

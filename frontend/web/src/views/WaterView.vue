@@ -1,8 +1,9 @@
 <template>
-  <div class="water-container">
-    <div class="iframe-wrap">
-      <!-- Skeleton Loader mimicking water guide layout -->
-      <div v-if="loading" class="skeleton-overlay">
+  <div class="water-view">
+    <div class="water-container">
+      <div class="iframe-wrap">
+        <!-- Skeleton Loader mimicking water guide layout -->
+        <div v-if="loading" class="skeleton-overlay">
         <div class="skeleton-water-guide">
           <!-- Title Section -->
           <div class="skeleton-title-box">
@@ -85,22 +86,70 @@
         allowfullscreen
         @load="onLoad"
       ></iframe>
+      </div>
     </div>
+
+    <!-- Floating Animal Guide - outside water-container to avoid z-index stacking context issue -->
+    <FloatingAnimalGuide
+      v-if="!loading && animals.length > 0"
+      :available-animals="animals"
+      :message="$t('floatingGuide.buddyChallengeMessage')"
+      :button-text="$t('floatingGuide.buddyChallengeButton')"
+      :aria-label="$t('floatingGuide.buddyChallengeAriaLabel')"
+      @click="navigateToChallenge"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { getAnimals } from '@/services/api.js'
+import FloatingAnimalGuide from '@/components/FloatingAnimalGuide.vue'
+
+const { locale } = useI18n()
+const router = useRouter()
 
 const loading = ref(true)
 const frame = ref(null)
+const animals = ref([])
 
 function onLoad() {
   loading.value = false
 }
+
+// Load animals for the floating guide
+const loadAnimals = async () => {
+  try {
+    const data = await getAnimals(locale.value)
+    animals.value = data.map(animal => ({
+      slug: animal.slug,
+      name: animal.name,
+      cartoon: animal.cartoon_image_url
+    }))
+  } catch (err) {
+    console.error('Failed to load animals for floating guide:', err)
+  }
+}
+
+// Navigate to challenge page
+function navigateToChallenge() {
+  router.push('/challenge')
+}
+
+onMounted(() => {
+  loadAnimals()
+})
 </script>
 
 <style scoped>
+.water-view {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
 .water-container {
   position: fixed;
   top: var(--nav-h, 80px);

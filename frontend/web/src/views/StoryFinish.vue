@@ -1,31 +1,72 @@
 <script setup>
+import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { getAnimals } from '@/services/api.js';
 import stories from '../data/stories.json';
+import FloatingAnimalGuide from '@/components/FloatingAnimalGuide.vue';
 
 const route = useRoute();
 const router = useRouter();
+const { locale } = useI18n();
 const story = stories.find(s => s.id === route.params.id);
+const animals = ref([]);
 
 function again(){ router.push(`/stories/${story.id}`); }
+
+// Load animals for the floating guide
+const loadAnimals = async () => {
+  try {
+    const data = await getAnimals(locale.value);
+    animals.value = data.map(animal => ({
+      slug: animal.slug,
+      name: animal.name,
+      cartoon: animal.cartoon_image_url
+    }));
+  } catch (err) {
+    console.error('Failed to load animals for floating guide:', err);
+  }
+};
+
+// Navigate to game page
+function navigateToGame() {
+  router.push('/game');
+}
+
+onMounted(() => {
+  loadAnimals();
+});
 </script>
 
 <template>
-  <div class="finish">
-    <div class="confetti" aria-hidden="true"><i v-for="n in 60" :key="n"></i></div>
+  <div class="story-finish-view">
+    <div class="finish">
+      <div class="confetti" aria-hidden="true"><i v-for="n in 60" :key="n"></i></div>
 
-    <h2>🎉 You finished <em>{{ story.title }}</em>!</h2>
+      <h2>🎉 You finished <em>{{ story.title }}</em>!</h2>
 
-    <div class="card">
-      <div class="badge">🌊 Ocean Helper</div>
-      <h3>🌱 Takeaway</h3>
-      <p>{{ story.takeaway }}</p>
+      <div class="card">
+        <div class="badge">🌊 Ocean Helper</div>
+        <h3>🌱 Takeaway</h3>
+        <p>{{ story.takeaway }}</p>
+      </div>
+
+      <div class="actions">
+        <button @click="again">🔁 Read Again</button>
+        <router-link to="/stories" class="link">📚 Back to Library</router-link>
+        <router-link to="/play" class="link">🎮 Try a Mini-Game</router-link>
+      </div>
     </div>
 
-    <div class="actions">
-      <button @click="again">🔁 Read Again</button>
-      <router-link to="/stories" class="link">📚 Back to Library</router-link>
-      <router-link to="/play" class="link">🎮 Try a Mini-Game</router-link>
-    </div>
+    <!-- Floating Animal Guide -->
+    <FloatingAnimalGuide
+      v-if="animals.length > 0"
+      :available-animals="animals"
+      :message="$t('floatingGuide.playGameMessage')"
+      :button-text="$t('floatingGuide.playGameButton')"
+      :aria-label="$t('floatingGuide.playGameAriaLabel')"
+      @click="navigateToGame"
+    />
   </div>
 </template>
 
