@@ -66,10 +66,9 @@
           <img :src="animalData?.cartoon_image_url" :alt="animalData?.name" class="avatar" />
           <div class="animal-text">
             <div class="eyebrow">{{ animalData?.name }}</div>
-            <h2>"This is my home: <span class="site-name">{{ siteName }}</span>"</h2>
+            <h2>This is my home: <br/>"<span class="site-name">{{ siteName }}</span>"</h2>
             <p class="lead">
-              Today my home looks like this. Can you tell me:
-              <strong>Is my home okay?</strong>
+              Today my home's water quality looks like this
             </p>
           </div>
         </section>
@@ -82,7 +81,7 @@
               <span v-for="(metric, index) in metricsList" :key="metric.key">
                 <span class="param-icon">{{ metric.emoji }}</span><span v-if="index < metricsList.length - 1">,</span>
               </span>
-              parameters condition below:
+              condition below:
             </div>
             <div class="q">What do you think about my home today?</div>
             <div class="circle-btns">
