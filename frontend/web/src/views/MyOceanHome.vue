@@ -77,6 +77,13 @@
         <!-- Center Section: Vote buttons as circles -->
         <section class="center-section glass">
           <div class="vote-content">
+            <div class="parameters-info">
+              Based on
+              <span v-for="(metric, index) in metricsList" :key="metric.key">
+                <span class="param-icon">{{ metric.emoji }}</span><span v-if="index < metricsList.length - 1">,</span>
+              </span>
+              parameters condition below:
+            </div>
             <div class="q">What do you think about my home today?</div>
             <div class="circle-btns">
               <button class="circle-btn green-circle" @click="vote('green')" aria-label="Safe">
@@ -566,6 +573,26 @@ function restartChallenge() {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
+.parameters-info{
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #475569;
+  line-height: 1.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.param-icon{
+  font-size: 20px;
+  display: inline-block;
+  vertical-align: middle;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+}
+
 .vote-content .q{
   font-weight: 800;
   font-size: 20px;
@@ -583,8 +610,8 @@ function restartChallenge() {
 
 .circle-btn{
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   border: 4px solid rgba(255, 255, 255, 0.9);
   cursor: pointer;
@@ -1338,8 +1365,18 @@ function restartChallenge() {
     margin-bottom: 10px;
   }
 
-  .vote-content .q{
+  .parameters-info{
+    font-size: 13px;
+    margin-bottom: 14px;
+    gap: 3px;
+  }
+
+  .param-icon{
     font-size: 18px;
+  }
+
+  .vote-content .q{
+    font-size: 50px;
     margin-bottom: 20px;
   }
 
