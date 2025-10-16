@@ -314,6 +314,8 @@ body{
     radial-gradient(40px 40px at 30% 80%, #e6edff 30%, transparent 31%) 0 0 / 76px 76px;
   border:2px solid #0c8b6f; border-radius:22px; box-shadow:6px 6px 0 #00000018;
   padding:14px; color:#103b3c; margin-bottom:0;
+  /* make it taller so no empty gap below */
+  min-height: 260px;
 }
 .insights-title{ font-weight:900; font-size:1.15rem; margin:0 0 6px 0; color:#0a6b56 !important; }
 
@@ -331,7 +333,7 @@ body{
   flex:0 0 100%; scroll-snap-align:start;
   border:2px solid #000; border-radius:18px;
   padding:18px 22px;
-  background:#fff; box-shadow:4px 4px 0 #00000014; min-height:180px;
+  background:#fff; box-shadow:4px 4px 0 #00000014; min-height:220px;
   display:flex; flex-direction:column; justify-content:center;
 }
 
@@ -432,13 +434,28 @@ details.quickhelp[open] > summary:before{ content:"▾"; }
   position:relative; z-index:5;
 }
 
-/* Date input with calendar icon on the right */
-.date-wrap{ position:relative; }
-.date-wrap .calendar-ico{
-  position:absolute; right:10px; top:50%; transform:translateY(-50%);
-  font-size:1.15rem; opacity:.85; cursor:pointer; pointer-events:auto;
+/* Date input with calendar icon on the right (centered) */
+.date-wrap{ position:relative; height:48px; }           /* give the wrapper a fixed height */
+div#pick_date{ height:48px; }                            /* match wrapper */
+div#pick_date input.form-control{
+  height:48px; line-height:48px; padding-right:2.2rem;  /* make input taller and leave room for icon */
 }
-div#pick_date input.form-control{ padding-right:2rem; }
+.date-wrap .calendar-ico{
+  position:absolute; right:10px; top:50%; transform:translateY(-50%);  /* true vertical center */
+  font-size:1.15rem; opacity:.9; cursor:pointer; pointer-events:auto;
+}
+
+/* Confetti (wasn’t animating before) */
+@keyframes confetti-fall{
+  0%   { transform: translateY(-20px) rotate(0deg);   opacity:.95; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity:.95; }
+}
+.confetti-toast{
+  position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
+  background:#fff; border:2px solid #000; border-radius:14px; padding:8px 14px;
+  box-shadow:4px 4px 0 #00000018; font-weight:900; z-index:9999; opacity:0; transition:.25s;
+}
+.confetti-toast.show{ opacity:1; }
 
 /* Misc */
 .flash{ animation: flash 1.2s ease-in-out 1; }
@@ -1088,7 +1105,7 @@ server <- function(input, output, session){
     }
     
     parts <- c(
-      "<p><b>Play by the Bay</b></p>",
+      # removed "Play by the Bay" header from the story card on purpose (requested)
       "<p>", opener, "</p>"
     )
     parts <- c(parts,
@@ -1114,15 +1131,34 @@ server <- function(input, output, session){
     if (is.null(rv$site_sel) || rv$site_sel == "All sites") {
       mdf <- map_data()
       counts <- table(factor(mdf$overall, levels = c("green","amber","red"))); counts[is.na(counts)] <- 0
-      reg_counts <- table(mdf$region)
+      reg_counts <- sort(table(mdf$region))
+      # pick top sparkly spots: safest then newest
+      top <- if (nrow(mdf)>0) {
+        mdf %>% dplyr::arrange(match(overall, c("green","amber","red")), dplyr::desc(sample_date)) %>% head(3)
+      } else mdf[0,]
+      top_names <- if (nrow(top)>0) paste(top$site_name_short, collapse=" • ") else "-"
+      
+      mean_turb <- suppressWarnings(mean(mdf$Turb, na.rm=TRUE));  mean_turb <- if (is.nan(mean_turb)) NA_real_ else mean_turb
+      mean_do   <- suppressWarnings(mean(mdf$DO_mg, na.rm=TRUE)); mean_do   <- if (is.nan(mean_do))   NA_real_ else mean_do
+      mean_temp <- suppressWarnings(mean(mdf$Temperature, na.rm=TRUE)); mean_temp <- if (is.nan(mean_temp)) NA_real_ else mean_temp
+      
       HTML(paste0(
-        "<p>We checked <b>", nrow(mdf), "</b> beaches for your chosen date.</p>",
-        "<p><span style='color:", code_to_color['green'], "'>", as.integer(counts[['green']]), "</span> safe ",
-        "• <span style='color:", code_to_color['amber'], "'>", as.integer(counts[['amber']]), "</span> caution ",
-        "• <span style='color:", code_to_color['red'], "'>", as.integer(counts[['red']]), "</span> rest.</p>",
-        if (length(reg_counts)) paste0("<p><b>By region</b> - ",
-                                       paste(paste0(names(reg_counts), ": ", as.integer(reg_counts)), collapse = " • "),
-                                       "</p>") else ""
+        "<p><b>Here is today’s simple story for all beaches.</b> Think of it as a quick weather report for the water.</p>",
+        "<p><b>How many are friendly?</b><br/>",
+        as.integer(counts[['green']]), " safe • ",
+        as.integer(counts[['amber']]), " caution • ",
+        as.integer(counts[['red']]), " rest.</p>",
+        if (length(reg_counts)) paste0(
+          "<p><b>By region</b><br/>",
+          paste(paste0(names(reg_counts), ": ", as.integer(reg_counts)), collapse = " • "),
+          "</p>"
+        ) else "",
+        "<p><b>Top sparkly spots</b><br/>", top_names, "</p>",
+        "<p><b>What the water feels like</b></p>",
+        "<p>👀 <b>Clarity</b> ~ ", ifelse(is.na(mean_turb), "-", fmt_num(mean_turb)), " NTU - lower numbers look more like clean glass.</p>",
+        "<p>🫧 <b>Oxygen</b> ~ ", ifelse(is.na(mean_do), "-", fmt_num(mean_do)), " mg/L - more bubbles keep sea life lively.</p>",
+        "<p>🌡️ <b>Temperature</b> ~ ", ifelse(is.na(mean_temp), "-", fmt_num(mean_temp)), " °C - cool feels comfy for quick splashes.</p>",
+        "<p><b>Try this today</b><br/>Pick a beach from the list, choose a day, and press OK to see that beach’s own story with a playful idea.</p>"
       ))
     } else {
       sub <- all_df %>% dplyr::filter(site_name_short==rv$site_sel, date <= as.Date(rv$date_sel))
